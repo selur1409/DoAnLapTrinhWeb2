@@ -1,12 +1,23 @@
 {
   "name": "do_an_lap_trinh_web_2",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/selur1409/DoAnLapTrinhWeb2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/selur1409/DoAnLapTrinhWeb2/issues"
+  },
+  "homepage": "https://github.com/selur1409/DoAnLapTrinhWeb2#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
