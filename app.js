@@ -12,8 +12,19 @@ app.set('view engine', 'hbs');
 
 app.use('/public', express.static('public'))
 
+// Trang chủ Home
+app.get('/', function (req, res) {
+  res.render('index');
+})
 app.get('/index.html', function (req, res) {
     res.render('index');
+})
+
+// Trang đăng kí (register)
+app.get('/register', function (req, res) {
+  res.render('vwAccount/register',{
+    layout: false
+  });
 })
 
 const PORT = 3000;
