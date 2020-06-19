@@ -24,7 +24,7 @@
 	<!-- Header -->
 
 	<header class="header">
-		<div class="container">
+		<div class="container-fluid">
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
@@ -39,7 +39,7 @@
 								<li><a href="contact.html">Contact</a></li>
 							</ul>
 						</nav>
-						<div class="search_container ml-auto">
+						<div class="search_container ml-5">
 							<!-- <div class="weather">
 								<div class="temperature">+10°</div>
 								<img class="weather_icon" src="images/cloud.png" alt="">
@@ -47,9 +47,51 @@
 							<form action="#">
 								<input type="search" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
-							</form>
-							
+							</form>							
 						</div>
+
+						{{!-- register_login --}}
+						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
+						<nav class="main_nav">
+							<ul>
+							{{#if lcIsAuthenticated}}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-user" aria-hidden="true"></i>
+								Welcome, <b>{{lcAuthUser.name}}</b>!
+								</a>
+								<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a class="dropdown-item" href="/account/profile">
+									<i class="fa fa-user" aria-hidden="true"></i>
+									Account Profile
+								</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="javascript: $('#frmLogout').submit()">
+									<i class="fa fa-sign-out" aria-hidden="true"></i>
+									Logout
+								</a>
+								</div>
+							</li>
+							{{else}}
+							<li class="nav-item">
+								<a class="nav-link" href="/account/login">
+								<i class="fa fa-sign-in" aria-hidden="true"></i>
+								Login
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/account/register">
+								<i class="fa fa-user-plus" aria-hidden="true"></i>
+								Register
+								</a>
+							</li>
+							{{/if}}	
+							</ul>
+						</nav>
+						
+						{{!-- /register_login --}}
+
 						<div class="hamburger ml-auto menu_mm">
 							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
 						</div>
