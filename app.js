@@ -21,7 +21,7 @@ app.get('/index.html', function (req, res) {
 })
 
 // Trang đăng kí (register)
-app.get('/register', function (req, res) {
+app.get('/account/register', function (req, res) {
   res.render('vwAccount/register',{
     layout: false
   });
