@@ -20,16 +20,9 @@ app.get('/index.html', function (req, res) {
     res.render('index');
 })
 
-// Trang đăng kí (register)
-app.get('/account/register', function (req, res) {
-  res.render('vwAccount/register',{
-    layout: false
-  });
-})
-
-app.post('/account/register', function(req, res){
-  // xử lý đăng kí
-})
+// route account
+const accountRoute = require('./route/account.route');
+app.use('/account', accountRoute);
 
 const PORT = 3000;
 app.listen(PORT, function () {
