@@ -27,6 +27,10 @@ app.get('/account/register', function (req, res) {
   });
 })
 
+app.post('/account/register', function(req, res){
+  // xử lý đăng kí
+})
+
 const PORT = 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
