@@ -3,13 +3,13 @@ const accountModel = require('../models/account.model');
 const bcrypt = require('bcryptjs');
 const config = require('../config/default.json');
 const moment = require('moment');
-const { response } = require('express');
+const auth = require('../middlewares/auth.mdw');
 
 
 const router = express.Router();
 
 // Trang đăng kí (register)
-router. get('/register', function (req, res) {
+router. get('/register', auth.referer, function (req, res) {
     res.render('vwAccount/register',{
     layout: false
     });
@@ -107,7 +107,7 @@ router.post('/register', async function(req, res){
 })
 
 // Trang đăng nhập (login)
-router.get('/login', function (req, res) {
+router.get('/login', auth.referer, function (req, res) {
     res.render('vwAccount/login',{
         layout: false
     });
@@ -140,7 +140,20 @@ router.post('/login', async function (req, res) {
         })
     }
 
-    res.send('Ok');
+    delete acc.Password_hash;
+
+    req.session.isAuthenticated = true;
+    req.session.authAccount = acc;
+
+    const url = req.query.retUrl || '/';
+    res.redirect(url);
 }) 
+
+router.post('/logout', auth.restrict, function (req, res) {
+    req.session.isAuthenticated = false;
+    req.session.authUser = null;
+
+    res.redirect(req.headers.referer);
+})
 
 module.exports = router;
