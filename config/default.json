@@ -6,5 +6,22 @@
       "password": "",
       "database": "news",
       "connectionLimit": 10
-    }
-  }
+    },
+    "authentication":{
+      "saltRounds": 8
+    },
+    "momentDefault":{
+      "Duration": {
+        "Year": "Y",
+        "Quarters": "Q",
+        "Months": "M",
+        "Weeks": "w",
+        "Days": "d",
+        "Hours": "h",
+        "Minutes": "m",
+        "Seconds": "s",
+        "Miliseconds": "ms"
+      },
+      "NumberTime": 7
+    }    
+}

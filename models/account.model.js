@@ -1,4 +1,5 @@
 const db = require('../utils/db');
+const { use } = require('../route/account.route');
 
 const TBL_ACCOUNTS = 'accounts'
 
@@ -6,14 +7,16 @@ module.exports = {
     all: function () {
         return db.load(`select * from ${TBL_ACCOUNTS}`);
     },
-    allUsername: function(){
-        return db.load(`select username from ${TBL_ACCOUNTS}`)
+    singleId: function (username) {
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}'`);
     },
-    single: function (id) {
-        return db.load(`select * from ${TBL_ACCOUNTS} where Id = ${id}`);
-    },
+
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);
+    },
+    addInfor: function(entity){
+        db.add('information', entity);
+        return 1;
     },
     patch: function (entity) {
         const condition = {

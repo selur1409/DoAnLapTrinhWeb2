@@ -1,10 +1,14 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
+const hbs_sections = require('express-handlebars-sections');
 const app = express();
 
 const hbs = exphbs.create({
   defaultLayout: 'home',
   extname: '.hbs',
+  helpers: {
+    section: hbs_sections()
+  }
 });
 
 app.engine('hbs', hbs.engine);
