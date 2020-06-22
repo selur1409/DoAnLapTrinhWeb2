@@ -33,7 +33,7 @@ USE `news`;
 CREATE TABLE IF NOT EXISTS `accounts` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `Password` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Password_hash` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `DateRegister` datetime NOT NULL,
   `DateExpired` datetime NOT NULL,
   `TypeAccount` int(4) NOT NULL,
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `information` (
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Nickname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Avatar` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Date` date NOT NULL,
+  `DOB` date NOT NULL,
   `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Phone` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IdAccount` int(11) NOT NULL,
@@ -291,6 +291,14 @@ CREATE TABLE IF NOT EXISTS `typeaccount` (
   `IsDelete` tinyint(1) NOT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `typeaccount`
+--
+
+INSERT INTO `typeaccount` (`Id`, `Name`, `IsDelete`) VALUES
+(1, 'User', 0),
+(2, 'Admin', 0);
 
 --
 -- Constraints for dumped tables
