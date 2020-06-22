@@ -7,10 +7,15 @@ module.exports = {
     all: function () {
         return db.load(`select * from ${TBL_ACCOUNTS}`);
     },
+    single: function (username) {
+        return db.load(`select Id, Username, Password_hash, TypeAccount from ${TBL_ACCOUNTS} where Username = '${username}'`);
+    },
     singleId: function (username) {
         return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}'`);
     },
-
+    singleEmail: function(email){
+        return db.load(`select IdAccount from information where Email = '${email}'`);
+    },
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);
     },
