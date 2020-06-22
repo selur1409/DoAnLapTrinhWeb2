@@ -51,5 +51,19 @@ module.exports = {
           resolve(results);
         });
       });
-    }
+    },
+
+  insert: (sql, value) => {
+    return new Promise((resolve, reject) => {
+      pool.query(sql, value, (error, results, fields) => {
+        if (error) {
+          return reject(error);
+        }
+        else {
+          resolve(results);
+        }
+      });
+    });
+  }
+
 };
