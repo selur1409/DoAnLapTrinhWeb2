@@ -7,10 +7,11 @@ const moment = require('moment');
 moment.locale("vi");
 const multer = require('multer');
 const upload = multer();
-app.use(upload.array()); 
 
 
 const app = express();
+app.use(upload.array()); 
+
 const hbs = exphbs.create({
   defaultLayout: 'home',
   extname: '.hbs',
