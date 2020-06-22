@@ -18,8 +18,11 @@
   "homepage": "https://github.com/selur1409/DoAnLapTrinhWeb2#readme",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "express": "^4.17.1",
     "express-handlebars": "^4.0.4",
+    "express-handlebars-sections": "^1.0.1",
+    "moment": "^2.27.0",
     "mysql": "^2.18.1"
   }
 }
