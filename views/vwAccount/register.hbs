@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - SelurProjectWeb2</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
     <style>
+        body,
+        html {
+          height: 100%;
+          background-image:url(/public/images/home_slider.jpg);
+        }
       .required .control-label:after {
           content:" (*)";
           color:red;
       }
     </style>
 </head>
-<body class="home_slider_background" style="background-image:url(/public/images/home_slider.jpg)">
+<body>
   <a href="/" class="btn btn-dark btn-lg float-left">
       <i class="fa fa-home" aria-hidden="true"></i>
       Home
@@ -58,7 +63,7 @@
       </div>
       <div class="form-group required">
         <label class="control-label" for="txtConfirm">Confirm</label>
-        <input type="password" class="form-control" placeholder="Confirm password" id="txtConfirm" Confirm="Confirm" required>
+        <input type="password" class="form-control" placeholder="Confirm password" id="txtConfirm" name="Confirm" required>
       </div>
       <div class="form-group required">
         <label for="txtName">Name</label>

@@ -87,24 +87,15 @@ router.post('/register', async function(req, res){
         layout: false,
         success: 'Created new account success!!!!'
     })
-
-
-    
-
-    // const dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
-    // const entity = {
-    //     Username: req.body.Username,
-    //     password_hash,
-    //     name: req.body.name,
-    //     email: req.body.email,
-    //     dob,
-    //     permission: 0
-    // }  
-    // await accountModel.add(entity);
-    // res.render('vwAccount/register');
-
-    //const dob = moment().format('MMMM Do YYYY, h:mm:ss a');
-    //console.log(moment(dob, "YYYYMMDD").fromNow());
 })
+
+// Trang đăng nhập (login)
+router.get('/login', function (req, res) {
+    res.render('vwAccount/login',{
+    layout: false
+    });
+}) 
+
+
 
 module.exports = router;
