@@ -2,10 +2,10 @@
 -- version 4.9.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th6 19, 2020 lúc 08:53 AM
--- Phiên bản máy phục vụ: 10.4.8-MariaDB
--- Phiên bản PHP: 7.3.10
+-- Host: 127.0.0.1
+-- Generation Time: Jun 22, 2020 at 10:57 AM
+-- Server version: 10.4.8-MariaDB
+-- PHP Version: 7.3.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,39 +19,44 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Cơ sở dữ liệu: `news`
+-- Database: `news`
 --
+CREATE DATABASE IF NOT EXISTS `news` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `news`;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `accounts`
+-- Table structure for table `accounts`
 --
 
-CREATE TABLE `accounts` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `accounts` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Password` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `DateRegister` datetime NOT NULL,
   `DateExpired` datetime NOT NULL,
   `TypeAccount` int(4) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Accounts_TypeAccount` (`TypeAccount`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories`
+-- Table structure for table `categories`
 --
 
-CREATE TABLE `categories` (
+CREATE TABLE IF NOT EXISTS `categories` (
   `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` int(11) NOT NULL
+  `IsDelete` int(11) NOT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `categories`
+-- Dumping data for table `categories`
 --
 
 INSERT INTO `categories` (`Id`, `Name`, `IsDelete`) VALUES
@@ -64,18 +69,20 @@ INSERT INTO `categories` (`Id`, `Name`, `IsDelete`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `categories_sub`
+-- Table structure for table `categories_sub`
 --
 
-CREATE TABLE `categories_sub` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `categories_sub` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `IdCategoriesMain` int(11) NOT NULL,
   `Name` varchar(50) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `IdCategoriesMain` (`IdCategoriesMain`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
 
 --
--- Đang đổ dữ liệu cho bảng `categories_sub`
+-- Dumping data for table `categories_sub`
 --
 
 INSERT INTO `categories_sub` (`Id`, `IdCategoriesMain`, `Name`, `IsDelete`) VALUES
@@ -104,55 +111,64 @@ INSERT INTO `categories_sub` (`Id`, `IdCategoriesMain`, `Name`, `IsDelete`) VALU
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `comments`
+-- Table structure for table `comments`
 --
 
-CREATE TABLE `comments` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `comments` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Content` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `DatetimeComment` datetime NOT NULL,
   `IdReader` int(11) NOT NULL,
   `IdPost` int(11) NOT NULL,
-  `IsDelete` int(11) NOT NULL
+  `IsDelete` int(11) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Comment_Informations` (`IdReader`),
+  KEY `Comment_Posts` (`IdPost`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `editoraccount`
+-- Table structure for table `editoraccount`
 --
 
-CREATE TABLE `editoraccount` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `editoraccount` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `IdAccount` int(11) NOT NULL,
   `IdCategoríe` int(11) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`,`IdAccount`,`IdCategoríe`) USING BTREE,
+  KEY `EditorAccount_Accounts` (`IdAccount`),
+  KEY `EditorAccount_Categories` (`IdCategoríe`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `feedback`
+-- Table structure for table `feedback`
 --
 
-CREATE TABLE `feedback` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `feedback` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Note` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `Status` tinyint(1) NOT NULL,
   `DatetimeApproval` datetime NOT NULL,
   `IdEditorAccount` int(11) NOT NULL,
   `IdPost` int(11) NOT NULL,
-  `IsDelete` int(11) NOT NULL
+  `IsDelete` int(11) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Feedback_EditorAccount` (`IdEditorAccount`),
+  KEY `Feedback_Posts` (`IdPost`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `information`
+-- Table structure for table `information`
 --
 
-CREATE TABLE `information` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `information` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Nickname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Avatar` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -160,54 +176,63 @@ CREATE TABLE `information` (
   `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Phone` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IdAccount` int(11) NOT NULL,
-  `Sex` tinyint(1) NOT NULL
+  `Sex` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Information_Accounts` (`IdAccount`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `postdetails`
+-- Table structure for table `postdetails`
 --
 
-CREATE TABLE `postdetails` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `postdetails` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `IdPost` int(11) NOT NULL,
-  `Content_Full` text NOT NULL
+  `Content_Full` text NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `IdPost` (`IdPost`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `posts`
+-- Table structure for table `posts`
 --
 
-CREATE TABLE `posts` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `posts` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Title` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Content_Summary` text COLLATE utf8_unicode_ci NOT NULL,
+  `Content_Full` text COLLATE utf8_unicode_ci NOT NULL,
   `DatePost` date NOT NULL,
   `Avatar` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Views` int(11) NOT NULL,
   `DatetimePost` datetime NOT NULL,
-  `IdCategoriesSub` int(11) NOT NULL,
+  `IdCategories` int(11) NOT NULL,
   `IdStatus` int(11) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `Posts_StatusPosts` (`IdStatus`),
+  KEY `Posts_SubCategories` (`IdCategories`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `status_posts`
+-- Table structure for table `status_posts`
 --
 
-CREATE TABLE `status_posts` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `status_posts` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `status_posts`
+-- Dumping data for table `status_posts`
 --
 
 INSERT INTO `status_posts` (`Id`, `Name`, `IsDelete`) VALUES
@@ -219,230 +244,104 @@ INSERT INTO `status_posts` (`Id`, `Name`, `IsDelete`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tags`
+-- Table structure for table `tags`
 --
 
-CREATE TABLE `tags` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `tags` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `tags`
+--
+
+INSERT INTO `tags` (`Id`, `Name`, `IsDelete`) VALUES
+(1, 'Web', 0),
+(2, 'App', 0),
+(3, 'Python', 0),
+(4, 'Ruby', 0);
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `tag_posts`
+-- Table structure for table `tag_posts`
 --
 
-CREATE TABLE `tag_posts` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `tag_posts` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `IdTag` int(11) NOT NULL,
-  `IdPost` int(11) NOT NULL
+  `IdPost` int(11) NOT NULL,
+  PRIMARY KEY (`Id`,`IdTag`,`IdPost`),
+  KEY `TagPosts_Posts` (`IdPost`),
+  KEY `TagPosts_Tags` (`IdTag`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `typeaccount`
+-- Table structure for table `typeaccount`
 --
 
-CREATE TABLE `typeaccount` (
-  `Id` int(11) NOT NULL,
+CREATE TABLE IF NOT EXISTS `typeaccount` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL
+  `IsDelete` tinyint(1) NOT NULL,
+  PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Chỉ mục cho các bảng đã đổ
+-- Constraints for dumped tables
 --
 
 --
--- Chỉ mục cho bảng `accounts`
---
-ALTER TABLE `accounts`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `Accounts_TypeAccount` (`TypeAccount`);
-
---
--- Chỉ mục cho bảng `categories`
---
-ALTER TABLE `categories`
-  ADD PRIMARY KEY (`Id`);
-
---
--- Chỉ mục cho bảng `categories_sub`
---
-ALTER TABLE `categories_sub`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `IdCategoriesMain` (`IdCategoriesMain`);
-
---
--- Chỉ mục cho bảng `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `Comment_Informations` (`IdReader`),
-  ADD KEY `Comment_Posts` (`IdPost`);
-
---
--- Chỉ mục cho bảng `editoraccount`
---
-ALTER TABLE `editoraccount`
-  ADD PRIMARY KEY (`Id`) USING BTREE,
-  ADD KEY `EditorAccount_Accounts` (`IdAccount`);
-
---
--- Chỉ mục cho bảng `feedback`
---
-ALTER TABLE `feedback`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `Feedback_EditorAccount` (`IdEditorAccount`),
-  ADD KEY `Feedback_Posts` (`IdPost`);
-
---
--- Chỉ mục cho bảng `information`
---
-ALTER TABLE `information`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `Information_Accounts` (`IdAccount`);
-
---
--- Chỉ mục cho bảng `postdetails`
---
-ALTER TABLE `postdetails`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `IdPost` (`IdPost`);
-
---
--- Chỉ mục cho bảng `posts`
---
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`Id`),
-  ADD KEY `Posts_StatusPosts` (`IdStatus`);
-
---
--- Chỉ mục cho bảng `status_posts`
---
-ALTER TABLE `status_posts`
-  ADD PRIMARY KEY (`Id`);
-
---
--- Chỉ mục cho bảng `tags`
---
-ALTER TABLE `tags`
-  ADD PRIMARY KEY (`Id`);
-
---
--- Chỉ mục cho bảng `tag_posts`
---
-ALTER TABLE `tag_posts`
-  ADD PRIMARY KEY (`Id`,`IdTag`,`IdPost`),
-  ADD KEY `TagPosts_Posts` (`IdPost`),
-  ADD KEY `TagPosts_Tags` (`IdTag`);
-
---
--- Chỉ mục cho bảng `typeaccount`
---
-ALTER TABLE `typeaccount`
-  ADD PRIMARY KEY (`Id`);
-
---
--- AUTO_INCREMENT cho các bảng đã đổ
---
-
---
--- AUTO_INCREMENT cho bảng `accounts`
---
-ALTER TABLE `accounts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `categories`
---
-ALTER TABLE `categories`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT cho bảng `categories_sub`
---
-ALTER TABLE `categories_sub`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT cho bảng `comments`
---
-ALTER TABLE `comments`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `editoraccount`
---
-ALTER TABLE `editoraccount`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `feedback`
---
-ALTER TABLE `feedback`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `information`
---
-ALTER TABLE `information`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `postdetails`
---
-ALTER TABLE `postdetails`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `posts`
---
-ALTER TABLE `posts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `status_posts`
---
-ALTER TABLE `status_posts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT cho bảng `tags`
---
-ALTER TABLE `tags`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `tag_posts`
---
-ALTER TABLE `tag_posts`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT cho bảng `typeaccount`
---
-ALTER TABLE `typeaccount`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Các ràng buộc cho các bảng đã đổ
---
-
---
--- Các ràng buộc cho bảng `accounts`
+-- Constraints for table `accounts`
 --
 ALTER TABLE `accounts`
   ADD CONSTRAINT `Accounts_TypeAccount` FOREIGN KEY (`TypeAccount`) REFERENCES `typeaccount` (`Id`);
 
 --
--- Các ràng buộc cho bảng `categories_sub`
+-- Constraints for table `comments`
 --
-ALTER TABLE `categories_sub`
-  ADD CONSTRAINT `categories_sub_ibfk_1` FOREIGN KEY (`IdCategoriesMain`) REFERENCES `categories` (`Id`);
+ALTER TABLE `comments`
+  ADD CONSTRAINT `Comment_Informations` FOREIGN KEY (`IdReader`) REFERENCES `information` (`Id`),
+  ADD CONSTRAINT `Comment_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`);
+
+--
+-- Constraints for table `editoraccount`
+--
+ALTER TABLE `editoraccount`
+  ADD CONSTRAINT `EditorAccount_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`),
+  ADD CONSTRAINT `EditorAccount_Categories` FOREIGN KEY (`IdCategoríe`) REFERENCES `categories` (`Id`);
+
+--
+-- Constraints for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD CONSTRAINT `Feedback_EditorAccount` FOREIGN KEY (`IdEditorAccount`) REFERENCES `editoraccount` (`Id`),
+  ADD CONSTRAINT `Feedback_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`);
+
+--
+-- Constraints for table `information`
+--
+ALTER TABLE `information`
+  ADD CONSTRAINT `Information_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`);
+
+--
+-- Constraints for table `posts`
+--
+ALTER TABLE `posts`
+  ADD CONSTRAINT `Posts_StatusPosts` FOREIGN KEY (`IdStatus`) REFERENCES `status_posts` (`Id`),
+  ADD CONSTRAINT `Posts_SubCategories` FOREIGN KEY (`IdCategories`) REFERENCES `categories_sub` (`Id`);
+
+--
+-- Constraints for table `tag_posts`
+--
+ALTER TABLE `tag_posts`
+  ADD CONSTRAINT `TagPosts_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`),
+  ADD CONSTRAINT `TagPosts_Tags` FOREIGN KEY (`IdTag`) REFERENCES `tags` (`Id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
