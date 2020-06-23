@@ -122,7 +122,26 @@ router.get('/Writer', async (req,res)=>{
             layout:'homewriter', 
             ListTag:Tags,
             ListCat:Categories,
-            ListSubCat:Categories_sub
+            ListSubCat:Categories_sub,
+            helpers: {
+                count_index: function(value){
+                if(value % 3 === 0 && value !== 0)
+                {
+                  return "<div class=w-100>" + "</div>";
+                }
+              },
+              load_sub_cat: function(context, Id, options){
+                let ret="";
+                for(let i = 0; i < context.length; i++)
+                {
+                  if(context[i].IdCategoriesMain === Id)
+                  {
+                    ret = ret + options.fn(context[i]);
+                  }
+                }
+                return ret;
+              }
+            }
         });
     }
     catch(e)
@@ -185,7 +204,12 @@ router.get('/ViewPost/:IdStatus', async (req, res)=>{
         layout:'homewriter',
         empty: Result.length === 0,
         ListPosts: Result,
-
+        helpers:{
+            format_datetime:function (value) {
+            const date = moment(value).format("DD-MM-YYYY HH:MM TT");
+            return date;
+          },
+        }
     });
 });
 

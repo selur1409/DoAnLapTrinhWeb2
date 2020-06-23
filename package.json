@@ -1,8 +1,7 @@
-
 {
   "name": "do_an_lap_trinh_web_2",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app"
@@ -30,4 +29,3 @@
     "mysql": "^2.18.1"
   }
 }
-
