@@ -42,6 +42,30 @@ const hbs = exphbs.create({
   }
 });
 
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+
+app.use(express.urlencoded({ extended: true }));
+app.use('/public', express.static('public'))
+
+// Trang chủ Home
+app.get('/', function (req, res) {
+  res.render('index');
+})
+app.get('/index.html', function (req, res) {
+    res.render('index');
+})
+
+// middlewares
+require('./middlewares/session.mdw')(app);
+require('./middlewares/locals.mdw')(app);
+require('./middlewares/view.mdw')(app);
+
+// route account
+const accountRoute = require('./route/account.route');
+app.use('/account', accountRoute);
+
+// Trang writer
 function exposeTemplates(req, res, next) {
   // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
   // templates which will be shared with the client-side of the app.
@@ -70,31 +94,6 @@ function exposeTemplates(req, res, next) {
   })
   .catch(next);
 }
-
-app.engine('hbs', hbs.engine);
-app.set('view engine', 'hbs');
-
-app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static('public'))
-
-// Trang chủ Home
-app.get('/', function (req, res) {
-  res.render('index');
-})
-app.get('/index.html', function (req, res) {
-    res.render('index');
-})
-
-// middlewares
-require('./middlewares/session.mdw')(app);
-require('./middlewares/locals.mdw')(app);
-require('./middlewares/view.mdw')(app);
-
-// route account
-const accountRoute = require('./route/account.route');
-app.use('/account', accountRoute);
-
-// Trang writer
 app.use('', exposeTemplates, require('./Route/Writer'));
 
 const PORT = 3000;
