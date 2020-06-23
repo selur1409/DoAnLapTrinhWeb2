@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors');
 const app = express();
 
 app.use(express.urlencoded({
@@ -24,8 +25,14 @@ app.get('/index.html', function (req, res) {
 const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
 
+
 app.use(function (req, res) {
   res.render('404', { layout: false });
+})
+
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).render('500', { layout: false });
 })
 
 const PORT = 3000;
