@@ -10,9 +10,11 @@
     body,
     html {
       height: 100%;
-      background-image:url(/public/images/home_slider.jpg);
-    }
-    
+      background-image:url(/public/images/home.png);
+      background-repeat: no-repeat;
+      background-size: 50%; 
+      background-position: bottom right;
+    }  
     .has-search .form-control {
       padding-left: 2.375rem;
     }
@@ -47,8 +49,8 @@
         <form method="POST">
           <div class="form-group">
             <div class="input-group">
-              <input class="form-control form-control-lg border-right-0 border" placeholder="User name" type="text"
-                name="username" autofocus>
+              <input class="form-control form-control-lg border-right-0 border" placeholder="Username" type="text"
+                name="Username" autofocus required>
               <span class="input-group-append">
                 <div class="input-group-text bg-white">
                   <i class="fa fa-user" aria-hidden="true"></i>
@@ -59,7 +61,7 @@
           <div class="form-group">
             <div class="input-group">
               <input class="form-control form-control-lg border-right-0 border" placeholder="Password" type="password"
-                name="password">
+                name="Password" required>
               <span class="input-group-append">
                 <div class="input-group-text bg-white">
                   <i class="fa fa-key" aria-hidden="true"></i>

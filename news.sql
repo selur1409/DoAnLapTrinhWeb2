@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 22, 2020 at 10:57 AM
+-- Generation Time: Jun 22, 2020 at 04:31 PM
 -- Server version: 10.4.8-MariaDB
--- PHP Version: 7.3.11
+-- PHP Version: 7.3.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -21,8 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `news`
 --
-CREATE DATABASE IF NOT EXISTS `news` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `news`;
 
 -- --------------------------------------------------------
 
@@ -30,17 +28,22 @@ USE `news`;
 -- Table structure for table `accounts`
 --
 
-CREATE TABLE IF NOT EXISTS `accounts` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `accounts` (
+  `Id` int(11) NOT NULL,
   `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Password_hash` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `DateRegister` datetime NOT NULL,
   `DateExpired` datetime NOT NULL,
   `TypeAccount` int(4) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Accounts_TypeAccount` (`TypeAccount`)
+  `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `accounts`
+--
+
+INSERT INTO `accounts` (`Id`, `Username`, `Password_hash`, `DateRegister`, `DateExpired`, `TypeAccount`, `IsDelete`) VALUES
+(1, 'admin00', '$2a$08$ifiEiz8/4B6wSn/5PiyGMe7tSNJoL1wfCPyCkj6yyFCWlvxTd0eae', '2020-06-22 19:27:39', '2020-06-29 19:27:39', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -48,11 +51,10 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 -- Table structure for table `categories`
 --
 
-CREATE TABLE IF NOT EXISTS `categories` (
+CREATE TABLE `categories` (
   `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` int(11) NOT NULL,
-  PRIMARY KEY (`Id`)
+  `IsDelete` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -72,14 +74,12 @@ INSERT INTO `categories` (`Id`, `Name`, `IsDelete`) VALUES
 -- Table structure for table `categories_sub`
 --
 
-CREATE TABLE IF NOT EXISTS `categories_sub` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `categories_sub` (
+  `Id` int(11) NOT NULL,
   `IdCategoriesMain` int(11) NOT NULL,
   `Name` varchar(50) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `IdCategoriesMain` (`IdCategoriesMain`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+  `IsDelete` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `categories_sub`
@@ -114,16 +114,13 @@ INSERT INTO `categories_sub` (`Id`, `IdCategoriesMain`, `Name`, `IsDelete`) VALU
 -- Table structure for table `comments`
 --
 
-CREATE TABLE IF NOT EXISTS `comments` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `comments` (
+  `Id` int(11) NOT NULL,
   `Content` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `DatetimeComment` datetime NOT NULL,
   `IdReader` int(11) NOT NULL,
   `IdPost` int(11) NOT NULL,
-  `IsDelete` int(11) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Comment_Informations` (`IdReader`),
-  KEY `Comment_Posts` (`IdPost`)
+  `IsDelete` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -132,14 +129,11 @@ CREATE TABLE IF NOT EXISTS `comments` (
 -- Table structure for table `editoraccount`
 --
 
-CREATE TABLE IF NOT EXISTS `editoraccount` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `editoraccount` (
+  `Id` int(11) NOT NULL,
   `IdAccount` int(11) NOT NULL,
   `IdCategoríe` int(11) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`,`IdAccount`,`IdCategoríe`) USING BTREE,
-  KEY `EditorAccount_Accounts` (`IdAccount`),
-  KEY `EditorAccount_Categories` (`IdCategoríe`)
+  `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -148,17 +142,14 @@ CREATE TABLE IF NOT EXISTS `editoraccount` (
 -- Table structure for table `feedback`
 --
 
-CREATE TABLE IF NOT EXISTS `feedback` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `feedback` (
+  `Id` int(11) NOT NULL,
   `Note` text COLLATE utf8_unicode_ci DEFAULT NULL,
   `Status` tinyint(1) NOT NULL,
   `DatetimeApproval` datetime NOT NULL,
   `IdEditorAccount` int(11) NOT NULL,
   `IdPost` int(11) NOT NULL,
-  `IsDelete` int(11) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Feedback_EditorAccount` (`IdEditorAccount`),
-  KEY `Feedback_Posts` (`IdPost`)
+  `IsDelete` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -167,8 +158,8 @@ CREATE TABLE IF NOT EXISTS `feedback` (
 -- Table structure for table `information`
 --
 
-CREATE TABLE IF NOT EXISTS `information` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `information` (
+  `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Nickname` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Avatar` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -176,10 +167,15 @@ CREATE TABLE IF NOT EXISTS `information` (
   `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Phone` varchar(11) COLLATE utf8_unicode_ci DEFAULT NULL,
   `IdAccount` int(11) NOT NULL,
-  `Sex` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Information_Accounts` (`IdAccount`)
+  `Sex` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `information`
+--
+
+INSERT INTO `information` (`Id`, `Name`, `Nickname`, `Avatar`, `DOB`, `Email`, `Phone`, `IdAccount`, `Sex`) VALUES
+(1, 'admin', NULL, NULL, '2020-05-01', 'admin00@gmail.com', '0123456789', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -187,12 +183,10 @@ CREATE TABLE IF NOT EXISTS `information` (
 -- Table structure for table `postdetails`
 --
 
-CREATE TABLE IF NOT EXISTS `postdetails` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `postdetails` (
+  `Id` int(11) NOT NULL,
   `IdPost` int(11) NOT NULL,
-  `Content_Full` text NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `IdPost` (`IdPost`)
+  `Content_Full` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -201,8 +195,8 @@ CREATE TABLE IF NOT EXISTS `postdetails` (
 -- Table structure for table `posts`
 --
 
-CREATE TABLE IF NOT EXISTS `posts` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `posts` (
+  `Id` int(11) NOT NULL,
   `Title` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
   `Content_Summary` text COLLATE utf8_unicode_ci NOT NULL,
   `Content_Full` text COLLATE utf8_unicode_ci NOT NULL,
@@ -212,10 +206,7 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `DatetimePost` datetime NOT NULL,
   `IdCategories` int(11) NOT NULL,
   `IdStatus` int(11) NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Posts_StatusPosts` (`IdStatus`),
-  KEY `Posts_SubCategories` (`IdCategories`)
+  `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -224,12 +215,11 @@ CREATE TABLE IF NOT EXISTS `posts` (
 -- Table structure for table `status_posts`
 --
 
-CREATE TABLE IF NOT EXISTS `status_posts` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `status_posts` (
+  `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `IsDelete` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `status_posts`
@@ -247,12 +237,11 @@ INSERT INTO `status_posts` (`Id`, `Name`, `IsDelete`) VALUES
 -- Table structure for table `tags`
 --
 
-CREATE TABLE IF NOT EXISTS `tags` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tags` (
+  `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+  `IsDelete` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `tags`
@@ -270,13 +259,10 @@ INSERT INTO `tags` (`Id`, `Name`, `IsDelete`) VALUES
 -- Table structure for table `tag_posts`
 --
 
-CREATE TABLE IF NOT EXISTS `tag_posts` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `tag_posts` (
+  `Id` int(11) NOT NULL,
   `IdTag` int(11) NOT NULL,
-  `IdPost` int(11) NOT NULL,
-  PRIMARY KEY (`Id`,`IdTag`,`IdPost`),
-  KEY `TagPosts_Posts` (`IdPost`),
-  KEY `TagPosts_Tags` (`IdTag`)
+  `IdPost` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -285,11 +271,10 @@ CREATE TABLE IF NOT EXISTS `tag_posts` (
 -- Table structure for table `typeaccount`
 --
 
-CREATE TABLE IF NOT EXISTS `typeaccount` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `typeaccount` (
+  `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `IsDelete` tinyint(1) NOT NULL,
-  PRIMARY KEY (`Id`)
+  `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
@@ -299,6 +284,178 @@ CREATE TABLE IF NOT EXISTS `typeaccount` (
 INSERT INTO `typeaccount` (`Id`, `Name`, `IsDelete`) VALUES
 (1, 'User', 0),
 (2, 'Admin', 0);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `accounts`
+--
+ALTER TABLE `accounts`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `Accounts_TypeAccount` (`TypeAccount`);
+
+--
+-- Indexes for table `categories`
+--
+ALTER TABLE `categories`
+  ADD PRIMARY KEY (`Id`);
+
+--
+-- Indexes for table `categories_sub`
+--
+ALTER TABLE `categories_sub`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `IdCategoriesMain` (`IdCategoriesMain`);
+
+--
+-- Indexes for table `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `Comment_Informations` (`IdReader`),
+  ADD KEY `Comment_Posts` (`IdPost`);
+
+--
+-- Indexes for table `editoraccount`
+--
+ALTER TABLE `editoraccount`
+  ADD PRIMARY KEY (`Id`,`IdAccount`,`IdCategoríe`) USING BTREE,
+  ADD KEY `EditorAccount_Accounts` (`IdAccount`),
+  ADD KEY `EditorAccount_Categories` (`IdCategoríe`);
+
+--
+-- Indexes for table `feedback`
+--
+ALTER TABLE `feedback`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `Feedback_EditorAccount` (`IdEditorAccount`),
+  ADD KEY `Feedback_Posts` (`IdPost`);
+
+--
+-- Indexes for table `information`
+--
+ALTER TABLE `information`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `Information_Accounts` (`IdAccount`);
+
+--
+-- Indexes for table `postdetails`
+--
+ALTER TABLE `postdetails`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `IdPost` (`IdPost`);
+
+--
+-- Indexes for table `posts`
+--
+ALTER TABLE `posts`
+  ADD PRIMARY KEY (`Id`),
+  ADD KEY `Posts_StatusPosts` (`IdStatus`),
+  ADD KEY `Posts_SubCategories` (`IdCategories`);
+
+--
+-- Indexes for table `status_posts`
+--
+ALTER TABLE `status_posts`
+  ADD PRIMARY KEY (`Id`);
+
+--
+-- Indexes for table `tags`
+--
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`Id`);
+
+--
+-- Indexes for table `tag_posts`
+--
+ALTER TABLE `tag_posts`
+  ADD PRIMARY KEY (`Id`,`IdTag`,`IdPost`),
+  ADD KEY `TagPosts_Posts` (`IdPost`),
+  ADD KEY `TagPosts_Tags` (`IdTag`);
+
+--
+-- Indexes for table `typeaccount`
+--
+ALTER TABLE `typeaccount`
+  ADD PRIMARY KEY (`Id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `accounts`
+--
+ALTER TABLE `accounts`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `categories_sub`
+--
+ALTER TABLE `categories_sub`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `editoraccount`
+--
+ALTER TABLE `editoraccount`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `feedback`
+--
+ALTER TABLE `feedback`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `information`
+--
+ALTER TABLE `information`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `postdetails`
+--
+ALTER TABLE `postdetails`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `posts`
+--
+ALTER TABLE `posts`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `status_posts`
+--
+ALTER TABLE `status_posts`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `tags`
+--
+ALTER TABLE `tags`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `tag_posts`
+--
+ALTER TABLE `tag_posts`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `typeaccount`
+--
+ALTER TABLE `typeaccount`
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
