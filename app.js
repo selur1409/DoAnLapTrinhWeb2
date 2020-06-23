@@ -32,6 +32,11 @@ app.use('/account', accountRoute);
 // Trang writer
 app.use('', exposeTemplates, require('./Route/Writer'));
 
+
+app.use(function (req, res) {
+  res.render('404', { layout: false });
+})
+
 const PORT = 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
