@@ -18,7 +18,7 @@ const hbs = exphbs.create({
   helpers: {
     section: hbs_sections(),
     format_time: function (value) {
-      const date = dateFormat(value, "dd/mm/yyyy h:mm TT");
+      const date = moment(value).format("DD-MM-YYYY HH:MM TT");
       return date;
     },
     //Post of Writer
@@ -42,6 +42,35 @@ const hbs = exphbs.create({
   }
 });
 
+function exposeTemplates(req, res, next) {
+  // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
+  // templates which will be shared with the client-side of the app.
+  hbs.getTemplates('./templates', {
+      cache      : app.enabled('view cache'),
+      precompiled: true
+  }).then(function (templates) {
+      // RegExp to remove the ".handlebars" extension from the template names.
+      const extRegex = new RegExp(hbs.extname + '$');
+
+      // Creates an array of templates which are exposed via
+      // `res.locals.templates`.
+      templates = Object.keys(templates).map(function (name) {
+          return {
+                      name: name.replace(extRegex, ""),
+              template: templates[name]
+          };
+      });
+
+      // Exposes the templates during view rendering.
+      if (templates.length) {
+          res.locals.templates = templates;
+      }
+
+      setImmediate(next);
+  })
+  .catch(next);
+}
+
 app.engine('hbs', hbs.engine);
 app.set('view engine', 'hbs');
 
@@ -64,7 +93,7 @@ app.get('/account/register', function (req, res) {
 })
 
 // Trang writer
-app.use('', require('./Route/Writer'));
+app.use('', exposeTemplates, require('./Route/Writer'));
 
 
 const PORT = 3000;

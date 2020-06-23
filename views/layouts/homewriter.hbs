@@ -326,7 +326,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <script src="/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="/public/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
+
 {{{_sections.js}}}
 
 </body>
 </html>
+<script>
+    (function () {
+        var revive = Handlebars.template,
+            templates = Handlebars.templates = Handlebars.templates || {};
+        {{#templates}}
+        templates['{{{name}}}'] = revive({{{ template }}});
+        {{/templates}}
+    }());
+</script>
