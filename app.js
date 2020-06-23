@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const express = require('express');
 const exphbs = require('express-handlebars');
 
@@ -85,18 +86,22 @@ app.get('/index.html', function (req, res) {
     res.render('index');
 })
 
-// Trang đăng kí (register)
-app.get('/account/register', function (req, res) {
-  res.render('vwAccount/register',{
-    layout: false
-  });
-})
+// middlewares
+require('./middlewares/session.mdw')(app);
+require('./middlewares/locals.mdw')(app);
+require('./middlewares/view.mdw')(app);
+
+// route account
+const accountRoute = require('./route/account.route');
+app.use('/account', accountRoute);
 
 // Trang writer
 app.use('', exposeTemplates, require('./Route/Writer'));
-
 
 const PORT = 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
 })
+
+
+
