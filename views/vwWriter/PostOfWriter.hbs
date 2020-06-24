@@ -82,6 +82,11 @@
                                     More</a>
                                 <a class="btn btnDetail red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
                                     id="btn{{@index}}">Detail</a>
+                                    
+                                {{#Update this.IdStatus Id}}
+                                    <a class="btn btnUpdate red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{this.Id}}
+                                    id="Update{{@index}}" href="/Update/{{this.Id}}">Modify</a>
+                                {{/Update}}
                             </div>
                         </div>
                     </div>

@@ -93,6 +93,9 @@ tinymce.init({
         if (ckbox[i].checked) {
           arrchkbox.push(document.getElementById("checkbox" + i).value);
         }
+        else{
+          arrchkbox.pop(document.getElementById("checkbox" + i).value);
+        }
       });
     }
     return arrchkbox;

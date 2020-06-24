@@ -131,13 +131,14 @@ router.post('/reset/', async(req, res, next)=>{
 router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
         const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
-        res.render('vwWriter/post',{
+        res.render('vwWriter/Post',{
             layout:'homewriter', 
             ListTag:Tags,
             ListCat:Categories,
             ListSubCat:Categories_sub,
             IsActivePost:true,
             Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
             helpers: {
                 count_index: function(value){
                 if(value % 3 === 0 && value !== 0)
@@ -158,6 +159,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
               }
             }
         });
+        
     }
     catch(e)
     {
@@ -165,7 +167,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
     }
 }); 
 
-router.post('/Writer', async (req,res, next)=>{
+router.post('/Writer', restrict, Authories, async (req,res, next)=>{
     try{
         let checkbox = JSON.parse(req.body.arrCheck);
         const IsDelete = 0;
@@ -179,33 +181,35 @@ router.post('/Writer', async (req,res, next)=>{
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
-
-        let Temp = [];
-        const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
-        const Result = await db.InsertPost(ValueOfPost);
-        const ValueOfPostDetail = ['IdPost', 'Content_Full', 'IdAccount', `${Result.insertId}`, `${FullContent}`, `${IdAccount}`];
-        await db.InsertPostDetail(ValueOfPostDetail);
-        for(let i = 0; i < checkbox.length; i++)
+        if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
-            let Tag_Post = [];
-            Tag_Post.push(Result.insertId);
-            Tag_Post.push(parseInt(checkbox[i]));
-            Temp.push(Tag_Post);
+            res.send('Please complete all fields in the form');
         }
-        const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
-        const result = await db.InsertTagPost(ValueOfTagPost);
-        if(result !== null)
-        {
-            res.send('This article has been sent successfully!');
+        else{
+            let Temp = [];
+            const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
+            const Result = await db.InsertPost(ValueOfPost);
+            const ValueOfPostDetail = ['IdPost', 'Content_Full', 'IdAccount', `${Result.insertId}`, `${FullContent}`, `${IdAccount}`];
+            await db.InsertPostDetail(ValueOfPostDetail);
+            for (let i = 0; i < checkbox.length; i++) {
+                let Tag_Post = [];
+                Tag_Post.push(Result.insertId);
+                Tag_Post.push(parseInt(checkbox[i]));
+                Temp.push(Tag_Post);
+            }
+            const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
+            const result = await db.InsertTagPost(ValueOfTagPost);
+            if (result !== null) {
+                res.send('This article has been sent successfully!');
+            }
+            // console.log(Temp);
+            // console.log(DatePost);
+            // console.log(DateTimePost);
+            // console.log(IdCategories);
+            // console.log(req.body.BriefCont);
+            // console.log(req.body.FullCont);
+            // console.log(Result.insertId);
         }
-        // console.log(Temp);
-        // console.log(DatePost);
-        // console.log(DateTimePost);
-        // console.log(IdCategories);
-        // console.log(req.body.BriefCont);
-        // console.log(req.body.FullCont);
-        // console.log(Result.insertId);
-        
     }
     catch(e)
     {
@@ -260,6 +264,7 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
         empty: Result.length === 0,
         IsActive:true,
         Name,
+        Avatar:res.locals.lcAuthUser.Avatar,
         IdStatus,
         IsActive1:IdStatus === 1,
         IsActive2:IdStatus === 2,
@@ -271,6 +276,22 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
             const date = moment(value).format("DD-MM-YYYY HH:MM TT");
             return date;
           },
+          Update:function(value, id, options)
+          {
+                if(4 === value || 2 === value)
+                {
+                    let ret="";
+                    for(let i = 0; i < Result.length; i++)
+                    {
+                        if(Result[i].Id === id)
+                        {
+                            ret = ret + options.fn(Result[i]);
+                        }
+                    }
+                    return ret;
+                }
+                return false;
+          }
         },
         page_items,
         prev_value: page - 1,
@@ -280,16 +301,119 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
         last:nPages
 
     });
-    console.log(Total[0].Number);
-    console.log(nPages);
 });
 
-router.get('/DetailPost/', async (req, res)=>{
+router.get('/DetailPost/', restrict, Authories, async (req, res)=>{
     const IdPost = req.query.id;
     const Post = await db.LoadSinglePost(IdPost);
     const Status = await db.LoadStatusById(Post[0].IdStatus);
     const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
     res.json({Post, Status, Categories});
 });
+
+router.get('/Update/:id', restrict, Authories, async (req, res)=>{
+    const IdPost = req.params.id;
+    const Post = await db.LoadSinglePost(IdPost);
+    // const Status = await db.LoadStatusById(Post[0].IdStatus);
+    // const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
+    const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
+    res.render('vwWriter/Update',{
+        IsActiveUpdate:true,
+        layout: 'homewriter',
+        Id:IdPost,
+        ListTag:Tags,
+        ListCat:Categories,
+        ListSubCat:Categories_sub,
+        FullCont:Post[0].Content_Full,
+        BriefCont:Post[0].Content_Summary,
+        Title:Post[0].Title,
+        Name:res.locals.lcAuthUser.Username,
+        Avatar:res.locals.lcAuthUser.Avatar,
+        Url:req.headers.referer,
+        helpers: {
+            count_index: function(value){
+            if(value % 3 === 0 && value !== 0)
+            {
+              return "<div class=w-100>" + "</div>";
+            }
+          },
+          load_sub_cat: function(context, Id, options){
+            let ret="";
+            for(let i = 0; i < context.length; i++)
+            {
+              if(context[i].IdCategoriesMain === Id)
+              {
+                ret = ret + options.fn(context[i]);
+              }
+            }
+            return ret;
+          },
+          NotUpdate:function(value, options)
+          {
+                let ret="";
+                if(4 === value || 2 === value)
+                {
+                    ret = ret + options.fn("The article has been approval. You cannot change it");
+                }
+                return ret;
+          }
+        }
+    })
+});
+
+router.post('/Update/', restrict, Authories, async (req,res, next)=>{
+    try{
+        let checkbox = JSON.parse(req.body.arrCheck);
+        const IdPost = +req.query.id;
+        const IsDelete = 0;
+        const IdStatus = 4;
+        const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
+        const DateTimePost = null;
+        const View = 0;
+        const Avatar = null;
+        const IdCategories = req.body.Categories;
+        const Title = req.body.Title;
+        const FullContent = req.body.FullCont;
+        const BriefContent = req.body.BriefCont;
+        const IdAccount = res.locals.lcAuthUser.Id;
+    
+        if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
+        {
+            res.send('Please complete all fields in the form');
+        }
+        else{
+            const ValueOfPost = [`${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
+            const Result = await db.UpdatePostOfWriter(ValueOfPost);
+            await db.UpdatePostDetail(FullContent, IdPost);
+            await db.DeleteTagPost(IdPost);
+            let tmp = [];
+            for (let i = 0; i < checkbox.length; i++) {
+                let Tag_Post = [];
+                Tag_Post.push(IdPost);
+                Tag_Post.push(checkbox[i]);
+                tmp.push(Tag_Post);
+            }
+            const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
+            const result = await db.InsertTagPost(ValueOfTagPost);
+            if (result !== null) {
+                res.send('This article has been sent successfully!');
+            }
+        }
+    
+        console.log(IdPost);
+        console.log(checkbox);
+        console.log(DatePost);
+        console.log(DateTimePost);
+        console.log(IdCategories);
+        console.log(req.body.BriefCont);
+        console.log(req.body.FullCont);
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+}); 
+
+
 
 module.exports = router;

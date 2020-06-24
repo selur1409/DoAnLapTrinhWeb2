@@ -43,4 +43,14 @@ module.exports = {
     CountPostOfWriter:(IdStatus, IdAccount)=>{
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
     },
+
+    UpdatePostOfWriter:(value)=>{
+        return db.insert(`UPDATE posts SET Title = ?, Content_Summary = ?, Content_Full = ?, DatePost = ?, Avatar = ?, Views = ?, DatetimePost = ?, IdCategories = ?, IdStatus = ?, IsDelete = ? WHERE Id = ?`, value);
+    },
+    UpdatePostDetail:(FullCont, id)=>{
+        return db.insert(`UPDATE postdetails SET Content_Full = '${FullCont}' WHERE IdPost = ${id}`);
+    },
+    DeleteTagPost:(IdPost)=>{
+        return db.load(`DELETE FROM tag_posts WHERE IdPost = ${IdPost}`);
+    }
 }
