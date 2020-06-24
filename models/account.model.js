@@ -32,7 +32,7 @@ module.exports = {
     },
     del: function (id) {
         const condition = {
-          CatID: id
+          Id: id
         }
         return db.del(TBL_ACCOUNTS, condition);
     }
