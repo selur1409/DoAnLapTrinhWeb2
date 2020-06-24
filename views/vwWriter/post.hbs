@@ -1,4 +1,13 @@
+
 <form method="POST" id="formPost">
+  {{#if success}}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            {{success}}
+            </div>
+  {{/if}}
   <div class="card">
     <div class="card-header">
         <h4>New Content</h4>
@@ -103,6 +112,8 @@ tinymce.init({
                 if (this.readyState == 4 && this.status == 200) {
                     console.log('Success!');
                     console.log(arrChecked);
+                    const success = xhttp.responseText;
+                    alert(success);
                 }
             }
             xhttp.open("POST", "/Writer", true);

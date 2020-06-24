@@ -161,7 +161,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <img src="/public/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block">{{Name}}</a>
+          {{!-- Alexander Pierce --}}
         </div>
       </div>
 
@@ -180,15 +181,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
-                <a href="/Writer" class="nav-link active">
+                <a href="/Writer" class="nav-link {{#if IsActivePost}} active {{/if}}">
                   <i class="far fa-circle nav-icon"></i>
                   <p>New Content</p>
                 </a>
               </li>
               <li class="nav-item">
-                <a href="/ViewPost/4" class="nav-link">
+                <a href="/ViewPost/4/1" class="nav-link {{#if IsActive}} active {{/if}}">
                   <i class="far fa-circle nav-icon"></i>
-                  <p>Inactive Page</p>
+                  <p>List Article</p>
                 </a>
               </li>
             </ul>
@@ -221,7 +222,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
+              {{#if IsActivePost}}
+                <li class="breadcrumb-item active">New Content</li>
+              {{/if}}
+              {{#if IsActive}}
+                <li class="breadcrumb-item acive">List Content</li>
+              {{/if}}
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->

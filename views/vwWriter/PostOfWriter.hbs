@@ -1,107 +1,137 @@
 <div class="container-fluid">
-    <div class="row">
-        <nav class="nav nav-pills flex-column flex-sm-row p-2">
-            <a class="flex-sm-fill text-sm-center nav-link active" href="/ViewPost/4">Chưa được
-                duyệt</a>
-            <a class="flex-sm-fill text-sm-center nav-link" href="/ViewPost/1">Đã được duyệt chờ xuất
-                bản</a>
-            <a class="flex-sm-fill text-sm-center nav-link" href="/ViewPost/3">Bị từ chối</a>
-            <a class="flex-sm-fill text-sm-center nav-link" href="/ViewPost/2">Đã xuất bản</a>
-        </nav>
-    </div>
-    {{#if this.empty}}
-    <div class="row justify-content-center">
-        <h1 class='text-primary'></h1>
-    </div>
-    {{else}}
-    <div class="row">
-        {{#each this.ListPosts}}
-        <div class="col-sm-4 mb-3">
-            <div class="card promoting-card">
-                <!-- Card content -->
-                <div class="card-body d-flex flex-row">
-
-                    <!-- Avatar -->
-                    <img src="https://img.favpng.com/25/7/23/computer-icons-user-profile-avatar-image-png-favpng-LFqDyLRhe3PBXM0sx2LufsGFU.jpg"
-                        class="rounded-circle mr-3" height="50px" width="50px" alt="avatar">
-
-                    <!-- Content -->
-                    <div>
-
-                        <!-- Title -->
-                        <h4 class="card-title font-weight-bold mb-2">{{Name}}</h4>
-                        <!-- Subtitle -->
-                        <p class="card-text"><i class="far fa-clock pr-2"></i>{{format_datetime DatePost}}
-                        </p>
-
-                    </div>
-
-                </div>
-
-                <!-- Card image -->
-                <div class="view">
-                    {{!-- <img class="card-img-top rounded-0"
-                            src="/public/conference/1.jpg" alt="Card image cap"> --}}
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
-                </div>
-
-                <!-- Card content -->
-                <div class="card-body">
-                    <div class="collapse-content">
-
-                        <!-- Text -->
-                        <p class="card-text collapse" id="collapseContent{{@index}}">Recently, we added
-                            several exotic new dishes
-                            to our restaurant menu. They come from countries such as Mexico, Argentina,
-                            and Spain. Come
-                            to us, have some delicious wine and enjoy our juicy meals from around the
-                            world.</p>
-                        <!-- Button -->
-                        <a class="btn btn-primary red-text p-1 my-1 mr-0 mml-1 collapsed" data-toggle="collapse"
-                            href="#collapseContent{{@index}}" aria-expanded="false" aria-controls="collapseContent"
-                            id="{{@index}}">Read
-                            More</a>
-                        <a class="btn btnDetail red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
-                            id="btn{{@index}}">Detail</a>
-                    </div>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-header">
+            <h4>Article</h4>
         </div>
-        {{/each}}
-    </div>
-    <div class="row justify-content-center">
-        <nav aria-label="...">
-            <ul class="pagination">
-                <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                    <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-                {{#each this.page_items}}
-                {{#if isActive}}
-                <li class="page-item active" aria-current="page">
-                    <span class="page-link">
-                        {{value}}
-                        <span class="sr-only">(current)</span>
-                    </span>
-                </li>
-                {{else}}
-                <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-                    <a class="page-link" href="?page={{value}}">{{value}}</a>
-                </li>
-                {{/if}}
+        <div class="card-body">
+            <div class="row">
+                <nav class="nav nav-pills flex-column flex-sm-row p-2">
+                    <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}"
+                        href="/ViewPost/4/1">Chưa
+                        được
+                        duyệt</a>
+                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}"
+                        href="/ViewPost/1/1">Đã
+                        được
+                        duyệt chờ xuất
+                        bản</a>
+                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}"
+                        href="/ViewPost/3/1">Bị
+                        từ
+                        chối</a>
+                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}"
+                        href="/ViewPost/2/1">Đã
+                        xuất
+                        bản</a>
+                </nav>
+            </div>
+
+            {{#if this.empty}}
+            <div class="row justify-content-center">
+                <h1 class='text-primary'></h1>
+            </div>
+            {{else}}
+            <div class="row">
+                {{#each this.ListPosts}}
+                <div class="col-sm-6 mb-3">
+                    <div class="card promoting-card">
+                        <!-- Card content -->
+                        <div class="card-body d-flex flex-row">
+
+                            <!-- Avatar -->
+                            <img src="https://img.favpng.com/25/7/23/computer-icons-user-profile-avatar-image-png-favpng-LFqDyLRhe3PBXM0sx2LufsGFU.jpg"
+                                class="rounded-circle mr-3" height="50px" width="50px" alt="avatar">
+
+                            <!-- Content -->
+                            <div>
+
+                                <!-- Title -->
+                                <h4 class="card-title font-weight-bold mb-2">{{Name}}</h4>
+                                <!-- Subtitle -->
+                                <p class="card-text"><i class="far fa-clock pr-2"></i>{{format_datetime DatePost}}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <!-- Card image -->
+                        <div class="view">
+                            {{!-- <img class="card-img-top rounded-0"
+                            src="/public/conference/1.jpg" alt="Card image cap"> --}}
+                            <a href="#!">
+                                <div class="mask rgba-white-slight"></div>
+                            </a>
+                        </div>
+
+                        <!-- Card content -->
+                        <div class="card-body">
+                            <div class="collapse-content">
+
+                                <!-- Text -->
+                                <p class="card-text collapse" id="collapseContent{{@index}}">Recently, we added
+                                    several exotic new dishes
+                                    to our restaurant menu. They come from countries such as Mexico, Argentina,
+                                    and Spain. Come
+                                    to us, have some delicious wine and enjoy our juicy meals from around the
+                                    world.</p>
+                                <!-- Button -->
+                                <a class="btn btn-primary red-text p-1 my-1 mr-0 mml-1 collapsed" data-toggle="collapse"
+                                    href="#collapseContent{{@index}}" aria-expanded="false"
+                                    aria-controls="collapseContent" id="{{@index}}">Read
+                                    More</a>
+                                <a class="btn btnDetail red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
+                                    id="btn{{@index}}">Detail</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 {{/each}}
-                <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                    <a class="page-link" href="?page={{next_value}}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+            </div>
+            <div class="row justify-content-center">
+                <nav aria-label="...">
+                    <ul class="pagination">
+                        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/1" aria-label="Previous">
+                                <span aria-hidden="true">FIRST</span>
+                            </a>
+                        </li>
+                        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{prev_value}}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {{#each this.page_items}}
+                        {{#if isActive}}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">
+                                {{value}}
+                                <span class="sr-only">(current)</span>
+                            </span>
+                        </li>
+                        {{else}}
+                        <li class="page-item {{#if isDisabled}}disabled{{/if}}">
+                            <a class="page-link" href="/ViewPost/{{IdStatus}}/{{value}}">{{value}}</a>
+                        </li>
+                        {{/if}}
+                        {{/each}}
+                        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{next_value}}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{last}}" aria-label="Next">
+                                <span aria-hidden="true">LAST</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            {{/if}}
+        </div>
     </div>
-    {{/if}}
+
 </div>
 
 
@@ -144,13 +174,13 @@
                             const FullCont = dataParsed.Post[0].Content_Full;
                             const Views = dataParsed.Post[0].Views;
                             const Avatar = dataParsed.Post[0].Avatar;
-                            const DatePost =   moment(dataParsed.Post[0].DatePost).format('YYYY-MM-DD HH:mm:ss');
+                            const DatePost = moment(dataParsed.Post[0].DatePost).format('YYYY-MM-DD HH:mm:ss');
                             const DatetimePost = dataParsed.Post[0].DatetimePost;
                             const IdStatus = dataParsed.Status[0].Name;
                             const Categories = dataParsed.Categories[0].CategorieName;
                             const DetailCategories = dataParsed.Categories[0].SubCategories;
                             console.log(dataParsed);
-                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont});
+                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont });
                             $("#modalDetailPost").modal("show");
                         }
                     }

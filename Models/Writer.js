@@ -24,8 +24,8 @@ module.exports = {
         return db.insert(`INSERT INTO postdetails(??, ??, ??) VALUES (?, ?, ?)`, value);
     },
 
-    LoadPostOfWriter:(IdStatus, IdAccount)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
+    LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} LIMIT ${Limit} OFFSET ${Offset}`);
     },
 
     LoadSinglePost:(value)=>{
@@ -38,5 +38,9 @@ module.exports = {
 
     LoadStatusById:(value)=>{
         return db.load(`SELECT * FROM status_posts s WHERE s.Id = '${value}'`);
-    }
+    },
+
+    CountPostOfWriter:(IdStatus, IdAccount)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
+    },
 }

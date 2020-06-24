@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../models/Writer');
+const flash = require('express-flash');
 const config = require('../config/default.json');
 const moment = require('moment');
 moment.locale("vi");
+const {restrict, referer} = require('../middlewares/auth.mdw')
 
 function exposeTemplates(req, res, next) {
     // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
@@ -34,6 +36,17 @@ function exposeTemplates(req, res, next) {
     .catch(next);
   }
 
+function Authories(req, res, next)
+{
+    const TypeAccount = res.locals.lcAuthUser.TypeAccount;
+    if(TypeAccount !== 2)
+    {
+        res.redirect('/error');
+    }
+    else{
+        next();
+    }
+}
 
   /*News*/
 router.get('/forgotPW.html', (req, res)=>{
@@ -115,14 +128,16 @@ router.post('/reset/', async(req, res, next)=>{
     res.send('success');
 }); 
 
-router.get('/Writer', async (req,res)=>{
+router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
         const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
-        res.render('vwWriter/Post',{
+        res.render('vwWriter/post',{
             layout:'homewriter', 
             ListTag:Tags,
             ListCat:Categories,
             ListSubCat:Categories_sub,
+            IsActivePost:true,
+            Name:res.locals.lcAuthUser.Username,
             helpers: {
                 count_index: function(value){
                 if(value % 3 === 0 && value !== 0)
@@ -150,7 +165,7 @@ router.get('/Writer', async (req,res)=>{
     }
 }); 
 
-router.post('/Writer', async (req,res)=>{
+router.post('/Writer', async (req,res, next)=>{
     try{
         let checkbox = JSON.parse(req.body.arrCheck);
         const IsDelete = 0;
@@ -163,7 +178,7 @@ router.post('/Writer', async (req,res)=>{
         const Title = req.body.Title;
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
-        const IdAccount = 1;
+        const IdAccount = res.locals.lcAuthUser.Id;
 
         let Temp = [];
         const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
@@ -178,16 +193,18 @@ router.post('/Writer', async (req,res)=>{
             Temp.push(Tag_Post);
         }
         const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
-        await db.InsertTagPost(ValueOfTagPost);
-        res.send("Success");
-
-        console.log(Temp);
-        console.log(DatePost);
-        console.log(DateTimePost);
-        console.log(IdCategories);
-        console.log(req.body.BriefCont);
-        console.log(req.body.FullCont);
-        console.log(Result.insertId);
+        const result = await db.InsertTagPost(ValueOfTagPost);
+        if(result !== null)
+        {
+            res.send('This article has been sent successfully!');
+        }
+        // console.log(Temp);
+        // console.log(DatePost);
+        // console.log(DateTimePost);
+        // console.log(IdCategories);
+        // console.log(req.body.BriefCont);
+        // console.log(req.body.FullCont);
+        // console.log(Result.insertId);
         
     }
     catch(e)
@@ -196,21 +213,75 @@ router.post('/Writer', async (req,res)=>{
     }
 }); 
 
-router.get('/ViewPost/:IdStatus', async (req, res)=>{
-    const IdAccount = 1;
-    const IdStatus = req.params.IdStatus;
-    const Result = await db.LoadPostOfWriter(IdStatus, IdAccount);
+router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
+    const page = +req.params.page || 1;
+    const IdAccount = res.locals.lcAuthUser.Id;
+    const IdStatus = +req.params.id || 4;
+    const offset = (page - 1) * config.pagination.limit;
+    const [Result, Total] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount)]);
+    const Name = res.locals.lcAuthUser.Username;
+   
+    const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+    const page_items = [];
+    let count = 0;
+    let lengthPagination = 0;
+    let temp = page;
+    while(true)
+    {
+        if(temp - config.pagination.limitPaginationLinks > 0)
+        {
+            count++;
+            temp = temp - config.pagination.limitPaginationLinks;
+        }      
+        else{
+            break;
+        }
+    }
+    if((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages)
+    {
+        lengthPagination = nPages;  
+    } 
+    else  
+    {
+        lengthPagination =  (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+    }  
+    for(let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++)
+    {
+        const item = {
+            value: i,
+            isActive: i === page,
+            IdStatus
+        }
+        page_items.push(item);
+    }
+
     res.render('vwWriter/PostOfWriter', {
         layout:'homewriter',
         empty: Result.length === 0,
+        IsActive:true,
+        Name,
+        IdStatus,
+        IsActive1:IdStatus === 1,
+        IsActive2:IdStatus === 2,
+        IsActive3:IdStatus === 3,
+        IsActive4:IdStatus === 4,
         ListPosts: Result,
         helpers:{
             format_datetime:function (value) {
             const date = moment(value).format("DD-MM-YYYY HH:MM TT");
             return date;
           },
-        }
+        },
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages,
+        last:nPages
+
     });
+    console.log(Total[0].Number);
+    console.log(nPages);
 });
 
 router.get('/DetailPost/', async (req, res)=>{

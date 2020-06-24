@@ -23,5 +23,9 @@
         "Miliseconds": "ms"
       },
       "NumberTime": 7
-    }    
+    },
+    "pagination": {
+      "limit": 4,
+      "limitPaginationLinks":5
+    }
 }
