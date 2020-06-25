@@ -8,6 +8,12 @@ module.exports = function (app) {
 
     res.locals.lcIsAuthenticated = req.session.isAuthenticated;
     res.locals.lcAuthUser = req.session.authAccount;
+    
+    res.locals.lcIsSubscriber = req.session.isSubscriber;
+    res.locals.lcIsWriter = req.session.isWriter;
+    res.locals.lcIsEditor = req.session.lcIsEditor;
+    res.locals.lcIsAdmin = req.session.isAdmin;
+
     next();
   })
 

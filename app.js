@@ -9,9 +9,13 @@ const upload = multer();
 
 const app = express();
 app.use(upload.array()); 
-
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'))
+// middlewares
+require('./middlewares/session.mdw')(app);
+require('./middlewares/locals.mdw')(app);
+require('./middlewares/view.mdw')(app);
+
 
 // Trang chủ Home
 app.get('/', function (req, res) {
@@ -50,11 +54,6 @@ passport.deserializeUser(async function (id, done){
     done (null, user);
 });
 
-// middlewares
-require('./middlewares/session.mdw')(app);
-require('./middlewares/locals.mdw')(app);
-require('./middlewares/view.mdw')(app);
-
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
 // route account
@@ -66,6 +65,8 @@ app.use('/auth', require('./route/auth.route'));
 // Trang writer
 app.use('', exposeTemplates, require('./Route/Writer'));
 
+
+app.use('/admin', require('./route/admin.route'));
 
 app.use(function (req, res) {
   res.render('404', { layout: false });

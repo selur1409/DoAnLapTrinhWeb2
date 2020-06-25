@@ -51,6 +51,38 @@
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
 							<ul>
+							{{#if lcIsSubscriber}}
+							<li>		
+								<a class="nav-link" href="/subcriber" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>SUBSCRIBER</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsWriter}}
+							<li>		
+								<a class="nav-link" href="/writer" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>WRITER</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsEditor}}
+							<li>		
+								<a class="nav-link" href="/editor" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>EDITOR</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsAdmin}}
+							<li>		
+								<a class="nav-link" href="/admin" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>ADMINISTRATOR</b>
+								</a>	
+							</li>
+							{{/if}}								
 							{{#if lcIsAuthenticated}}
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -61,7 +93,7 @@
 								<div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
 								<a class="dropdown-item bg-info" href="/account/profile">
 									<i class="fa fa-user" aria-hidden="true"></i>
-									Account Profile
+									Account Profil
 								</a>
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">

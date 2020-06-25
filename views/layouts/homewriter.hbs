@@ -32,7 +32,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="index3.html" class="nav-link">Home</a>
+          <a href="/" class="nav-link">Home</a>
         </li>
         {{!-- <li class="nav-item d-none d-sm-inline-block">
         <a href="#" class="nav-link">Contact</a>
@@ -40,7 +40,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </ul>
       <form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
       <nav class="navbar">
-        <ul>
+        <ul class="nav navbar-light bg-light">
           {{#if lcIsAuthenticated}}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -54,7 +54,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 Account Profile
               </a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item bg-info" href="/index.html">
+              <a class="dropdown-item bg-info" href="/">
                 <i class="fa fa-arrow-right" aria-hidden="true"></i>
                 Change To Home
               </a>
@@ -194,7 +194,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
               class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block">{{Name}}</a>
+            <a href="/account/profile" class="d-block">{{lcAuthUser.Nickname}}</a>
+            {{!-- <a href="/account/profile" class="d-block">{{Name}}</a> --}}
             {{!-- Alexander Pierce --}}
           </div>
         </div>
@@ -254,7 +255,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
                 {{#if IsActivePost}}
                 <li class="breadcrumb-item active">New Content</li>
                 {{/if}}
