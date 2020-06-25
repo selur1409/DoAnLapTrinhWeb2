@@ -14,6 +14,7 @@ router. get('/register', auth.referer, function (req, res) {
     layout: false
     });
 }) 
+
 router.post('/register', async function(req, res){
     const rows = await accountModel.singleId(req.body.Username);
 
@@ -141,9 +142,23 @@ router.post('/login', async function (req, res) {
     }
 
     delete acc.Password_hash;
-
+    
     req.session.isAuthenticated = true;
     req.session.authAccount = acc;
+
+    if (acc.TypeAccount == 1)
+    {
+        req.session.isSubscriber = true;
+    }
+    else if (acc.TypeAccount == 2){
+        req.session.isWriter = true;
+    }
+    else if (acc.TypeAccount == 3){
+        req.session.isEditor = true;
+    }
+    else if (acc.TypeAccount == 4){
+        req.session.isAdmin = true;
+    }
 
     const url = req.query.retUrl || '/';
     res.redirect(url);
@@ -151,7 +166,12 @@ router.post('/login', async function (req, res) {
 
 router.post('/logout', auth.restrict, function (req, res) {
     req.session.isAuthenticated = false;
-    req.session.authUser = null;
+    
+    req.session.authAccount = null;
+    req.session.isSubscriber = false;
+    req.session.isWriter = false;
+    req.session.isEditor = false;
+    req.session.isAdmin = false;
 
     res.redirect(req.headers.referer);
 })

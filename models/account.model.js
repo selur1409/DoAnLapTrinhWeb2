@@ -11,7 +11,7 @@ module.exports = {
                         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
     },
     singleId: function (username) {
-        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}'`);
+        return db.load(`select * from ${TBL_ACCOUNTS} where Username = '${username}'`);
     },
     singleEmail: function(email){
         return db.load(`select IdAccount from information where Email = '${email}'`);
