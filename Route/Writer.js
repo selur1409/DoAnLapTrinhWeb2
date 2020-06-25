@@ -183,7 +183,7 @@ router.post('/Writer', restrict, Authories, async (req,res, next)=>{
         const IdAccount = res.locals.lcAuthUser.Id;
         if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
-            res.send('Please complete all fields in the form');
+            res.json({fail:'Please complete all fields in the form'});
         }
         else{
             let Temp = [];
@@ -200,7 +200,7 @@ router.post('/Writer', restrict, Authories, async (req,res, next)=>{
             const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
             const result = await db.InsertTagPost(ValueOfTagPost);
             if (result !== null) {
-                res.send('This article has been sent successfully!');
+                res.json({success:'This article has been sent successfully!'});
             }
             // console.log(Temp);
             // console.log(DatePost);
@@ -316,49 +316,63 @@ router.get('/Update/:id', restrict, Authories, async (req, res)=>{
     const Post = await db.LoadSinglePost(IdPost);
     // const Status = await db.LoadStatusById(Post[0].IdStatus);
     // const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
-    const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
-    res.render('vwWriter/Update',{
-        IsActiveUpdate:true,
-        layout: 'homewriter',
-        Id:IdPost,
-        ListTag:Tags,
-        ListCat:Categories,
-        ListSubCat:Categories_sub,
-        FullCont:Post[0].Content_Full,
-        BriefCont:Post[0].Content_Summary,
-        Title:Post[0].Title,
-        Name:res.locals.lcAuthUser.Username,
-        Avatar:res.locals.lcAuthUser.Avatar,
-        Url:req.headers.referer,
-        helpers: {
-            count_index: function(value){
-            if(value % 3 === 0 && value !== 0)
-            {
-              return "<div class=w-100>" + "</div>";
-            }
-          },
-          load_sub_cat: function(context, Id, options){
-            let ret="";
-            for(let i = 0; i < context.length; i++)
-            {
-              if(context[i].IdCategoriesMain === Id)
-              {
-                ret = ret + options.fn(context[i]);
-              }
-            }
-            return ret;
-          },
-          NotUpdate:function(value, options)
-          {
-                let ret="";
-                if(4 === value || 2 === value)
+    if(Post[0].IdStatus === 1 || Post[0].IdStatus === 2)
+    {
+        res.render('vwWriter/Update',{
+            IsActiveUpdate:true,
+            layout: 'homewriter',
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
+            Url:req.headers.referer,
+            NotFound:true
+        });
+    }
+    else
+    {
+        const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
+        res.render('vwWriter/Update',{
+            IsActiveUpdate:true,
+            layout: 'homewriter',
+            Id:IdPost,
+            ListTag:Tags,
+            ListCat:Categories,
+            ListSubCat:Categories_sub,
+            FullCont:Post[0].Content_Full,
+            BriefCont:Post[0].Content_Summary,
+            Title:Post[0].Title,
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
+            Url:req.headers.referer,
+            helpers: {
+                count_index: function(value){
+                if(value % 3 === 0 && value !== 0)
                 {
-                    ret = ret + options.fn("The article has been approval. You cannot change it");
+                return "<div class=w-100>" + "</div>";
+                }
+            },
+            load_sub_cat: function(context, Id, options){
+                let ret="";
+                for(let i = 0; i < context.length; i++)
+                {
+                if(context[i].IdCategoriesMain === Id)
+                {
+                    ret = ret + options.fn(context[i]);
+                }
                 }
                 return ret;
-          }
-        }
-    })
+            },
+            NotUpdate:function(value, options)
+            {
+                    let ret="";
+                    if(4 === value || 2 === value)
+                    {
+                        ret = ret + options.fn("The article has been approval. You cannot change it");
+                    }
+                    return ret;
+            }
+            }
+        });
+    }   
 });
 
 router.post('/Update/', restrict, Authories, async (req,res, next)=>{
@@ -379,7 +393,7 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
     
         if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
-            res.send('Please complete all fields in the form');
+            res.json({fail:' Please complete all fields in the form'});
         }
         else{
             const ValueOfPost = [`${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
@@ -396,7 +410,7 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
             const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
             const result = await db.InsertTagPost(ValueOfTagPost);
             if (result !== null) {
-                res.send('This article has been sent successfully!');
+                res.json({success:'This article has been sent successfully!'});
             }
         }
     
