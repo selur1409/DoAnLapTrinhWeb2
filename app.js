@@ -1,4 +1,7 @@
 const express = require('express');
+const passport = require('passport');
+const passportfb = require('passport-facebook').Strategy;
+const db = require('./models/account.model');
 
 // Phần của Khương mới thêm
 const multer = require('multer');
@@ -18,16 +21,47 @@ app.get('/index.html', function (req, res) {
     res.render('index');
 })
 
+// đăng nhập bằng facebook
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new passportfb(
+  {
+    clientID: "593141928292244",
+    clientSecret: "f4f2260540dc4d6beb61d8088cb71ccb",
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    profileFields: ['email']
+  },
+  function(accessToken, refreshToken, profile, done) {
+    console.log(profile);
+  }
+));
+
+passport.serializeUser((user, done) =>{
+    done(null, user.id);
+});
+
+passport.deserializeUser(async function (id, done){
+    const rows = await db.singleId(id);
+    console.log("rows:" + rows);
+    if (rows.length === 0){
+      return;
+    }
+    const user = rows[0];
+    done (null, user);
+});
+
 // middlewares
 require('./middlewares/session.mdw')(app);
 require('./middlewares/locals.mdw')(app);
 require('./middlewares/view.mdw')(app);
-const {hbs} = require('./middlewares/view.mdw');
+
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
 // route account
 const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
+// passport
+app.use('/auth', require('./route/auth.route'));
 
 // Trang writer
 app.use('', exposeTemplates, require('./Route/Writer'));

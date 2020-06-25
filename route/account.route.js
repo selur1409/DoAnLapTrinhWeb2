@@ -14,6 +14,7 @@ router. get('/register', auth.referer, function (req, res) {
     layout: false
     });
 }) 
+
 router.post('/register', async function(req, res){
     const rows = await accountModel.singleId(req.body.Username);
 
