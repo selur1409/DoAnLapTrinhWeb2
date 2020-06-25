@@ -3,9 +3,9 @@ const config = require('../config/default.json');
 
 const pool = mysql.createPool(config.mysql);
 module.exports = {
-    load: function (sql) {
+    load: function (sql, value = null) {
       return new Promise(function (resolve, reject) {
-        pool.query(sql, function (error, results, fields) {
+        pool.query(sql, value, function (error, results, fields) {
           if (error) {
             return reject(error);
           }
@@ -51,5 +51,19 @@ module.exports = {
           resolve(results);
         });
       });
-    }
+    },
+
+  insert: (sql, value) => {
+    return new Promise((resolve, reject) => {
+      pool.query(sql, value, (error, results, fields) => {
+        if (error) {
+          return reject(error);
+        }
+        else {
+          resolve(results);
+        }
+      });
+    });
+  }
+
 };

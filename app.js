@@ -1,17 +1,14 @@
 const express = require('express');
-require('express-async-errors');
+
+// Phần của Khương mới thêm
+const multer = require('multer');
+const upload = multer();
+
 const app = express();
+app.use(upload.array()); 
 
-app.use(express.urlencoded({
-  extended: true
-}));
-
+app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'))
-
-// middlewares
-require('./middlewares/session.mdw')(app);
-require('./middlewares/locals.mdw')(app);
-require('./middlewares/view.mdw')(app);
 
 // Trang chủ Home
 app.get('/', function (req, res) {
@@ -21,9 +18,19 @@ app.get('/index.html', function (req, res) {
     res.render('index');
 })
 
+// middlewares
+require('./middlewares/session.mdw')(app);
+require('./middlewares/locals.mdw')(app);
+require('./middlewares/view.mdw')(app);
+const {hbs} = require('./middlewares/view.mdw');
+const {exposeTemplates} = require('./public/js/exposeTemplate');
+
 // route account
 const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
+
+// Trang writer
+app.use('', exposeTemplates, require('./Route/Writer'));
 
 
 app.use(function (req, res) {

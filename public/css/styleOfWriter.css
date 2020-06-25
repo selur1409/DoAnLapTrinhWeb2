@@ -1,0 +1,15 @@
+.collapse-content .collapse:not(.show) {
+    display: block;
+    height: 3rem;
+    overflow: hidden;
+  }
+  
+  .collapse-content .collapsing {
+    height: 3rem;
+  } 
+
+  #modalDetailPost .modal-body{
+    max-height: 100vh;
+    overflow-y: auto;
+}
+  
