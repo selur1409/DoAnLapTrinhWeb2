@@ -414,13 +414,13 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
             }
         }
     
-        console.log(IdPost);
-        console.log(checkbox);
-        console.log(DatePost);
-        console.log(DateTimePost);
-        console.log(IdCategories);
-        console.log(req.body.BriefCont);
-        console.log(req.body.FullCont);
+        // console.log(IdPost);
+        // console.log(checkbox);
+        // console.log(DatePost);
+        // console.log(DateTimePost);
+        // console.log(IdCategories);
+        // console.log(req.body.BriefCont);
+        // console.log(req.body.FullCont);
     }
     catch(e)
     {
