@@ -3,11 +3,10 @@ const express = require('express');
 // Phần của Khương mới thêm
 const multer = require('multer');
 const upload = multer();
-const nodemailer = require('nodemailer');
+const flash = require('express-flash');
 
 const app = express();
 app.use(upload.array()); 
-
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'))
 
@@ -34,6 +33,7 @@ app.use('/account', accountRoute);
 app.use('', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
+app.use(flash());
 app.use('', require('./route/ForgotPW'));
 
 

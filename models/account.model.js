@@ -43,19 +43,19 @@ module.exports = {
     },
 
     UpdateToken:(value)=>{
-        return db.Insert("UPDATE token SET ?? = ? WHERE ?? = ?", value);
+        return db.insert("UPDATE token SET ?? = ? WHERE ?? = ?", value);
     },
 
     InsertToken:(value)=>{
-        return db.Insert("INSERT INTO token (??, ??, ??, ??) VALUES (?, ?, ?, ?)", value);
+        return db.insert("INSERT INTO token (??, ??, ??, ??) VALUES (?, ?, ?, ?)", value);
     },
 
     DeleteToken:(value)=>{
-        return db.Insert("DELETE FROM token WHERE ?? = ? OR Expiration < ?", value);
+        return db.insert("DELETE FROM token WHERE ?? = ? OR Expiration < ?", value);
     },
 
     UpdatePassword:(value)=>{
-        return db.Insert(`UPDATE accounts SET Password_hash = ? WHERE Id = (SELECT IdAccount FROM information WHERE Email = ?)`, value);
+        return db.insert(`UPDATE accounts SET Password_hash = ? WHERE Id = (SELECT IdAccount FROM information WHERE Email = ?)`, value);
     },
 
     LoadAccount: (value) => {

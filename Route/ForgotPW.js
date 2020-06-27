@@ -7,9 +7,15 @@ const nodemailer = require('nodemailer');
 const flash = require('express-flash');
 moment.locale("vi");
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const session = require('express-session');
 
 router.get('/ForgotPW', (req, res)=>{
-    res.render('vwAccount/ForgotPassword',{Fail: req.flash('Fail'), Success: req.flash('Success')});
+    res.render('vwAccount/ForgotPassword',{
+        Fail: req.flash('Fail'),
+        Success: req.flash('Success'), 
+        layout: false
+        });
 });
 
 router.post('/forgotPassword', async (req, res, next)=>{
@@ -22,7 +28,7 @@ router.post('/forgotPassword', async (req, res, next)=>{
         }
         const value1 = ['Used', 1, 'Email', `${Result[0].Email}`];
         await db.UpdateToken(value1);
-        const Token = genRandomString();
+        const Token = crypto.randomBytes(Math.ceil(16 / 2)).toString('hex').slice(0, 16);
         let ExpireDate = new Date();
         ExpireDate.setHours(ExpireDate.getHours() + 1);
         const tmp = moment(ExpireDate).format('YYYY-MM-DD HH:mm:ss');
@@ -74,7 +80,7 @@ router.get('/reset/', async(req, res, next)=>{
     const result = await db.LoadToken(value);
     if(email === undefined)
     {
-        return res.render('ResetPassword',{Fail:req.flash('Fail')});
+        return res.render('vwAccount/ResetPassword',{Fail:req.flash('Fail'), layout:false});
     }
     if (result === null) {
         req.flash("Fail",'Token has expired. Please try password reset again.');
@@ -104,3 +110,5 @@ router.post('/reset/', async(req, res, next)=>{
     await Promise.all([db.UpdatePassword(valueOfPassword), db.DeleteToken(ValueOfToken)]);
     res.json({success:'Success! Your password has been changed.'});
 }); 
+
+module.exports = router;
