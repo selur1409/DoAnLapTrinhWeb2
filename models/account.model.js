@@ -35,5 +35,32 @@ module.exports = {
           CatID: id
         }
         return db.del(TBL_ACCOUNTS, condition);
+    },
+
+    //Forgot Password
+    LoadToken:(value)=>{
+        return db.load(`SELECT * FROM token WHERE ?? = ? AND ?? = ? AND ?? = ? AND Expiration > ?`, value);
+    },
+
+    UpdateToken:(value)=>{
+        return db.Insert("UPDATE token SET ?? = ? WHERE ?? = ?", value);
+    },
+
+    InsertToken:(value)=>{
+        return db.Insert("INSERT INTO token (??, ??, ??, ??) VALUES (?, ?, ?, ?)", value);
+    },
+
+    DeleteToken:(value)=>{
+        return db.Insert("DELETE FROM token WHERE ?? = ? OR Expiration < ?", value);
+    },
+
+    UpdatePassword:(value)=>{
+        return db.Insert(`UPDATE accounts SET Password_hash = ? WHERE Id = (SELECT IdAccount FROM information WHERE Email = ?)`, value);
+    },
+
+    LoadAccount: (value) => {
+        return db.load(`SELECT ac.Id, inf.Name, inf.Email, inf.IdAccount 
+                                FROM accounts ac, information inf 
+                                WHERE ac.Id = inf.IdAccount AND inf.Email = ?`, value);
     }
 };
