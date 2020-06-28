@@ -68,7 +68,7 @@ app.use('', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 app.use(flash());
-app.use('', require('./route/ForgotPW'));
+app.use('/write', require('./route/ForgotPW'));
 
 
 app.use('/admin', require('./route/admin.route'));
