@@ -87,7 +87,7 @@ router.get('/reset/', async(req, res, next)=>{
         return res.redirect('/ForgotPW');
     }
     req.session.Email = email;
-    res.render('vwAccount/ResetPassword');
+    res.render('vwAccount/ResetPassword', {layout:false});
 });
 
 router.post('/reset/', async(req, res, next)=>{
