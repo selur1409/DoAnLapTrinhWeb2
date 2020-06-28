@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 26, 2020 at 04:40 AM
+-- Generation Time: Jun 28, 2020 at 04:14 PM
 -- Server version: 10.4.8-MariaDB
 -- PHP Version: 7.3.11
 
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `accounts` (
 --
 
 INSERT INTO `accounts` (`Id`, `Username`, `Password_hash`, `DateRegister`, `DateExpired`, `TypeAccount`, `IsDelete`) VALUES
-(1, 'writer1', '$2a$08$GkmYMgW5ix6jXx4OLKK6MOEpcGFq9yVjHIaT113wGxl3PybFowvj.', '2020-06-22 00:00:00', '2020-06-22 00:00:00', 2, 0),
+(1, 'writer123', '$2a$08$URXr.tpbrXkZHJsg5iPIPecFiCA0O7iAYuLlDeBkK0GDGRU6uBQk2', '2020-06-22 00:00:00', '2020-06-22 00:00:00', 2, 0),
 (5, 'admin123', '$2a$08$GkmYMgW5ix6jXx4OLKK6MOEpcGFq9yVjHIaT113wGxl3PybFowvj.', '2020-06-23 20:14:59', '2020-06-30 20:14:59', 2, 0);
 
 -- --------------------------------------------------------
@@ -187,14 +187,15 @@ CREATE TABLE IF NOT EXISTS `information` (
   `Sex` tinyint(1) NOT NULL,
   PRIMARY KEY (`Id`),
   KEY `Information_Accounts` (`IdAccount`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `information`
 --
 
 INSERT INTO `information` (`Id`, `Name`, `Nickname`, `Avatar`, `DOB`, `Email`, `Phone`, `IdAccount`, `Sex`) VALUES
-(1, 'Admin', NULL, 'avatar2.png\r\n', '2020-06-23', 'Admin123@gmail.com', '0987654321', 5, 0);
+(1, 'Admin', NULL, 'avatar2.png\r\n', '2020-06-23', 'Admin123@gmail.com', '0987654321', 5, 0),
+(2, 'Writer', NULL, NULL, '2020-06-17', 'anhkhuong1306@gmail.com', '0904567891', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -442,6 +443,28 @@ INSERT INTO `tag_posts` (`Id`, `IdTag`, `IdPost`) VALUES
 (88, 2, 34),
 (89, 1, 35),
 (90, 1, 36);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `token`
+--
+
+CREATE TABLE IF NOT EXISTS `token` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Token` varchar(500) COLLATE utf8_unicode_ci NOT NULL,
+  `Expiration` datetime NOT NULL,
+  `Used` int(11) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `token`
+--
+
+INSERT INTO `token` (`Id`, `Email`, `Token`, `Expiration`, `Used`) VALUES
+(6, 'anhkhuong1306@gmail.com', 'fa97797f80b19227', '2020-06-28 21:33:10', 0);
 
 -- --------------------------------------------------------
 
