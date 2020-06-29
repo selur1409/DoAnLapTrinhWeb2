@@ -52,5 +52,10 @@ module.exports = {
     },
     DeleteTagPost:(IdPost)=>{
         return db.load(`DELETE FROM tag_posts WHERE IdPost = ${IdPost}`);
+    },
+
+    CountNumberPost:(IdAccount)=>{
+        return db.load(`SELECT st.*, (SELECT Count(*) FROM posts p, postdetails pd, accounts ac WHERE p.Id = pd.IdPost AND pd.IdAccount = ac.Id AND ac.Id = ${IdAccount} AND st.Id = p.IdStatus)  AS 'Number'
+        FROM status_posts st`);
     }
 }

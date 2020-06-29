@@ -212,7 +212,7 @@ tinymce.init({
                       document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
                       $("#myModal").modal("show"); 
                     }
-                    else
+                    if(dataParsed.hasOwnProperty('fail'))
                     {
                       document.getElementById("alert").innerHTML = Handlebars.templates.Warning({warning:dataParsed.fail});
                       $("#myModal").modal("show");

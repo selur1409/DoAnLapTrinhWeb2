@@ -142,9 +142,9 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
     const IdAccount = res.locals.lcAuthUser.Id;
     const IdStatus = +req.params.id || 4;
     const offset = (page - 1) * config.pagination.limit;
-    const [Result, Total] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount)]);
+    const [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
     const Name = res.locals.lcAuthUser.Username;
-   
+    
     const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
     const page_items = [];
     let count = 0;
@@ -211,7 +211,17 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
                     return ret;
                 }
                 return false;
+          },
+          NumberOfPost:function(Id){
+            for(let i = 0; i < NumberOfPost.length; i++)
+            {
+                if(NumberOfPost[i].Id === Id)
+                {
+                    return NumberOfPost[i].Number;
+                }
+            }
           }
+
         },
         page_items,
         prev_value: page - 1,

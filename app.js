@@ -64,7 +64,7 @@ app.use('/account', accountRoute);
 app.use('/auth', require('./route/auth.route'));
 
 // Trang writer
-app.use('/write', exposeTemplates, require('./Route/Writer'));
+app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 app.use(flash());
