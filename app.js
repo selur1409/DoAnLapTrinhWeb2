@@ -64,11 +64,11 @@ app.use('/account', accountRoute);
 app.use('/auth', require('./route/auth.route'));
 
 // Trang writer
-app.use('', exposeTemplates, require('./Route/Writer'));
+app.use('/write', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 app.use(flash());
-app.use('', require('./route/ForgotPW'));
+app.use('/account', require('./route/ForgotPW'));
 
 
 app.use('/admin', require('./route/admin.route'));
