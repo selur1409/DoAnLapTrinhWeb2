@@ -18,17 +18,17 @@ router.get('/ForgotPW', (req, res)=>{
         });
 });
 
-router.post('/forgotPassword', async (req, res, next)=>{
+router.post('/ForgotPW', async (req, res, next)=>{
     try{
         const Email = req.body.email;
         const Result = await db.LoadAccount([Email]);
         if (Result.length === 0) {
             req.flash('Fail', 'Email is invalid.');
-            return res.redirect('/forgotPassword');
+            return res.redirect('/account/ForgotPW');
         }
         const value1 = ['Used', 1, 'Email', `${Result[0].Email}`];
         await db.UpdateToken(value1);
-        const Token = crypto.randomBytes(Math.ceil(16 / 2)).toString('hex').slice(0, 16);
+        const Token = crypto.randomBytes(Math.ceil(32 / 2)).toString('hex').slice(0, 32);
         let ExpireDate = new Date();
         ExpireDate.setHours(ExpireDate.getHours() + 1);
         const tmp = moment(ExpireDate).format('YYYY-MM-DD HH:mm:ss');
@@ -41,7 +41,7 @@ router.post('/forgotPassword', async (req, res, next)=>{
             subject: 'Node.js Password Reset',
             text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' +
                 'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-                'http://localhost:3000/reset/?token=' + Token + '&email=' + Result[0].Email + '\n\n' +
+                'http://localhost:3000/account/reset/' + Token + '\n\n' +
                 'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         }
 
@@ -63,7 +63,7 @@ router.post('/forgotPassword', async (req, res, next)=>{
         });
 
         req.flash('Success', `An email has been sent to ${Result[0].Email} with further instruction`);
-        res.redirect('/ForgotPW');
+        res.redirect('/account/ForgotPW');
     }
     catch(e)
     {
@@ -71,30 +71,28 @@ router.post('/forgotPassword', async (req, res, next)=>{
     }
 });
 
-router.get('/reset/', async(req, res, next)=>{
-    sess = req.session;
+router.get('/reset/:token', async(req, res, next)=>{
     const date = Date.now();
-    const token = req.query.token;
-    const email = req.query.email;
-    const value = ['Email', `${email}`, 'Token', `${token}`, 'Used', 0, `${date}`];
+    const token = req.params.token;
+    const value = ['Token', `${token}`, 'Used', 0, `${date}`];
     const result = await db.LoadToken(value);
+    const email = result[0].Email;
     if(email === undefined)
     {
         return res.render('vwAccount/ResetPassword',{Fail:req.flash('Fail'), layout:false});
     }
     if (result === null) {
         req.flash("Fail",'Token has expired. Please try password reset again.');
-        return res.redirect('/ForgotPW');
+        return res.redirect('/account/ForgotPW');
     }
     req.session.Email = email;
     res.render('vwAccount/ResetPassword', {layout:false});
 });
 
 router.post('/reset/', async(req, res, next)=>{
-    sess = req.session;
     const Password = req.body.NewPassword;
     const RePassword = req.body.RePassword;
-    const Email = sess.Email;
+    const Email = req.session.Email;
     if(Email === undefined)
     {
         return res.json({fail:'Your email is invalid.'});
@@ -108,6 +106,9 @@ router.post('/reset/', async(req, res, next)=>{
     const pw_hash = bcrypt.hashSync(Password, config.authentication.saltRounds);
     const valueOfPassword = [`${pw_hash}`, `${Email}`];
     await Promise.all([db.UpdatePassword(valueOfPassword), db.DeleteToken(ValueOfToken)]);
+    req.session.destroy(function(){
+        console.log("session is destroyed");
+    });
     res.json({success:'Success! Your password has been changed.'});
 }); 
 

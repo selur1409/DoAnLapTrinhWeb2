@@ -39,7 +39,7 @@ module.exports = {
 
     //Forgot Password
     LoadToken:(value)=>{
-        return db.load(`SELECT * FROM token WHERE ?? = ? AND ?? = ? AND ?? = ? AND Expiration > ?`, value);
+        return db.load(`SELECT * FROM token WHERE ?? = ? AND ?? = ? AND Expiration > ?`, value);
     },
 
     UpdateToken:(value)=>{
