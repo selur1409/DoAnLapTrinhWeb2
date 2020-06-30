@@ -57,5 +57,23 @@ module.exports = {
     CountNumberPost:(IdAccount)=>{
         return db.load(`SELECT st.*, (SELECT Count(*) FROM posts p, postdetails pd, accounts ac WHERE p.Id = pd.IdPost AND pd.IdAccount = ac.Id AND ac.Id = ${IdAccount} AND st.Id = p.IdStatus)  AS 'Number'
         FROM status_posts st`);
+    },
+
+    LoadInboxFB:(IdPost, Limit, OffSet)=>{
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        FROM feedback fb, editoraccount ec, information inf 
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = 0 LIMIT ${Limit} OFFSET ${OffSet}`);
+    },
+
+    LoadFB:(Id)=>{
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        FROM feedback fb, editoraccount ec, information inf
+        WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount`);
+    },
+
+    CountFB:(IdPost)=>{
+        return db.load(`SELECT count(fb.IdPost) AS 'Number'
+        FROM feedback fb, editoraccount ec, information inf 
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost}`);
     }
 }

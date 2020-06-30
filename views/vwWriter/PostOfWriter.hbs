@@ -82,13 +82,17 @@
                                     href="#collapseContent{{@index}}" aria-expanded="false"
                                     aria-controls="collapseContent" id="{{@index}}">Read
                                     More</a>
-                                <a class="btn btnDetail red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
+                                <a class="btn btnDetail btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
                                     id="btn{{@index}}">Detail</a>
                                     
                                 {{#Update this.IdStatus Id}}
-                                    <a class="btn btnUpdate red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{this.Id}}
+                                    <a class="btn btnUpdate btn-outline-primary p-1 my-1 mr-0 mml-1 " data-value={{this.Id}}
                                     id="Update{{@index}}" href="/writer/Update/{{this.Id}}">Modify</a>
                                 {{/Update}}
+                                {{#FeedBack this.IdStatus Id}}
+                                 <a class="btn btnFeedBack btn-outline-primary p-1 my-1 mr-0 mml-1 " data-value={{this.Id}}
+                                    id="FB{{@index}}" href="/writer/FeedBack_Inbox/{{this.Id}}/1">Feeds Back</a>
+                                {{/FeedBack}}
                             </div>
                         </div>
                     </div>

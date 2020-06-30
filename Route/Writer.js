@@ -5,7 +5,9 @@ const flash = require('express-flash');
 const config = require('../config/default.json');
 const moment = require('moment');
 moment.locale("vi");
-const {restrict, referer} = require('../middlewares/auth.mdw')
+const {restrict, referer} = require('../middlewares/auth.mdw');
+const { route } = require('./account.route');
+const { CountFB } = require('../models/Writer');
 
 function exposeTemplates(req, res, next) {
     // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
@@ -198,7 +200,7 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
           },
           Update:function(value, id, options)
           {
-                if(4 === value || 2 === value)
+                if(4 === value || 3 === value)
                 {
                     let ret="";
                     for(let i = 0; i < Result.length; i++)
@@ -210,7 +212,23 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
                     }
                     return ret;
                 }
-                return false;
+                return null;
+          },
+          FeedBack:function(value, id, options)
+          {
+                if(3 === value)
+                {
+                    let ret="";
+                    for(let i = 0; i < Result.length; i++)
+                    {
+                        if(Result[i].Id === id)
+                        {
+                            ret = ret + options.fn(Result[i]);
+                        }
+                    }
+                    return ret;
+                }
+                return null;
           },
           NumberOfPost:function(Id){
             for(let i = 0; i < NumberOfPost.length; i++)
@@ -358,6 +376,69 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
     }
 }); 
 
+router.get('/FeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, next)=>{
+    try{
+        const Id = req.params.id;
+        const IdPost = req.params.idPost;
+        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost)]);
+     
+        res.render('vwWriter/feedback_read', {
+            layout:'homewriter',
+            IsActiveFB:true,
+            FeedBackEditor:Result[0].Name,
+            FeedBackIdPost:Result[0].IdPost,
+            FeedBackContent:Result[0].Note,
+            FeedBackDate:Result[0].DatetimeApproval,
+            NumberOfFB:Total[0].Number,
+            helpers:{
+                format_time:function(value){
+                    return moment(value).format('llll');
+                }
+            }
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
 
+router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, next)=>{
+    try{
+        const page = +req.params.page || 1;
+        const offset = (page - 1) * config.pagination.limit;
+        const IdPost = req.params.id;
+        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset), db.CountFB(IdPost)]);
+        const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+        let PageEnd = offset + config.pagination.limit;
+        if(PageEnd > Total[0].Number)
+        {
+            PageEnd = Total[0].Number;
+        }
+        res.render('vwWriter/feedback_inbox', {
+            layout:'homewriter',
+            IsActiveFB:true,
+            Inbox:Result,
+            IdPost,
+            NumberOfFB:Total[0].Number,
+            TotalPage:Total[0].Number,
+            PageCurrent:offset,
+            PageEnd,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages,
+            helpers:{
+                format_time:function(value){
+                    return moment(value).format('llll');
+                }
+            }
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
 
 module.exports = router;
