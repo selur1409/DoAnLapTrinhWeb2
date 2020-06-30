@@ -18,7 +18,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="/public/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  {{{_sections.css}}}
+
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -144,7 +144,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content-wrapper">
       {{{body}}}
     </div>
-    <!-- /.content-wrapper --
+    <!-- /.content-wrapper -->
 
     <!-- Main Footer -->
     <footer class="main-footer">
@@ -166,17 +166,5 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- AdminLTE App -->
   <script src="/public/js/adminlte.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
-  {{{_sections.js}}}
-
 </body>
-
 </html>
-<script>
-  (function () {
-    var revive = Handlebars.template,
-      templates = Handlebars.templates = Handlebars.templates || {};
-    {{#templates}}
-    templates['{{{name}}}'] = revive({{{ template }}});
-  {{/templates}}
-  } ());
-</script>

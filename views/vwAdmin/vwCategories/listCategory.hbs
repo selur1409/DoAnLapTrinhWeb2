@@ -1,9 +1,15 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <h4>Categories</h4>
+    <label for="select">Hiển thị:</label>
+    <select name="select" onchange="window.location=this.value">
+      <option value="/admin/categories/full" {{#if this.selectedFull}} selected {{/if}}>Tất cả chuyên mục</option>
+      <option value="/admin/categories/main" {{#if this.selectedMain}} selected {{/if}}>Chỉ chuyên mục cha</option>
+      <option value="/admin/categories/sub" {{#if this.selectedSub}} selected {{/if}}>Chỉ chuyên mục con</option>
+    </select> 
     <a class="btn btn-outline-success" href="/admin/categories/add" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>
-      Add Category
+      Thêm chuyên mục
     </a>
   </div>
   {{#if this.empty}}
@@ -15,22 +21,28 @@
     <thead>
       <tr>
         <th scope="col" class="text-center">#</th>
-        <th scope="col">Category</th>
+        <th scope="col">Chuyên mục</th>
+        <th scope="col">Đường dẫn tĩnh</th>
+        <th scope="col">Chuyên mục cha</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
       {{#each this.categories}}
       <tr>
-        <th scope="row" class="text-center">{{Id}}</th>
+        <th scope="row" class="text-center">{{Stt}}</th>
         <td>{{Name}}</td>
+        <td>{{Url}}</td>
         <td class="text-right">
-          <a class="btn btn-primary btn-sm" href="/admin/categories/edit/{{Id}}" role="button" title="Edit Category">
-            <i class="fa fa-pencil" aria-hidden="true"></i>
-          </a>
-          {{!-- <a class="btn btn-danger btn-sm" href="javascript:;" role="button">
-            <i class="fa fa-trash" aria-hidden="true"></i>
-          </a> --}}
+        <form method="POST" action="/admin/categories/del">
+            <a class="btn btn-primary btn-sm" href="/admin/categories/edit/{{Url}}" role="button" title="Edit Category">
+                <i class="fas fa-pen"></i>
+            </a>
+            <input type="hidden" name="Url" value="{{Url}}">            
+            <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
         </td>
       </tr>
       {{/each}}
