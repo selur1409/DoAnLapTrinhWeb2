@@ -8,6 +8,7 @@ moment.locale("vi");
 const {restrict, referer} = require('../middlewares/auth.mdw');
 const { route } = require('./account.route');
 const { CountFB } = require('../models/Writer');
+const { query } = require('express');
 
 function exposeTemplates(req, res, next) {
     // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
@@ -380,11 +381,13 @@ router.get('/FeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, ne
     try{
         const Id = req.params.id;
         const IdPost = req.params.idPost;
-        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost)]);
+        const IsDelete = 0;
+        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost, IsDelete)]);
      
         res.render('vwWriter/feedback_read', {
             layout:'homewriter',
             IsActiveFB:true,
+            IsFeedBack:true,
             FeedBackEditor:Result[0].Name,
             FeedBackIdPost:Result[0].IdPost,
             FeedBackContent:Result[0].Note,
@@ -408,7 +411,8 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
         const page = +req.params.page || 1;
         const offset = (page - 1) * config.pagination.limit;
         const IdPost = req.params.id;
-        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset), db.CountFB(IdPost)]);
+        const IsDelete = 0;
+        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset, IsDelete), db.CountFB(IdPost, IsDelete)]);
         const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
         let PageEnd = offset + config.pagination.limit;
         if(PageEnd > Total[0].Number)
@@ -420,6 +424,7 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
             IsActiveFB:true,
             Inbox:Result,
             IdPost,
+            IsFeedBack:true,
             NumberOfFB:Total[0].Number,
             TotalPage:Total[0].Number,
             PageCurrent:offset,
@@ -440,5 +445,96 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
         console.log(e);
     }
 });
+
+router.post('/FeedBack_Inbox/RemoveFeedBack/:id', async (req, res, next)=>{
+    try{
+        const IdPost = req.params.id;
+        const checkbox = req.body.checkbox;
+        let value = [];
+        for(let i = 0; i < checkbox.length; i++)
+        {
+            let tmp = [];
+            tmp.push(+checkbox[i]);
+            tmp.push(1);
+            value.push(tmp);
+        }
+        console.log(value);
+        const result = await db.RemoveFB(value);
+        console.log(checkbox);
+        res.redirect(`/writer/FeedBack_Inbox/${IdPost}/1`);
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
+
+router.get('/TrashFeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, next)=>{
+    try{
+        const Id = req.params.id;
+        const IdPost = req.params.idPost;
+        const IsDelete = 1;
+        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost, IsDelete)]);
+     
+        res.render('vwWriter/feedback_read', {
+            layout:'homewriter',
+            IsActiveFB:true,
+            FeedBackEditor:Result[0].Name,
+            FeedBackIdPost:Result[0].IdPost,
+            FeedBackContent:Result[0].Note,
+            FeedBackDate:Result[0].DatetimeApproval,
+            NumberOfTrashFB:Total[0].Number,
+            helpers:{
+                format_time:function(value){
+                    return moment(value).format('llll');
+                }
+            }
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
+
+router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, next)=>{
+    try{
+        const page = +req.params.page || 1;
+        const IdPost = req.params.id;
+        const offset = (page - 1) * config.pagination.limit;
+        const IsDelete = 1;
+        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset, IsDelete), db.CountFB(IdPost, IsDelete)]);
+        const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+        let PageEnd = offset + config.pagination.limit;
+        if(PageEnd > Total[0].Number)
+        {
+            PageEnd = Total[0].Number;
+        }
+        res.render('vwWriter/feedback_inbox', {
+            layout:'homewriter',
+            IsActiveFB:true,
+            Inbox:Result,
+            IdPost,
+            NumberOfTrashFB:Total[0].Number,
+            TotalPage:Total[0].Number,
+            PageCurrent:offset,
+            PageEnd,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages,
+            helpers:{
+                format_time:function(value){
+                    return moment(value).format('llll');
+                }
+            }
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
+
 
 module.exports = router;

@@ -59,10 +59,10 @@ module.exports = {
         FROM status_posts st`);
     },
 
-    LoadInboxFB:(IdPost, Limit, OffSet)=>{
+    LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
         return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
         FROM feedback fb, editoraccount ec, information inf 
-        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = 0 LIMIT ${Limit} OFFSET ${OffSet}`);
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete} LIMIT ${Limit} OFFSET ${OffSet}`);
     },
 
     LoadFB:(Id)=>{
@@ -71,9 +71,14 @@ module.exports = {
         WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount`);
     },
 
-    CountFB:(IdPost)=>{
+    CountFB:(IdPost, IsDelete)=>{
         return db.load(`SELECT count(fb.IdPost) AS 'Number'
         FROM feedback fb, editoraccount ec, information inf 
-        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost}`);
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete}`);
+    },
+
+    RemoveFB:(value)=>{
+        return db.insert(`INSERT INTO feedback (Id, IsDelete) VALUES ?
+        ON DUPLICATE KEY UPDATE IsDelete=VALUES(IsDelete)`, [value]);
     }
 }

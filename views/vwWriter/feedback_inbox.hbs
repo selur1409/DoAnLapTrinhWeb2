@@ -19,7 +19,7 @@
                 <div class="card-body p-0">
                     <ul class="nav nav-pills flex-column">
                         <li class="nav-item active">
-                            <a href="#" class="nav-link">
+                            <a href="/writer/FeedBack_Inbox/{{this.IdPost}}/1" class="nav-link">
                                 <i class="fas fa-inbox"></i> Inbox
                                 <span class="badge bg-primary float-right">{{this.NumberOfFB}}</span>
                             </a>
@@ -39,12 +39,13 @@
                                 <i class="fas fa-filter"></i> Junk
                                 <span class="badge bg-warning float-right">65</span>
                             </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="far fa-trash-alt"></i> Trash
-                            </a>
                         </li> --}}
+                        <li class="nav-item">
+                            <a href="/writer/TrashFeedBack_Inbox/{{this.IdPost}}/1" class="nav-link">
+                                <i class="far fa-trash-alt"></i> Trash
+                                <span class="badge bg-primary float-right">{{this.NumberOfTrashFB}}</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <!-- /.card-body -->
@@ -135,11 +136,12 @@
                     <div class="table-responsive mailbox-messages">
                         <table class="table table-hover table-striped">
                             <tbody>
+                                <form action="/writer/FeedBack_Inbox/RemoveFeedBack/{{this.IdPost}}" method="POST" id="formRemove"></form>
                                 {{#each this.Inbox}}
                                 <tr>
                                     <td>
                                         <div class="icheck-primary">
-                                            <input class="checkbox" type="checkbox" value="" id="checkbox{{@index}}">
+                                            <input class="checkbox" type="checkbox" name="checkbox" value="{{Id}}" id="checkbox{{@index}}" form="formRemove">
                                             <label for="check1"></label>
                                         </div>
                                     </td>
@@ -150,7 +152,7 @@
                                     {{!-- <td class="mailbox-attachment"></td> --}}
                                     <td class="mailbox-date"><div>{{format_time DatetimeApproval}}</div></td>
                                 </tr>   
-                                {{/each}}         
+                                {{/each}}       
                             </tbody>
                         </table>
                         <!-- /.table -->
@@ -164,12 +166,14 @@
                         {{!-- <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i
                                 class="far fa-square"></i>
                         </button> --}}
+                        {{#if IsFeedBack}}
                         <div class="btn-group">
-                            <button type="button" class="btn btn-default btn-sm" id="btnRemove"><i
+                            <button type="submit" class="btn btn-default btn-sm" id="btnRemove" formaction="formRemove" onclick="submit()"><i
                                     class="far fa-trash-alt"></i></button>
                             {{!-- <button type="button" class="btn btn-default btn-sm"><i class="fas fa-reply"></i></button>
                             <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i></button> --}}
                         </div>
+                        {{/if}}
                         <!-- /.btn-group -->
                         {{!-- <button type="button" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></button> --}}
                         <div class="float-right">
@@ -197,38 +201,9 @@
 
 {{#section 'js'}}
 <script>
-    function checkbox() {
-        const ckbox = document.getElementsByClassName("custom-control-input");
-        let arrchkbox = [];
-        for (let i = 0; i < ckbox.length; i++) {
-            ckbox[i].addEventListener('change', function () {
-                if (ckbox[i].checked) {
-                    arrchkbox.push(document.getElementById("checkbox" + i).value);
-                }
-                else {
-                    arrchkbox.pop(document.getElementById("checkbox" + i).value);
-                }
-            });
-        }
-        return arrchkbox;
-    }
-    
-    function RemoveFeedBack() {
-        const btnRemove = document.getElementById("btnRemove");
-        const arrChecked = checkbox();
-        btnRemove.addEventListener("click", function () {
-            event.preventDefault();
-            const xhttp = new XMLHttpRequest();
-            const FD = new FormData();
-            FD.append("arrCheck", JSON.stringify(arrChecked));
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                  
-                }
-            }
-            xhttp.open("GET", "/writer/FeedBack_Inbox/" + {{this.IdPost}}/{{next_value}}", true);
-            xhttp.send(FD);
-        }, true)
+    function submit()
+    {
+        document.getElementById('formRemove').submit();
     }
 </script>
 {{/section}}
