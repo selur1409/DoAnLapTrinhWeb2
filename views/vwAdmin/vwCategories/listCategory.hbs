@@ -3,9 +3,9 @@
     <h4>Categories</h4>
     <label for="select">Hiển thị:</label>
     <select name="select" onchange="window.location=this.value">
-      <option value="/admin/categories/full" {{#if this.selectedFull}} selected {{/if}}>Tất cả chuyên mục</option>
-      <option value="/admin/categories/main" {{#if this.selectedMain}} selected {{/if}}>Chỉ chuyên mục cha</option>
-      <option value="/admin/categories/sub" {{#if this.selectedSub}} selected {{/if}}>Chỉ chuyên mục con</option>
+      <option value="/admin/categories?select=full" {{#if this.selectedFull}} selected {{/if}}>Tất cả chuyên mục</option>
+      <option value="/admin/categories?select=main" {{#if this.selectedMain}} selected {{/if}}>Chỉ chuyên mục cha</option>
+      <option value="/admin/categories?select=sub" {{#if this.selectedSub}} selected {{/if}}>Chỉ chuyên mục con</option>
     </select> 
     <a class="btn btn-outline-success" href="/admin/categories/add" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>

@@ -12,19 +12,8 @@ router.get('/', function(req, res){
 });
 
 router.get('/categories', async function(req, res){
-    const list = await categoryModel.all();
 
-    res.render('vwAdmin/vwCategories/listCategory', {
-        layout: 'homeadmin',
-        IsActiveCat: true,
-        empty: list.length == 0,
-        categories: list
-    })
-});
-
-router.get('/categories/:select', async function(req, res){
-
-    const sl = req.params.select;
+    const sl = req.query.select;
 
     if (sl === 'full'){
         const list = await categoryModel.all();
@@ -69,6 +58,7 @@ router.get('/categories/:select', async function(req, res){
         categories: list
     })
 });
+
 
 router.get('/categories/add', async function(req, res){
     res.send('add');
