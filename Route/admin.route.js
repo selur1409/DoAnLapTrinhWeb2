@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 
 const categoryModel = require('../models/category.model');
+const notification = require('../config/notification.json');
 
 const router = express.Router();
 
@@ -138,13 +139,249 @@ router.post('/categories/add', async function(req, res){
 
 router.get('/categories/edit/:url', async function(req, res){
     // const q = req.query.url;
-    const q = req.params.url;
-    res.send('edit' + q);
+    const url = req.params.url;
+    const isUrlMain = await categoryModel.singleUrlMain(url);
+    if (isUrlMain){
+        const catMain = await categoryModel.allMain();
+        console.log(catMain);
+        
+        for (const c of catMain) {
+            if (c.Id === isUrlMain.Id) {
+                catMain.splice(catMain.indexOf(c), 1);
+            }
+        }
+        console.log(catMain);
+        return res.render('vwAdmin/vwCategories/editCategory', {
+            layout: 'homeAdmin',
+            catMain: catMain,
+            isSelectMain: true, 
+            Category: isUrlMain
+        });
+    }
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlSub){
+        const catMain = await categoryModel.allMain();
+
+        for (const c of catMain) {
+            if (c.Id === isUrlSub.IdCategoriesMain) {
+                c.isActive = true;
+            }
+        }
+        return res.render('vwAdmin/vwCategories/editCategory', {
+            layout: 'homeAdmin',
+            catMain: catMain,
+            Category: isUrlSub,
+            isSelectSub: true
+        }); 
+    }
+    res.redirect('/admin/categories');
+});
+
+router.post('/categories/edit/:url', async function(req, res){
+    const urlParam = req.params.url;
+    const id = req.body.Id;
+    const type = req.body.Type;
+    const name = req.body.Name;
+    const url = req.body.Url;
+    const select = req.body.Select;
+    const description = req.body.Description;
+
+    if (!name || !url)
+    {
+        return res.redirect(`/admin/categories/edit/${urlParam}/e1`)
+    }
+
+    const isNameMain = await categoryModel.singleNameMainEdit(name, id);
+    const isNameSub = await categoryModel.singleNameSubEdit(name, id);
+    if (isNameMain || isNameSub)
+    {  
+        return res.redirect(`/admin/categories/edit/${urlParam}/e2`)
+    }
+
+    const isUrlMain = await categoryModel.singleUrlMainEdit(url, id);
+    const isUrlSub = await categoryModel.singleUrlSubEdit(url, id);
+    if (isUrlMain || isUrlSub){
+        return res.redirect(`/admin/categories/edit/${url}/e3`)
+    }
+
+
+    if (type === 'Main'){
+        if (select === 'Empty'){      
+            const entity = {
+                Id: id,
+                Name: name,
+                Url: url,
+                Description: description,
+                IsDelete: 0
+            };
+            await categoryModel.patchMain(entity);
+        }
+        else{     
+            const entity = {
+                Name: name,
+                Url: url,
+                Description: description,
+                IdCategoriesMain: parseInt(select),
+                IsDelete: 0
+            };
+            await categoryModel.delMain(id);
+            await categoryModel.addSub(entity);
+        }
+
+        // load thành công
+        const isUrlMainLoad = await categoryModel.singleUrlMain(url);
+        if (isUrlMainLoad){
+            const catMain = await categoryModel.allMain();
+            return res.render('vwAdmin/vwCategories/editCategory', {
+                layout: 'homeAdmin',
+                catMain: catMain,
+                isSelectMain: true, 
+                Category: isUrlMainLoad,
+                success: "Chỉnh sửa thành công."
+            });
+        }
+        const isUrlSubLoad = await categoryModel.singleUrlSub(url);
+        if (isUrlSubLoad){
+            const catMain = await categoryModel.allMain();
+
+            for (const c of catMain) {
+                if (c.Id === isUrlSubLoad.IdCategoriesMain) {
+                    c.isActive = true;
+                }
+            }
+            return res.render('vwAdmin/vwCategories/editCategory', {
+                layout: 'homeAdmin',
+                catMain: catMain,
+                Category: isUrlSubLoad,
+                isSelectSub: true,
+                success: "Chỉnh sửa thành công."
+            }); 
+        }
+
+        return res.redirect('/admin/categories');
+    }
+
+    if (type === 'Sub'){
+        if (select === 'Empty'){ 
+            const entity = {
+                Name: name,
+                Url: url,
+                Description: description,
+                IsDelete: 0
+            };
+            await categoryModel.delSub(id);
+            await categoryModel.addMain(entity);
+
+            // xử lý khi có khóa ngoại trỏ tới
+        }
+        else{     
+            const entity = {
+                Id: id,
+                Name: name,
+                Url: url,
+                Description: description,
+                IdCategoriesMain: parseInt(select),
+                IsDelete: 0
+            };
+            await categoryModel.patchSub(entity);
+        }
+
+        // load thành công
+        const isUrlMainLoad = await categoryModel.singleUrlMain(url);
+        if (isUrlMainLoad){
+            const catMain = await categoryModel.allMain();
+            return res.render('vwAdmin/vwCategories/editCategory', {
+                layout: 'homeAdmin',
+                catMain: catMain,
+                isSelectMain: true, 
+                Category: isUrlMainLoad,
+                success: "Chỉnh sửa thành công."
+            });
+        }
+        const isUrlSubLoad = await categoryModel.singleUrlSub(url);
+        if (isUrlSubLoad){
+            const catMain = await categoryModel.allMain();
+
+            for (const c of catMain) {
+                if (c.Id === isUrlSubLoad.IdCategoriesMain) {
+                    c.isActive = true;
+                }
+            }
+            return res.render('vwAdmin/vwCategories/editCategory', {
+                layout: 'homeAdmin',
+                catMain: catMain,
+                Category: isUrlSubLoad,
+                isSelectSub: true,
+                err: err,
+                success: "Chỉnh sửa thành công."
+            }); 
+        }
+
+        return res.redirect('/admin/categories');
+    }
+    
+
+});
+
+
+router.get('/categories/edit/:url/:notifi', async function(req, res){
+    // const q = req.query.url;
+    const url = req.params.url;
+    const notifi = req.params.notifi;
+    var err = undefined;
+    var suc = undefined;
+    if (notifi === 'e1'){
+        err = notification.err.e1;
+    }
+    else if(notifi === 'e2'){
+        err = notification.err.e2;
+    }
+    else if(notifi === 'e3'){
+        err = notification.err.e3;
+    }
+    else if(notifi === 's1'){
+        suc = notification.success.s1;
+    }
+    else{
+        res.redirect(`/categories/edit/${url}`);
+    }
+    
+    const isUrlMain = await categoryModel.singleUrlMain(url);
+    if (isUrlMain){
+        const catMain = await categoryModel.allMain();
+        return res.render('vwAdmin/vwCategories/editCategory', {
+            layout: 'homeAdmin',
+            catMain: catMain,
+            isSelectMain: true, 
+            Category: isUrlMain,
+            err: err,
+            success: suc
+        });
+    }
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlSub){
+        const catMain = await categoryModel.allMain();
+
+        for (const c of catMain) {
+            if (c.Id === isUrlSub.IdCategoriesMain) {
+                c.isActive = true;
+            }
+        }
+        return res.render('vwAdmin/vwCategories/editCategory', {
+            layout: 'homeAdmin',
+            catMain: catMain,
+            Category: isUrlSub,
+            isSelectSub: true,
+            err: err,
+            success: suc
+        }); 
+    }
+    
+    res.redirect('/admin/categories');
 });
 
 router.post('/categories/del', async function(req, res){
     const url = req.body.Url;
-    console.log(url);
     res.send('del' + " url: " + url);
 });
 

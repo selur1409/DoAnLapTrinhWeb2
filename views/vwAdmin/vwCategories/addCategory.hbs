@@ -33,7 +33,7 @@
       <div class="form-group">
         <label for="ControlSelect">Chuyên mục hiện tại (Trống là chuyên mục cha)</label>
         <select class="form-control" id="ControlSelect" name="Select">
-        <option value="Empty">Trống</option>
+        <option value="Empty" selected>Trống</option>
         {{#each this.catMain}}
         <option value="{{Id}}">{{Name}}</option>
         {{/each}}

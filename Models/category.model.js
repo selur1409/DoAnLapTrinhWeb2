@@ -23,6 +23,14 @@ module.exports = {
         const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}'`);
         return rows[0];
     },
+    singleNameMainEdit: async function (name, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}' and Id != ${id}`);
+        return rows[0];
+    },
+    singleUrlMainEdit: async function (url, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}' and Id != ${id}`);
+        return rows[0];
+    },
     singleNameSub: async function (name) {
         const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}'`);
         return rows[0];
@@ -31,23 +39,62 @@ module.exports = {
         const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
         return rows[0];
     },
+    singleNameSubEdit: async function (name, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id}`);
+        return rows[0];
+    },
+    singleUrlSubEdit: async function (url, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and Id != ${id}`);
+        return rows[0];
+    },
     addMain: function (entity) {
         return db.add(TBL_CATEGORIES, entity);
     },
     addSub: function (entity) {
         return db.add(TBL_CATEGORIES_SUB, entity);
     },
-    patch: function (entity) {
+    patchMain: function (entity) {
         const condition = {
           Id: entity.Id
         }
         delete entity.Id;
         return db.patch(TBL_CATEGORIES, entity, condition);
     },
-    del: function (id) {
+    patchSub: function (entity) {
+        const condition = {
+          Id: entity.Id
+        }
+        delete entity.Id;
+        return db.patch(TBL_CATEGORIES_SUB, entity, condition);
+    },
+    patchIsDelMain: function (id) {
+        const condition = {
+          Id: id
+        }
+        const entity = {
+            IsDelete: 1
+        }
+        return db.patch(TBL_CATEGORIES, entity, condition);
+    },
+    patchIsDelSub: function (id) {
+        const condition = {
+          Id: id
+        }
+        const entity = {
+            IsDelete: 1
+        }
+        return db.patch(TBL_CATEGORIES_SUB, entity, condition);
+    },
+    delMain: function (id) {
         const condition = {
           Id: id
         }
         return db.del(TBL_CATEGORIES, condition);
+    },
+    delSub: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.del(TBL_CATEGORIES_SUB, condition);
     },
 };
