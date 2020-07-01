@@ -69,7 +69,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
                         return "<div class=w-100>" + "</div>";
                     }
                 },
-                
+
                 load_sub_cat: function (context, Id, options) {
                     let ret = "";
                     for (let i = 0; i < context.length; i++) {
@@ -392,6 +392,8 @@ router.get('/FeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, ne
             FeedBackContent:Result[0].Note,
             FeedBackDate:Result[0].DatetimeApproval,
             NumberOfFB:Total[0].Number,
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
             helpers:{
                 format_time:function(value){
                     return moment(value).format('llll');
@@ -428,6 +430,8 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
             TotalPage:Total[0].Number,
             PageCurrent:offset,
             PageEnd,
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
             prev_value: page - 1,
             next_value: page + 1,
             can_go_prev: page > 1,
@@ -483,6 +487,8 @@ router.get('/TrashFeedBack_Read/:id/:idPost', restrict, Authories, async (req,re
             FeedBackContent:Result[0].Note,
             FeedBackDate:Result[0].DatetimeApproval,
             NumberOfTrashFB:Total[0].Number,
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
             helpers:{
                 format_time:function(value){
                     return moment(value).format('llll');
@@ -522,6 +528,8 @@ router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,re
             next_value: page + 1,
             can_go_prev: page > 1,
             can_go_next: page < nPages,
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
             helpers:{
                 format_time:function(value){
                     return moment(value).format('llll');

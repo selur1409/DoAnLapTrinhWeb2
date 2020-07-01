@@ -5,25 +5,27 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <nav class="nav nav-pills flex-column flex-sm-row p-2">
-                    <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}"
-                        href="/writer/ViewPost/4/1">Chưa
-                        được
-                        duyệt <span class="badge badge-light"> {{NumberOfPost 4}}</span></a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}"
-                        href="/writer/ViewPost/1/1">Đã
-                        được
-                        duyệt chờ xuất
-                        bản <span class="badge badge-light"> {{NumberOfPost 1}}</span></a></a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}"
-                        href="/writer/ViewPost/3/1">Bị
-                        từ
-                        chối <span class="badge badge-light"> {{NumberOfPost 3}}</span></a></a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}"
-                        href="/writer/ViewPost/2/1">Đã
-                        xuất
-                        bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
-                </nav>
+                <div class="col">
+                    <nav class="nav nav-pills flex-column flex-sm-row p-2">
+                        <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}" href="/writer/ViewPost/4/1">Chưa
+                            được
+                            duyệt <span class="badge badge-light"> {{NumberOfPost 4}}</span></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}" href="/writer/ViewPost/1/1">Đã
+                            được
+                            duyệt chờ xuất
+                            bản <span class="badge badge-light"> {{NumberOfPost 1}}</span></a></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}" href="/writer/ViewPost/3/1">Bị
+                            từ
+                            chối <span class="badge badge-light"> {{NumberOfPost 3}}</span></a></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}" href="/writer/ViewPost/2/1">Đã
+                            xuất
+                            bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
+                    </nav>
+                </div>
+                <div class="col">
+
+                </div>
+
             </div>
 
             {{#if this.empty}}
