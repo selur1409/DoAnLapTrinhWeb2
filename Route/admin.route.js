@@ -56,12 +56,84 @@ router.get('/categories', async function(req, res){
         IsActiveCat: true,
         empty: list.length == 0,
         categories: list
-    })
+    });
 });
 
 
 router.get('/categories/add', async function(req, res){
-    res.send('add');
+    const catMain = await categoryModel.allMain();
+
+    res.render('vwAdmin/vwCategories/addCategory', {
+        layout: 'homeAdmin',
+        catMain: catMain
+    });
+});
+
+router.post('/categories/add', async function(req, res){
+    const name = req.body.Name;
+    var url = req.body.Url;
+    var select = req.body.Select;
+    var description = req.body.Description;
+    
+    if (!name || !url)
+    {
+        const catMain = await categoryModel.allMain();
+        return res.render('vwAdmin/vwCategories/addCategory',{
+            layout: 'homeAdmin',
+            err: 'Mục bắt buộc không được để trống.',
+            catMain: catMain
+        });
+    }
+
+    const isNameMain = await categoryModel.singleNameMain(name);
+    const isNameSub = await categoryModel.singleNameSub(name);
+    if (isNameMain || isNameSub)
+    {  
+        const catMain = await categoryModel.allMain();
+        return res.render('vwAdmin/vwCategories/addCategory',{
+            layout: 'homeAdmin',
+            err: 'Tên chuyên mục đã tồn tại.',
+            catMain: catMain
+        });
+    }
+
+    const isUrlMain = await categoryModel.singleUrlMain(url);
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlMain || isUrlSub){
+        const catMain = await categoryModel.allMain();
+        return res.render('vwAdmin/vwCategories/addCategory',{
+            layout: 'homeAdmin',
+            err: 'Url đã tồn tại.',
+            catMain: catMain
+        });
+    }
+
+    if (select === 'Empty'){      
+        const entity = {
+            Name: name,
+            Url: url,
+            Description: description,
+            IsDelete: 0
+        };
+        await categoryModel.addMain(entity);
+    }
+    else{        
+        const entity = {
+            Name: name,
+            Url: url,
+            Description: description,
+            IdCategoriesMain: parseInt(select),
+            IsDelete: 0
+        };
+        await categoryModel.addSub(entity);
+    }
+
+    const catMain = await categoryModel.allMain();
+    res.render('vwAdmin/vwCategories/addCategory',{
+        layout: 'homeAdmin',
+        success: `Thêm chuyên mục ${Name} thành công.`,
+        catMain: catMain
+    });
 });
 
 router.get('/categories/edit/:url', async function(req, res){

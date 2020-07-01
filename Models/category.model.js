@@ -15,13 +15,27 @@ module.exports = {
     allSub: function () {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 ORDER BY Name`);
     },
-    single: function (username) {
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar 
-                        FROM ${TBL_CATEGORIES} a, information i 
-                        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
+    singleNameMain: async function (name) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
+        return rows[0];
     },
-    add: function (entity) {
+    singleUrlMain: async function (url) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}'`);
+        return rows[0];
+    },
+    singleNameSub: async function (name) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}'`);
+        return rows[0];
+    },
+    singleUrlSub: async function (url) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
+        return rows[0];
+    },
+    addMain: function (entity) {
         return db.add(TBL_CATEGORIES, entity);
+    },
+    addSub: function (entity) {
+        return db.add(TBL_CATEGORIES_SUB, entity);
     },
     patch: function (entity) {
         const condition = {
