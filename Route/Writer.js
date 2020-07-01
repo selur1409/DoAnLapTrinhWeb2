@@ -53,36 +53,35 @@ function Authories(req, res, next)
 
 router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
-        const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
-        res.render('vwWriter/Post',{
-            layout:'homewriter', 
-            ListTag:Tags,
-            ListCat:Categories,
-            ListSubCat:Categories_sub,
-            IsActivePost:true,
-            Name:res.locals.lcAuthUser.Username,
-            Avatar:res.locals.lcAuthUser.Avatar,
+
+        const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
+        res.render('vwWriter/Post', {
+            layout: 'homewriter',
+            ListTag: Tags,
+            ListCat: Categories,
+            ListSubCat: Categories_sub,
+            IsActivePost: true,
+            Name: res.locals.lcAuthUser.Username,
+            Avatar: res.locals.lcAuthUser.Avatar,
             helpers: {
-                count_index: function(value){
-                if(value % 3 === 0 && value !== 0)
-                {
-                  return "<div class=w-100>" + "</div>";
+                count_index: function (value) {
+                    if (value % 3 === 0 && value !== 0) {
+                        return "<div class=w-100>" + "</div>";
+                    }
+                },
+                
+                load_sub_cat: function (context, Id, options) {
+                    let ret = "";
+                    for (let i = 0; i < context.length; i++) {
+                        if (context[i].IdCategoriesMain === Id) {
+                            ret = ret + options.fn(context[i]);
+                        }
+                    }
+                    return ret;
                 }
-              },
-              load_sub_cat: function(context, Id, options){
-                let ret="";
-                for(let i = 0; i < context.length; i++)
-                {
-                  if(context[i].IdCategoriesMain === Id)
-                  {
-                    ret = ret + options.fn(context[i]);
-                  }
-                }
-                return ret;
-              }
             }
         });
-        
+
     }
     catch(e)
     {
@@ -92,6 +91,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
 
 router.post('/Writer', restrict, Authories, async (req,res, next)=>{
     try{
+
         let checkbox = JSON.parse(req.body.arrCheck);
         const IsDelete = 0;
         const IdStatus = 4;
@@ -104,26 +104,29 @@ router.post('/Writer', restrict, Authories, async (req,res, next)=>{
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
-        if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
-        {
-            res.json({fail:'Please complete all fields in the form'});
+    
+        if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
+            res.json({ fail: 'Please complete all fields in the form' });
         }
-        else{
+        else {
+
             let Temp = [];
             const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
             const Result = await db.InsertPost(ValueOfPost);
             const ValueOfPostDetail = ['IdPost', 'Content_Full', 'IdAccount', `${Result.insertId}`, `${FullContent}`, `${IdAccount}`];
             await db.InsertPostDetail(ValueOfPostDetail);
+
             for (let i = 0; i < checkbox.length; i++) {
                 let Tag_Post = [];
                 Tag_Post.push(Result.insertId);
                 Tag_Post.push(parseInt(checkbox[i]));
                 Temp.push(Tag_Post);
             }
+
             const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
             const result = await db.InsertTagPost(ValueOfTagPost);
             if (result !== null) {
-                res.json({success:'This article has been sent successfully!'});
+                res.json({ success: 'This article has been sent successfully!' });
             }
             // console.log(Temp);
             // console.log(DatePost);
@@ -144,6 +147,7 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
     const page = +req.params.page || 1;
     const IdAccount = res.locals.lcAuthUser.Id;
     const IdStatus = +req.params.id || 4;
+
     const offset = (page - 1) * config.pagination.limit;
     const [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
     const Name = res.locals.lcAuthUser.Username;
@@ -153,6 +157,7 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
     let count = 0;
     let lengthPagination = 0;
     let temp = page;
+
     while(true)
     {
         if(temp - config.pagination.limitPaginationLinks > 0)
@@ -195,53 +200,47 @@ router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
         IsActive4:IdStatus === 4,
         ListPosts: Result,
         helpers:{
-            format_datetime:function (value) {
-            const date = moment(value).format("DD-MM-YYYY HH:MM TT");
-            return date;
-          },
-          Update:function(value, id, options)
-          {
-                if(4 === value || 3 === value)
-                {
-                    let ret="";
-                    for(let i = 0; i < Result.length; i++)
-                    {
-                        if(Result[i].Id === id)
-                        {
+            format_datetime: function (value) {
+                const date = moment(value).format("DD-MM-YYYY HH:MM TT");
+                return date;
+            },
+
+            Update: function (value, id, options) {
+                if (4 === value || 3 === value) {
+                    let ret = "";
+                    for (let i = 0; i < Result.length; i++) {
+                        if (Result[i].Id === id) {
                             ret = ret + options.fn(Result[i]);
                         }
                     }
                     return ret;
                 }
                 return null;
-          },
-          FeedBack:function(value, id, options)
-          {
-                if(3 === value)
-                {
-                    let ret="";
-                    for(let i = 0; i < Result.length; i++)
-                    {
-                        if(Result[i].Id === id)
-                        {
+            },
+
+            FeedBack: function (value, id, options) {
+                if (3 === value) {
+                    let ret = "";
+                    for (let i = 0; i < Result.length; i++) {
+                        if (Result[i].Id === id) {
                             ret = ret + options.fn(Result[i]);
                         }
                     }
                     return ret;
                 }
                 return null;
-          },
-          NumberOfPost:function(Id){
-            for(let i = 0; i < NumberOfPost.length; i++)
-            {
-                if(NumberOfPost[i].Id === Id)
-                {
-                    return NumberOfPost[i].Number;
+            },
+
+            NumberOfPost: function (Id) {
+                for (let i = 0; i < NumberOfPost.length; i++) {
+                    if (NumberOfPost[i].Id === Id) {
+                        return NumberOfPost[i].Number;
+                    }
                 }
             }
-          }
 
         },
+
         page_items,
         prev_value: page - 1,
         next_value: page + 1,

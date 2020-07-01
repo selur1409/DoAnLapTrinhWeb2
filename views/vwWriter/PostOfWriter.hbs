@@ -83,7 +83,7 @@
                                     aria-controls="collapseContent" id="{{@index}}">Read
                                     More</a>
                                 <a class="btn btnDetail btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
-                                    id="btn{{@index}}">Detail</a>
+                                    id="btn{{@index}}" href="">Detail</a>
                                     
                                 {{#Update this.IdStatus Id}}
                                     <a class="btn btnUpdate btn-outline-primary p-1 my-1 mr-0 mml-1 " data-value={{this.Id}}
@@ -184,13 +184,12 @@
                             const BriefCont = dataParsed.Post[0].Content_Summary;
                             const FullCont = dataParsed.Post[0].Content_Full;
                             const Views = dataParsed.Post[0].Views;
-                            const Avatar = dataParsed.Post[0].Avatar;
                             const DatePost = moment(dataParsed.Post[0].DatePost).format('YYYY-MM-DD HH:mm:ss');
                             const DatetimePost = dataParsed.Post[0].DatetimePost;
                             const IdStatus = dataParsed.Status[0].Name;
                             const Categories = dataParsed.Categories[0].CategorieName;
                             const DetailCategories = dataParsed.Categories[0].SubCategories;
-                            console.log(dataParsed);
+                            let Avatar = dataParsed.Post[0].Avatar === null ? dataParsed.Post[0].Avatar : false;
                             document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont });
                             $("#modalDetailPost").modal("show");
                         }
@@ -210,5 +209,5 @@
 </script>
 {{/section}}
 {{#section 'css'}}
-<link rel="stylesheet" href="../public/css/styleOfWriter.css">
+<link rel="stylesheet" href="/public/css/styleOfWriter.css">
 {{/section}}

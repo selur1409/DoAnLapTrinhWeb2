@@ -32,3 +32,35 @@ td.mailbox-date{
   padding-left: 0px;
   padding-right: 0px;
 }
+
+.btnTag:hover{
+  font-weight: bolder;
+  border-radius: 5px;
+}
+
+div > .active, .btnTag :hover {
+  background-color: #007bff;
+  color: white;
+  font-weight:bolder;
+  border-radius: 5px;
+}
+
+
+.jiggle {
+  animation: jiggle 2s forwards ease-in-out;
+}
+
+
+@keyframes jiggle {
+  0% { transform: scale(.9); }
+  10% { transform: scale(1.1); }
+  20% { transform: scale(.9); }
+  30% { transform: scale(1.05); }
+  40% { transform: scale(.95); }
+  50% { transform: scale(1.025); }
+  60% { transform: scale(.975); }
+  70% { transform: scale(1.02); }
+  80% { transform: scale(.985); }
+  90% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
