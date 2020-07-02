@@ -5,7 +5,7 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col">
+                <div class="col-8">
                     <nav class="nav nav-pills flex-column flex-sm-row p-2">
                         <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}" href="/writer/ViewPost/4/1">Chưa
                             được
@@ -22,10 +22,20 @@
                             bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
                     </nav>
                 </div>
-                <div class="col">
-
+                <div class="col-4 p-2 d-flex justify-content-end">
+                    <div class="btn-group dropup mr-1">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            Tìm Kiếm
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=1">Trong hôm nay</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=2">Trong tuần này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=3">Trong tháng này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=4">Trong năm này</a>
+                        </div>
+                    </div>
                 </div>
-
             </div>
 
             {{#if this.empty}}
@@ -105,12 +115,12 @@
                 <nav aria-label="...">
                     <ul class="pagination">
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/1" aria-label="Previous">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/1/?opt={{Opt}}" aria-label="Previous">
                                 <span aria-hidden="true">FIRST</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{prev_value}}" aria-label="Previous">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{prev_value}}/?opt={{Opt}}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -124,17 +134,17 @@
                         </li>
                         {{else}}
                         <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-                            <a class="page-link" href="/writer/ViewPost/{{IdStatus}}/{{value}}">{{value}}</a>
+                            <a class="page-link" href="/writer/ViewPost/{{IdStatus}}/{{value}}/?opt={{Opt}}">{{value}}</a>
                         </li>
                         {{/if}}
                         {{/each}}
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{next_value}}" aria-label="Next">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{next_value}}/?opt={{Opt}}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{last}}" aria-label="Next">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{last}}/?opt={{Opt}}" aria-label="Next">
                                 <span aria-hidden="true">LAST</span>
                             </a>
                         </li>

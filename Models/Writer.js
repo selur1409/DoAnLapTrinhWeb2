@@ -25,7 +25,15 @@ module.exports = {
     },
 
     LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} LIMIT ${Limit} OFFSET ${Offset}`);
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    LoadPostOfWriterThisWeek:(IdStatus, IdAccount, Limit, Offset)=>{
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    LoadPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, Limit, Offset, DayOrMonthOrYear)=>{
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
     },
 
     LoadSinglePost:(value)=>{
@@ -42,6 +50,14 @@ module.exports = {
 
     CountPostOfWriter:(IdStatus, IdAccount)=>{
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
+    },
+
+    CountPostOfWriterThisWeek:(IdStatus, IdAccount)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE()`);
+    },
+
+    CountPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, ThisDayOrMonthOrYear)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() , '${ThisDayOrMonthOrYear}') AND CURDATE()`);
     },
 
     UpdatePostOfWriter:(value)=>{

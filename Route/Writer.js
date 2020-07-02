@@ -143,112 +143,130 @@ router.post('/Writer', restrict, Authories, async (req,res, next)=>{
     }
 }); 
 
-router.get('/ViewPost/:id/:page', restrict, Authories, async (req, res)=>{
-    const page = +req.params.page || 1;
-    const IdAccount = res.locals.lcAuthUser.Id;
-    const IdStatus = +req.params.id || 4;
+router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
+    try{
 
-    const offset = (page - 1) * config.pagination.limit;
-    const [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
-    const Name = res.locals.lcAuthUser.Username;
-    
-    const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
-    const page_items = [];
-    let count = 0;
-    let lengthPagination = 0;
-    let temp = page;
-
-    while(true)
-    {
-        if(temp - config.pagination.limitPaginationLinks > 0)
-        {
-            count++;
-            temp = temp - config.pagination.limitPaginationLinks;
-        }      
-        else{
-            break;
+        const page = +req.params.page || 1;
+        const IdAccount = res.locals.lcAuthUser.Id;
+        const IdStatus = +req.params.id || 4;
+        const Opt = +req.query.opt;
+        console.log(Opt);
+        const offset = (page - 1) * config.pagination.limit;
+        let [Result, Total, NumberOfPost] = [];
+        if (Opt === 1) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-%m-%d'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-%m-%d'), db.CountNumberPost(IdAccount)]);
         }
-    }
-    if((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages)
-    {
-        lengthPagination = nPages;  
-    } 
-    else  
-    {
-        lengthPagination =  (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
-    }  
-    for(let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++)
-    {
-        const item = {
-            value: i,
-            isActive: i === page,
-            IdStatus
+        else if (Opt === 2) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisWeek(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriterThisWeek(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
         }
-        page_items.push(item);
-    }
+        else if (Opt === 3) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-%m-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-%m-01'), db.CountNumberPost(IdAccount)]);
+        }
+        else if (Opt === 4) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-01-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-01-01'), db.CountNumberPost(IdAccount)]);
+        }
+        else {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
+        }
 
-    res.render('vwWriter/PostOfWriter', {
-        layout:'homewriter',
-        empty: Result.length === 0,
-        IsActive:true,
-        Name,
-        Avatar:res.locals.lcAuthUser.Avatar,
-        IdStatus,
-        IsActive1:IdStatus === 1,
-        IsActive2:IdStatus === 2,
-        IsActive3:IdStatus === 3,
-        IsActive4:IdStatus === 4,
-        ListPosts: Result,
-        helpers:{
-            format_datetime: function (value) {
-                const date = moment(value).format("DD-MM-YYYY HH:MM TT");
-                return date;
-            },
+        const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+        const page_items = [];
+        let count = 0;
+        let lengthPagination = 0;
+        let temp = page;
 
-            Update: function (value, id, options) {
-                if (4 === value || 3 === value) {
-                    let ret = "";
-                    for (let i = 0; i < Result.length; i++) {
-                        if (Result[i].Id === id) {
-                            ret = ret + options.fn(Result[i]);
-                        }
-                    }
-                    return ret;
-                }
-                return null;
-            },
-
-            FeedBack: function (value, id, options) {
-                if (3 === value) {
-                    let ret = "";
-                    for (let i = 0; i < Result.length; i++) {
-                        if (Result[i].Id === id) {
-                            ret = ret + options.fn(Result[i]);
-                        }
-                    }
-                    return ret;
-                }
-                return null;
-            },
-
-            NumberOfPost: function (Id) {
-                for (let i = 0; i < NumberOfPost.length; i++) {
-                    if (NumberOfPost[i].Id === Id) {
-                        return NumberOfPost[i].Number;
-                    }
-                }
+        while (true) {
+            if (temp - config.pagination.limitPaginationLinks > 0) {
+                count++;
+                temp = temp - config.pagination.limitPaginationLinks;
             }
+            else {
+                break;
+            }
+        }
+        if ((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages) {
+            lengthPagination = nPages;
+        }
+        else {
+            lengthPagination = (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+        }
+        for (let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++) {
+            const item = {
+                value: i,
+                isActive: i === page,
+                IdStatus,
+                Opt
+            }
+            page_items.push(item);
+        }
 
-        },
+        res.render('vwWriter/PostOfWriter', {
+            layout: 'homewriter',
+            empty: Result.length === 0,
+            IsActive: true,
+            Name: res.locals.lcAuthUser.Username,
+            Avatar: res.locals.lcAuthUser.Avatar,
+            IdStatus,
+            IsActive1: IdStatus === 1,
+            IsActive2: IdStatus === 2,
+            IsActive3: IdStatus === 3,
+            IsActive4: IdStatus === 4,
+            ListPosts: Result,
+            helpers: {
+                format_datetime: function (value) {
+                    const date = moment(value).format("DD-MM-YYYY HH:MM TT");
+                    return date;
+                },
 
-        page_items,
-        prev_value: page - 1,
-        next_value: page + 1,
-        can_go_prev: page > 1,
-        can_go_next: page < nPages,
-        last:nPages
+                Update: function (value, id, options) {
+                    if (4 === value || 3 === value) {
+                        let ret = "";
+                        for (let i = 0; i < Result.length; i++) {
+                            if (Result[i].Id === id) {
+                                ret = ret + options.fn(Result[i]);
+                            }
+                        }
+                        return ret;
+                    }
+                    return null;
+                },
 
-    });
+                FeedBack: function (value, id, options) {
+                    if (3 === value) {
+                        let ret = "";
+                        for (let i = 0; i < Result.length; i++) {
+                            if (Result[i].Id === id) {
+                                ret = ret + options.fn(Result[i]);
+                            }
+                        }
+                        return ret;
+                    }
+                    return null;
+                },
+
+                NumberOfPost: function (Id) {
+                    for (let i = 0; i < NumberOfPost.length; i++) {
+                        if (NumberOfPost[i].Id === Id) {
+                            return NumberOfPost[i].Number;
+                        }
+                    }
+                }
+
+            },
+
+            page_items,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages,
+            last: nPages,
+            Opt
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
 });
 
 router.get('/DetailPost/', restrict, Authories, async (req, res)=>{

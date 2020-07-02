@@ -8,6 +8,14 @@
     height: 3rem;
   } 
 
+  #myInput {
+    padding: 20px;
+    margin-top: -6px;
+    border: 0;
+    border-radius: 0;
+    background: #f1f1f1;
+  }
+
   #modalDetailPost .modal-body{
     max-height: 100vh;
     overflow-y: auto;
@@ -33,10 +41,6 @@ td.mailbox-date{
   padding-right: 0px;
 }
 
-.btnTag:hover{
-  font-weight: bolder;
-  border-radius: 5px;
-}
 
 div > .active, .btnTag :hover {
   background-color: #007bff;
