@@ -11,25 +11,25 @@ module.exports = {
     LoadSubCategories:()=>{
         return db.load(`SELECT * FROM categories_sub`);
     },
-
-    InsertPost:(value)=>{
-        return db.insert(`INSERT INTO posts(??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, value);
-    },
     
     InsertTagPost:(value)=>{
         return db.insert(`INSERT INTO tag_posts(??, ??) VALUES ?`, value);
+    },
+
+    LoadStatusPost:(idStatus)=>{
+        return db.load(`SELECT * FROM status_posts WHERE Id ='${idStatus}`, value);
     },
 
     InsertPostDetail:(value)=>{
         return db.insert(`INSERT INTO postdetails(??, ??, ??) VALUES (?, ?, ?)`, value);
     },
 
-    LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} LIMIT ${Limit} OFFSET ${Offset}`);
+    LoadPostIsPending:(postStatus)=>{
+        return db.load(`SELECT * FROM posts WHERE IdStatus ='${postStatus}'`);
     },
 
     LoadSinglePost:(value)=>{
-        return db.load(`SELECT p.* FROM posts p WHERE p.Id = '${value}'`);
+        return db.load(`SELECT * FROM posts WHERE Id = '${value}'`);
     },
 
     LoadCategoriesById:(value)=>{
@@ -38,19 +38,5 @@ module.exports = {
 
     LoadStatusById:(value)=>{
         return db.load(`SELECT * FROM status_posts s WHERE s.Id = '${value}'`);
-    },
-
-    CountPostOfWriter:(IdStatus, IdAccount)=>{
-        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
-    },
-
-    UpdatePostOfWriter:(value)=>{
-        return db.insert(`UPDATE posts SET Title = ?, Content_Summary = ?, Content_Full = ?, DatePost = ?, Avatar = ?, Views = ?, DatetimePost = ?, IdCategories = ?, IdStatus = ?, IsDelete = ? WHERE Id = ?`, value);
-    },
-    UpdatePostDetail:(FullCont, id)=>{
-        return db.insert(`UPDATE postdetails SET Content_Full = '${FullCont}' WHERE IdPost = ${id}`);
-    },
-    DeleteTagPost:(IdPost)=>{
-        return db.load(`DELETE FROM tag_posts WHERE IdPost = ${IdPost}`);
     }
 }

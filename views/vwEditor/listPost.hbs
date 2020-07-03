@@ -1,0 +1,33 @@
+<div class="list-group">
+  {{#if this.empty}}
+    <p class="card-text">Không có dữ liệu.</p>
+  {{else}}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">Title</th>
+        <th scope="col">Status</th>
+        <th scope="col">DatePost</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.pendingPost}}
+      <tr>
+        <th scope="row" class="text-center">{{Title}}</th>
+        <td>{{DatePost}}</td>
+        <td class="text-right">
+          <a class="btn btn-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
+          Review
+            <i class="fa fa-eye" aria-hidden="true"></i>
+          </a>
+          {{!-- <a class="btn btn-danger btn-sm" href="javascript:;" role="button">
+            <i class="fa fa-trash" aria-hidden="true"></i>
+          </a> --}}
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>
