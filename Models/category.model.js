@@ -1,6 +1,6 @@
 const db = require('../utils/db');
-const TBL_CATEGORIES = 'categories'
-const TBL_CATEGORIES_SUB = 'categories_sub'
+const TBL_CATEGORIES = 'categories';
+const TBL_CATEGORIES_SUB = 'categories_sub';
 
 module.exports = {
     all: function () {

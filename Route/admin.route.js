@@ -3,7 +3,7 @@ const passport = require('passport');
 
 const categoryModel = require('../models/category.model');
 const notification = require('../config/notification.json');
-const { response } = require('express');
+const tagModel = require('../models/tag.model');
 
 const router = express.Router();
 
@@ -436,11 +436,12 @@ router.post('/categories/del', async function(req, res){
     res.send('del' + " url: " + url);
 });
 
-router.get('/tags', function(req, res){    
-    
+router.get('/tags', async function(req, res){
+    const list = await tagModel.all();
     res.render('vwAdmin/vwTags/listTag', {
         layout: 'homeadmin',
-        IsActiveTag: true
+        IsActiveTag: true,
+        tags: list
     })
 });
 
@@ -458,6 +459,5 @@ router.get('/account', function(req, res){
         IsActiveAcc: true
     })
 });
-
 
 module.exports = router;
