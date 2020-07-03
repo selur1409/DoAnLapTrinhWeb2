@@ -560,5 +560,21 @@ router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,re
     }
 });
 
+router.get('/Profile', restrict, Authories, async (req, res, next)=>{
+    try{
+        const IdAccount = res.locals.lcAuthUser.Id;
+        const NumberOfPost = await db.CountAllPost(IdAccount);
+        res.render('vwWriter/profile',{
+            layout:'homewriter',
+            Name:res.locals.lcAuthUser.Username,
+            Avatar:res.locals.lcAuthUser.Avatar,
+            NumberOfPost:NumberOfPost[0].Number
+        });
+    }
+    catch(e){
+        console.log(e);
+    }
+});
+
 
 module.exports = router;

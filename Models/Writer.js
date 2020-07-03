@@ -48,6 +48,11 @@ module.exports = {
         return db.load(`SELECT * FROM status_posts s WHERE s.Id = '${value}'`);
     },
 
+    CountAllPost:(IdAccount)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND ac.Id = '${IdAccount}'`);
+
+    },
+
     CountPostOfWriter:(IdStatus, IdAccount)=>{
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
     },
