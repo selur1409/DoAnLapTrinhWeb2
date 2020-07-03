@@ -20,7 +20,7 @@
       {{success}}
     </div>
     {{/if}}
-    <form method="POST" action="">
+    <form method="POST" action="/admin/categories/add">
       <div class="form-group">
         <label for="txtCatName">Name</label>
         <input type="text" class="form-control" id="txtCatName" name="Name" autofocus>
@@ -33,9 +33,9 @@
       <div class="form-group">
         <label for="ControlSelect">Chuyên mục hiện tại (Trống là chuyên mục cha)</label>
         <select class="form-control" id="ControlSelect" name="Select">
-        <option value="Empty" selected>Trống</option>
+        <option value="Empty">Trống</option>
         {{#each this.catMain}}
-        <option value="{{Id}}">{{Name}}</option>
+        <option value="{{Id}}" {{#if Selected}} selected {{/if}} >{{Name}}</option>
         {{/each}}
         </select>
       </div>
@@ -43,7 +43,8 @@
         <label for="ControlTextarea">Mô tả</label>
         <textarea class="form-control" id="ControlTextarea" rows="3" name="textArea"></textarea>
       </div>
-      <a class="btn btn-success" href="/admin/categories" role="button" title="Back to List">
+      <input type="hidden" name="comback" value="{{this.comback}}">
+      <a class="btn btn-success" href="/admin/categories{{#if this.comback}}/view/{{this.comback}}{{/if}}" role="button" title="Back to List">
         <i class="fa fa-backward" aria-hidden="true"></i>
         Trở về
       </a>

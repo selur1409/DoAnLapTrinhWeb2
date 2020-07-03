@@ -3,6 +3,7 @@ const passport = require('passport');
 
 const categoryModel = require('../models/category.model');
 const notification = require('../config/notification.json');
+const { response } = require('express');
 
 const router = express.Router();
 
@@ -13,53 +14,78 @@ router.get('/', function(req, res){
 });
 
 router.get('/categories', async function(req, res){
+    try {
+        const sl = req.query.select;
+        if (sl === 'full'){
+            const list = await categoryModel.all();
+        
+            return res.render('vwAdmin/vwCategories/listCategory', {
+                layout: 'homeadmin',
+                IsActiveCat: true,
+                empty: list.length == 0,
+                categories: list,
+                selectedFull: true
+            })
+        }
+        if (sl === 'main'){
+            const list = await categoryModel.allMain();
+            for(c of list){
+                c.Manage = 'fsdfsad';
+            }
+            return res.render('vwAdmin/vwCategories/listCategory', {
+                layout: 'homeadmin',
+                IsActiveCat: true,
+                empty: list.length == 0,
+                categories: list,
+                selectedMain: true
+            })
+        }
+        if (sl === 'sub'){
+            const list = await categoryModel.allSub();
+            for(c of list){
+                const nameMain = await categoryModel.getNameMain(c.Id);
+                
+                c.NameMain = nameMain[0].Name;
+            }
+            return res.render('vwAdmin/vwCategories/listCategory', {
+                layout: 'homeadmin',
+                IsActiveCat: true,
+                empty: list.length == 0,
+                categories: list,
+                selectedSub: true
+            })
+        }
 
-    const sl = req.query.select;
-
-    if (sl === 'full'){
-        const list = await categoryModel.all();
-    
-        return res.render('vwAdmin/vwCategories/listCategory', {
-            layout: 'homeadmin',
-            IsActiveCat: true,
-            empty: list.length == 0,
-            categories: list,
-            selectedFull: true
-        })
+        res.redirect('/admin/categories?select=main')
+        
+    } catch (error) {
+        res.redirect('/admin/categories?select=main')
     }
-    if (sl === 'main'){
-        const list = await categoryModel.allMain();
-    
-        return res.render('vwAdmin/vwCategories/listCategory', {
-            layout: 'homeadmin',
-            IsActiveCat: true,
-            empty: list.length == 0,
-            categories: list,
-            selectedMain: true
-        })
-    }
-    if (sl === 'sub'){
-        const list = await categoryModel.allSub();
-    
-        return res.render('vwAdmin/vwCategories/listCategory', {
-            layout: 'homeadmin',
-            IsActiveCat: true,
-            empty: list.length == 0,
-            categories: list,
-            selectedSub: true
-        })
-    }
 
-    const list = await categoryModel.all();
-
-    res.render('vwAdmin/vwCategories/listCategory', {
-        layout: 'homeadmin',
-        IsActiveCat: true,
-        empty: list.length == 0,
-        categories: list
-    });
 });
 
+router.get('/categories/view/:url', async function(req, res){
+    const url = req.params.url;
+    const cat = await categoryModel.singleUrlMain(url);
+
+    if (!cat){
+        res.redirect('/admin/categories?select=main');
+    }
+
+    const catSub = await categoryModel.allSub_Id(cat.Id);
+    for(c of catSub){
+        const nameMain = await categoryModel.getNameMain(c.Id);
+        
+        c.NameMain = nameMain[0].Name;
+    }
+    res.render('vwAdmin/vwCategories/viewCategory',{
+        layout: 'homeAdmin',
+        Name: cat.Name,
+        UrlMain: cat.Url,
+        categories: catSub,
+        empty: catSub.length === 0
+    });
+})
 
 router.get('/categories/add', async function(req, res){
     const catMain = await categoryModel.allMain();
@@ -70,15 +96,48 @@ router.get('/categories/add', async function(req, res){
     });
 });
 
+router.get('/categories/add/:url', async function(req, res){
+    const url = req.params.url;
+    const selectedCat = await categoryModel.singleUrlMain(url);
+    if(!selectedCat)
+    {
+        return res.redirect('/admin/categories/add');
+    }
+
+    const catMain = await categoryModel.allMain();
+    for(c of catMain){
+        if (c.Id === selectedCat.Id){
+            c.Selected = true;
+        }
+    }
+
+    res.render('vwAdmin/vwCategories/addCategory', {
+        layout: 'homeAdmin',
+        catMain: catMain,
+        comback: selectedCat.Url
+    });
+});
+
 router.post('/categories/add', async function(req, res){
     const name = req.body.Name;
-    var url = req.body.Url;
-    var select = req.body.Select;
-    var description = req.body.Description;
-    
+    const url = req.body.Url;
+    const select = req.body.Select;
+    const description = req.body.Description;
+    const comback = req.body.comback;
+
+    const catMain = await categoryModel.allMain();
+    if(comback){
+        const selectedCat = await categoryModel.singleUrlMain(comback);
+        for(c of catMain){
+            if (c.Id === selectedCat.Id){
+                c.Selected = true;
+            }
+        }
+    }    
+
     if (!name || !url)
     {
-        const catMain = await categoryModel.allMain();
+        
         return res.render('vwAdmin/vwCategories/addCategory',{
             layout: 'homeAdmin',
             err: 'Mục bắt buộc không được để trống.',
@@ -90,22 +149,22 @@ router.post('/categories/add', async function(req, res){
     const isNameSub = await categoryModel.singleNameSub(name);
     if (isNameMain || isNameSub)
     {  
-        const catMain = await categoryModel.allMain();
         return res.render('vwAdmin/vwCategories/addCategory',{
             layout: 'homeAdmin',
             err: 'Tên chuyên mục đã tồn tại.',
-            catMain: catMain
+            catMain: catMain,
+            comback: comback
         });
     }
 
     const isUrlMain = await categoryModel.singleUrlMain(url);
     const isUrlSub = await categoryModel.singleUrlSub(url);
     if (isUrlMain || isUrlSub){
-        const catMain = await categoryModel.allMain();
         return res.render('vwAdmin/vwCategories/addCategory',{
             layout: 'homeAdmin',
             err: 'Url đã tồn tại.',
-            catMain: catMain
+            catMain: catMain,
+            comback: comback
         });
     }
 
@@ -129,11 +188,11 @@ router.post('/categories/add', async function(req, res){
         await categoryModel.addSub(entity);
     }
 
-    const catMain = await categoryModel.allMain();
     res.render('vwAdmin/vwCategories/addCategory',{
         layout: 'homeAdmin',
-        success: `Thêm chuyên mục ${Name} thành công.`,
-        catMain: catMain
+        success: `Thêm chuyên mục ${name} thành công.`,
+        catMain: catMain,
+        comback: comback
     });
 });
 
@@ -204,7 +263,6 @@ router.post('/categories/edit/:url', async function(req, res){
         return res.redirect(`/admin/categories/edit/${url}/e3`)
     }
 
-
     if (type === 'Main'){
         if (select === 'Empty'){      
             const entity = {
@@ -230,8 +288,8 @@ router.post('/categories/edit/:url', async function(req, res){
 
         // load thành công
         const isUrlMainLoad = await categoryModel.singleUrlMain(url);
+        const catMain = await categoryModel.allMain();
         if (isUrlMainLoad){
-            const catMain = await categoryModel.allMain();
             return res.render('vwAdmin/vwCategories/editCategory', {
                 layout: 'homeAdmin',
                 catMain: catMain,
@@ -242,7 +300,6 @@ router.post('/categories/edit/:url', async function(req, res){
         }
         const isUrlSubLoad = await categoryModel.singleUrlSub(url);
         if (isUrlSubLoad){
-            const catMain = await categoryModel.allMain();
 
             for (const c of catMain) {
                 if (c.Id === isUrlSubLoad.IdCategoriesMain) {
@@ -271,8 +328,6 @@ router.post('/categories/edit/:url', async function(req, res){
             };
             await categoryModel.delSub(id);
             await categoryModel.addMain(entity);
-
-            // xử lý khi có khóa ngoại trỏ tới
         }
         else{     
             const entity = {
@@ -287,9 +342,9 @@ router.post('/categories/edit/:url', async function(req, res){
         }
 
         // load thành công
+        const catMain = await categoryModel.allMain();
         const isUrlMainLoad = await categoryModel.singleUrlMain(url);
         if (isUrlMainLoad){
-            const catMain = await categoryModel.allMain();
             return res.render('vwAdmin/vwCategories/editCategory', {
                 layout: 'homeAdmin',
                 catMain: catMain,
@@ -300,7 +355,6 @@ router.post('/categories/edit/:url', async function(req, res){
         }
         const isUrlSubLoad = await categoryModel.singleUrlSub(url);
         if (isUrlSubLoad){
-            const catMain = await categoryModel.allMain();
 
             for (const c of catMain) {
                 if (c.Id === isUrlSubLoad.IdCategoriesMain) {
@@ -312,15 +366,12 @@ router.post('/categories/edit/:url', async function(req, res){
                 catMain: catMain,
                 Category: isUrlSubLoad,
                 isSelectSub: true,
-                err: err,
                 success: "Chỉnh sửa thành công."
             }); 
         }
 
         return res.redirect('/admin/categories');
     }
-    
-
 });
 
 
@@ -386,6 +437,7 @@ router.post('/categories/del', async function(req, res){
 });
 
 router.get('/tags', function(req, res){    
+    
     res.render('vwAdmin/vwTags/listTag', {
         layout: 'homeadmin',
         IsActiveTag: true

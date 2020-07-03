@@ -52,6 +52,31 @@ module.exports = {
         });
       });
     },
+    del_provisional: function (table, condition) {
+      return new Promise(function (resolve, reject) {
+        const sql = `update ${table} set isDelete = 1 where ?`;
+        pool.query(sql, condition, function (error, results) {
+          if (error) {
+            return reject(error);
+          }
+  
+          resolve(results);
+        });
+      });
+    },
+    activated: function (table, condition) {
+      return new Promise(function (resolve, reject) {
+        const sql = `update ${table} set isDelete = 1 where ?`;
+        pool.query(sql, condition, function (error, results) {
+          if (error) {
+            return reject(error);
+          }
+  
+          resolve(results);
+        });
+      });
+    },
+    
 
   insert: (sql, value) => {
     return new Promise((resolve, reject) => {

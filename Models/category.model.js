@@ -15,6 +15,14 @@ module.exports = {
     allSub: function () {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 ORDER BY Name`);
     },
+    allSub_Id: function (id) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name`);
+    },
+    
+    getNameMain: function(id){
+        return db.load(`SELECT c.Name FROM ${TBL_CATEGORIES_SUB} s, ${TBL_CATEGORIES} c WHERE s.Id = ${id} and s.IdCategoriesMain = c.Id`);
+        
+    },
     singleNameMain: async function (name) {
         const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
         return rows[0];
@@ -67,34 +75,29 @@ module.exports = {
         delete entity.Id;
         return db.patch(TBL_CATEGORIES_SUB, entity, condition);
     },
-    patchIsDelMain: function (id) {
-        const condition = {
-          Id: id
-        }
-        const entity = {
-            IsDelete: 1
-        }
-        return db.patch(TBL_CATEGORIES, entity, condition);
-    },
-    patchIsDelSub: function (id) {
-        const condition = {
-          Id: id
-        }
-        const entity = {
-            IsDelete: 1
-        }
-        return db.patch(TBL_CATEGORIES_SUB, entity, condition);
-    },
+
     delMain: function (id) {
         const condition = {
           Id: id
         }
-        return db.del(TBL_CATEGORIES, condition);
+        return db.del_provisional(TBL_CATEGORIES, condition);
     },
     delSub: function (id) {
         const condition = {
           Id: id
         }
-        return db.del(TBL_CATEGORIES_SUB, condition);
+        return db.del_provisionall(TBL_CATEGORIES_SUB, condition);
+    },
+    provisionalMain: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.activated(TBL_CATEGORIES, condition);
+    },
+    provisionalSub: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.activated(TBL_CATEGORIES_SUB, condition);
     },
 };
