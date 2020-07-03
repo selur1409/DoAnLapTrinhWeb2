@@ -16,11 +16,28 @@
     background: #f1f1f1;
   }
 
+/*Modal detailPost*/
   #modalDetailPost .modal-body{
     max-height: 100vh;
     overflow-y: auto;
 }
+/*Modal detailPost*/
 
+/*Modal success and warning*/
+.modal-confirm .modal-body{
+  padding: 0;
+}
+
+.modal-confirm .modal-body > .alert{
+  margin: 0;
+}
+
+.modal-confirm .modal-footer{
+  border: none;
+}
+/*Modal success, warning*/
+
+/* Mail box*/
 td.mailbox-subject > div {
   width: 476px;
   height: 50px;
@@ -40,8 +57,9 @@ td.mailbox-date{
   padding-left: 0px;
   padding-right: 0px;
 }
+/*Mail box*/
 
-
+/*Button tag*/
 div > .active, .btnTag :hover {
   background-color: #007bff;
   color: white;
@@ -68,3 +86,4 @@ div > .active, .btnTag :hover {
   90% { transform: scale(1.01); }
   100% { transform: scale(1); }
 }
+/*Button Tag */

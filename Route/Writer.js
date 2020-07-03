@@ -150,7 +150,6 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
         const IdAccount = res.locals.lcAuthUser.Id;
         const IdStatus = +req.params.id || 4;
         const Opt = +req.query.opt;
-        console.log(Opt);
         const offset = (page - 1) * config.pagination.limit;
         let [Result, Total, NumberOfPost] = [];
         if (Opt === 1) {

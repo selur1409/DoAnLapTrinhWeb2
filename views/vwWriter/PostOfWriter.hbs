@@ -1,7 +1,33 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h4>Article</h4>
+            <div class="row">
+                <div class="col-6">
+                    <h4>Article</h4>
+                </div>
+                <div class="col-6 d-flex p-1">
+                    <div class="input-group input-group-sm m-1">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <div class="input-group-append">
+                            <div class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group dropdown">
+                        <button class="btn btn-tool dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-filter" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=1">Trong hôm nay</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=2">Trong tuần này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=3">Trong tháng này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=4">Trong năm này</a>
+                        </div>
+                    </div>
+                </div>
+            </div>          
         </div>
         <div class="card-body">
             <div class="row">
@@ -22,20 +48,7 @@
                             bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
                     </nav>
                 </div>
-                <div class="col-4 p-2 d-flex justify-content-end">
-                    <div class="btn-group dropup mr-1">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">
-                            Tìm Kiếm
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=1">Trong hôm nay</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=2">Trong tuần này</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=3">Trong tháng này</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=4">Trong năm này</a>
-                        </div>
-                    </div>
-                </div>
+                <div class="col-4 p-2 d-flex justify-content-end"></div>
             </div>
 
             {{#if this.empty}}
