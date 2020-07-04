@@ -1,5 +1,5 @@
 const db = require('../utils/db');
-const TBL_ACCOUNTS = 'accounts'
+const TBL_ACCOUNTS = 'accounts';
 
 module.exports = {
     all: function () {
