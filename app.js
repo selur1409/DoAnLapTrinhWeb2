@@ -19,12 +19,8 @@ require('./middlewares/view.mdw')(app);
 
 
 // Trang chủ Home
-app.get('/', function (req, res) {
-  res.render('index');
-})
-app.get('/index.html', function (req, res) {
-    res.render('index');
-})
+app.use('/', require('./route/home.route'));
+app.use('/index.html', require('./route/home.route'));
 
 // đăng nhập bằng facebook
 app.use(passport.initialize());
