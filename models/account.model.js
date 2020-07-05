@@ -6,7 +6,7 @@ module.exports = {
         return db.load(`select * from ${TBL_ACCOUNTS}`);
     },
     single: function (username) {
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar 
+        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
                         FROM ${TBL_ACCOUNTS} a, information i 
                         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
     },
