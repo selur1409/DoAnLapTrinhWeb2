@@ -20,12 +20,15 @@ router.get('/ForgotPW', (req, res)=>{
 
 router.post('/ForgotPW', async (req, res, next)=>{
     try{
+
         const Email = req.body.email;
         const Result = await db.LoadAccount([Email]);
+
         if (Result.length === 0) {
             req.flash('Fail', 'Email is invalid.');
             return res.redirect('/account/ForgotPW');
         }
+
         const value1 = ['Used', 1, 'Email', `${Result[0].Email}`];
         await db.UpdateToken(value1);
         const Token = crypto.randomBytes(Math.ceil(32 / 2)).toString('hex').slice(0, 32);
@@ -72,15 +75,18 @@ router.post('/ForgotPW', async (req, res, next)=>{
 });
 
 router.get('/reset/:token', async(req, res, next)=>{
+
     const date = Date.now();
     const token = req.params.token;
     const value = ['Token', `${token}`, 'Used', 0, `${date}`];
     const result = await db.LoadToken(value);
     const email = result[0].Email;
+
     if(email === undefined)
     {
         return res.render('vwAccount/ResetPassword',{Fail:req.flash('Fail'), layout:false});
     }
+
     if (result === null) {
         req.flash("Fail",'Token has expired. Please try password reset again.');
         return res.redirect('/account/ForgotPW');
@@ -90,17 +96,21 @@ router.get('/reset/:token', async(req, res, next)=>{
 });
 
 router.post('/reset/', async(req, res, next)=>{
+
     const Password = req.body.NewPassword;
     const RePassword = req.body.RePassword;
     const Email = req.session.Email;
+
     if(Email === undefined)
     {
         return res.json({fail:'Your email is invalid.'});
     }
+
     if(Password !== RePassword)
     {
         return res.json({fail:"Re-Password not match"});
     }
+    
     const Date = moment().format('YYYY-MM-DD HH:MM:SS');
     const ValueOfToken = ['Used', 1, Date];
     const pw_hash = bcrypt.hashSync(Password, config.authentication.saltRounds);

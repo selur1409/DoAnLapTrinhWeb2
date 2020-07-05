@@ -51,7 +51,7 @@
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
 							<ul>
-							{{#if lcIsSubscriber}}
+							{{!--{{#if lcIsSubscriber}}
 							<li>		
 								<a class="nav-link" href="/subcriber" role="button"
 								aria-haspopup="true" aria-expanded="false">
@@ -61,7 +61,7 @@
 							{{/if}}								
 							{{#if lcIsWriter}}
 							<li>		
-								<a class="nav-link" href="/writer" role="button"
+								<a class="nav-link" href="/write/Writer" role="button"
 								aria-haspopup="true" aria-expanded="false">
 								<b>WRITER</b>
 								</a>	
@@ -82,7 +82,7 @@
 								<b>ADMINISTRATOR</b>
 								</a>	
 							</li>
-							{{/if}}								
+							{{/if}}--}}
 							{{#if lcIsAuthenticated}}
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -95,6 +95,27 @@
 									<i class="fa fa-user" aria-hidden="true"></i>
 									Account Profil
 								</a>
+								<div class="dropdown-divider"></div>
+								{{#if lcIsSubscriber}}
+									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>SUBSCRIBER</b>
+									</a>
+								{{/if}}
+								{{#if lcIsWriter}}
+									<a class="nav-link" href="/writer/Writer" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>WRITER</b>
+									</a>
+								{{/if}}
+								{{#if lcIsEditor}}
+									<a class="nav-link" href="/editor" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>EDITOR</b>
+									</a>
+								{{/if}}
+								{{#if lcIsAdmin}}
+									<a class="nav-link" href="/admin" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>ADMINISTRATOR</b>
+									</a>
+								{{/if}}
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
 									<i class="fa fa-sign-out" aria-hidden="true"></i>
