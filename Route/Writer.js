@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../models/Writer');
 const flash = require('express-flash');
 const config = require('../config/default.json');
-const bcrypt = require('bcryptjs');
-const moment = require('moment'); moment.locale("vi");
-const db = require('../models/Writer');
-const account = require('../models/account.model');
+const moment = require('moment');
+moment.locale("vi");
 const {restrict, referer} = require('../middlewares/auth.mdw');
 const { route } = require('./account.route');
 const { CountFB } = require('../models/Writer');
@@ -567,16 +566,9 @@ router.get('/Profile', restrict, Authories, async (req, res, next)=>{
         const NumberOfPost = await db.CountAllPost(IdAccount);
         res.render('vwWriter/profile',{
             layout:'homewriter',
-            Username:res.locals.lcAuthUser.Username,
-            Name:res.locals.lcAuthUser.Name,
-            Nickname:res.locals.lcAuthUser.Nickname,
-            DateOfBirth: moment(res.locals.lcAuthUser.DOB).format('DD/MM/YYYY'),
-            Email:res.locals.lcAuthUser.Email,
-            Phone:res.locals.lcAuthUser.Phone,
-            Sex:res.locals.lcAuthUser.Sex,
+            Name:res.locals.lcAuthUser.Username,
             Avatar:res.locals.lcAuthUser.Avatar,
-            NumberOfPost:NumberOfPost[0].Number,
-            IsActiveProfile:true
+            NumberOfPost:NumberOfPost[0].Number
         });
     }
     catch(e){
@@ -584,64 +576,5 @@ router.get('/Profile', restrict, Authories, async (req, res, next)=>{
     }
 });
 
-router.post('/Profile', restrict, Authories, async (req, res, next)=>{
-    try{
-       const option = +req.query.opt;
-       if(option === 1)
-       {
-           if (req.body.Name === "" ||
-               moment(req.body.DOB, "DD/MM/YYYY").isValid === false ||
-               req.body.Email === "") 
-            {
-               res.json({fail:"These fields cannot not be emtpy!"});
-            }
-            else
-            {
-                const dt_now = moment().format('YYYY-MM-DD');
-                const DOB = moment(req.body.DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
-                const Name = req.body.Name;
-                const Email = req.body.Email;
-                const Phone = req.body.Phone; 
-                const Nickname = req.body.Nickname;
-                const IdAccount = res.locals.lcAuthUser.IdAccount;
-                const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${IdAccount}`];
-                if(DOB > dt_now)
-                {
-                    res.json({fail: 'Your birthday cannot be greater than current date'});
-                }
-                else
-                {
-                    await db.UpdateProfile(value);
-                    res.json({success: "The change process is successful"});
-                }
-            }
-       }
-       else if(option === 2)
-       {
-            const Result = await account.single(res.locals.lcAuthUser.Username);
-            console.log(Result);
-            const verification = bcrypt.compareSync(req.body.CurrentPassword, Result[0].Password_hash);
-            const Id = res.locals.lcAuthUser.Id;
-            if(req.body.NewPassword !== req.body.ConfirmNewPassword)
-            {
-                res.json({fail: 'Confirmation password does not match the New Password'});
-            }
-            else if(verification === false)
-            {   
-                res.json({fail: 'Your current password is incorrect'});
-            }
-            else
-            {
-                const NewPassword = bcrypt.hashSync(req.body.NewPassword, config.authentication.saltRounds);
-                const ValuePassword = [`${NewPassword}`, `${Id}`];
-                await db.UpdatePassword(ValuePassword);
-                res.json({success: "The change process is successful"});
-            }
-       }
-    }
-    catch(e){
-        console.log(e);
-    }
-});
 
 module.exports = router;

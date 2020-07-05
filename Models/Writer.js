@@ -1,6 +1,5 @@
 const db = require('../utils/db');
 module.exports = {
-    /* Post, PostOfWriter, DetailPost, Update*/
     LoadTag:()=>{
         return db.load(`SELECT * FROM tags`);
     },
@@ -80,9 +79,7 @@ module.exports = {
         return db.load(`SELECT st.*, (SELECT Count(*) FROM posts p, postdetails pd, accounts ac WHERE p.Id = pd.IdPost AND pd.IdAccount = ac.Id AND ac.Id = ${IdAccount} AND st.Id = p.IdStatus)  AS 'Number'
         FROM status_posts st`);
     },
-    /* Post, PostOfWriter, DetailPost, Update*/
 
-    /*Feedback*/
     LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
         return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
         FROM feedback fb, editoraccount ec, information inf 
@@ -104,15 +101,5 @@ module.exports = {
     RemoveFB:(value)=>{
         return db.insert(`INSERT INTO feedback (Id, IsDelete) VALUES ?
         ON DUPLICATE KEY UPDATE IsDelete=VALUES(IsDelete)`, [value]);
-    },
-    /*Feedback*/
-
-    /*Profile*/
-    UpdateProfile:(value)=>{
-        return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ? WHERE IdAccount = ?`, value);
-    },
-
-    UpdatePassword:(value)=>{
-        return db.insert(`UPDATE accounts SET Password_hash = ? WHERE Id = ?`, value);
     }
 }

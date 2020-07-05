@@ -49,7 +49,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <i class="fa fa-user" aria-hidden="true"></i>
               Welcome, <b>{{lcAuthUser.Name}}</b>!
             </a>
-            <div class="dropdown-menu dropdown-menu-right bg-info" aria-labelledby="navbarDropdown">
+            <div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
               <a class="dropdown-item bg-info" href="/writer/Profile">
                 <i class="fa fa-user" aria-hidden="true"></i>
                 Account Profile
@@ -268,9 +268,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 {{/if}}
                 {{#if IsActiveFB}}
                 <li class="breadcrumb-item acive">FeedBack</li>
-                {{/if}}
-                {{#if IsActiveProfile}}
-                <li class="breadcrumb-item acive">Profile</li>
                 {{/if}}
               </ol>
             </div><!-- /.col -->
