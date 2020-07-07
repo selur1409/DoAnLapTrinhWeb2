@@ -1283,7 +1283,7 @@ section
 }
 .grid
 {
-	width: calc(100% + 30px);
+	width: calc(96% + 35px);
 }
 .grid-item
 {
@@ -1293,7 +1293,7 @@ section
 .card_large_with_background,
 .card_large_with_image
 {
-	width: 555px;
+	width: calc(96% + 35px);
 	/*height: 325px;*/
 }
 .card_small_no_image,
@@ -1479,8 +1479,8 @@ section
 }
 .side_post_image div
 {
-	width: 70px;
-	height: 70px;
+	width: 130px;
+	height: 65px;
 	border-radius: 6px;
 	overflow: hidden;
 }

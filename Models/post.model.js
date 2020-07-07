@@ -6,31 +6,31 @@ module.exports = {
         return db.load(`select * from ${TBL_POSTS}`);
     },
     trending: function () {
-        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, a.Username
-                        from posts p, accounts a, information i 
-                        where p.IdAccount = a.Id AND i.IdAccount = a.Id
-                        AND p.DatetimePost <= NOW()
+        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+                        from posts p, accounts a, information i, postdetails pt 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
-        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, a.Username
-                        from posts p, accounts a, information i  
-                        where p.IdAccount = a.Id AND i.IdAccount = a.Id
-                         AND p.DatetimePost <= NOW()
+        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+                        from posts p, accounts a, information i, postdetails pt 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
                         ORDER BY p.Views DESC LIMIT 10`);
     },
     postnew: function () {
-        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, a.Username 
-                        from posts p, accounts a, information i  
-                        where p.IdAccount = a.Id AND i.IdAccount = a.Id
-                        AND p.DatetimePost <= NOW()
+        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+                        from posts p, accounts a, information i, postdetails pt 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
-        return db.load(`select DISTINCT(c.Id), p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, a.Username
-                        from posts p, accounts a, information i, categories c  
-                        where p.IdAccount = a.Id AND i.IdAccount = a.Id AND c.Id = p.IdCategories
-                        AND p.DatetimePost <= NOW()
+        return db.load(`select p.Id, p.Title, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+                        from posts p, accounts a, information i, postdetails pt 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     postByCategories: function (id) {
