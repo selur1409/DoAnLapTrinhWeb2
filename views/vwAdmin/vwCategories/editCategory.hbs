@@ -1,0 +1,60 @@
+<div class="card">
+  <div class="card-header">
+    <h4>Chỉnh sửa chuyên mục</h4>
+  </div>
+  <div class="card-body">
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    <form method="POST" action="/admin/categories/edit/{{this.Category.Url}}">
+      <div class="form-group">
+        <label for="txtCatName">Name</label>
+        <input type="text" class="form-control" id="txtCatName" name="Name" autofocus value="{{this.Category.Name}}">
+      </div>
+      <div class="form-group">
+        <label for="txtUrl">Url (chứa kí tự thường, số, dấu '-')</label>
+        <input type="text" class="form-control" id="txtUrl" name="Url" pattern="([a-z]){1}([a-z0-9-]){2,99}" 
+        title="Chuỗi bao gồm kí tự thường, số và dấu '-'" value="{{this.Category.Url}}">
+      </div>
+      <div class="form-group">
+        <label for="ControlSelect">Chuyên mục hiện tại (Trống là chuyên mục cha)</label>
+        <select class="form-control" id="ControlSelect" name="Select">
+        <option value="Empty" {{#if isSelectMain}} selected {{/if}}>Trống</option>
+        {{#each this.catMain}}
+        <option value="{{Id}}" {{#if isActive}} selected {{/if}}>{{Name}}</option>
+        {{/each}}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="ControlTextarea">Mô tả</label>
+        <textarea class="form-control" id="ControlTextarea" rows="3" name="textArea">{{this.Category.Description}}</textarea>
+      </div>
+
+      <input type="hidden" name="Id" value="{{this.Category.Id}}">
+      <input type="hidden" name="Type" value="{{#if isSelectMain}}Main{{else}}Sub{{/if}}">
+
+      <a class="btn btn-success" href="/admin/categories" role="button" title="Back to List">
+        <i class="fa fa-backward" aria-hidden="true"></i>
+        Trở về
+      </a>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Lưu
+      </button>
+    </form>
+  </div>
+</div>

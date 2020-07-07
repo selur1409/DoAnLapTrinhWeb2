@@ -4,54 +4,97 @@ const TBL_CATEGORIES_SUB = 'categories_sub'
 
 module.exports = {
     all: function () {
-        return db.load(`select * from ${TBL_ACCOUNTS}`);
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.Id, t.Name, t.Url, t.Description 
+                        from (SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 
+                        UNION 
+                        SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES} WHERE IsDelete = 0) as t ORDER BY t.Name`);
     },
-    single: function (username) {
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar 
-                        FROM ${TBL_ACCOUNTS} a, information i 
-                        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
+    allMain: function () {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES} WHERE IsDelete = 0 ORDER BY Name`);
     },
-    add: function (entity) {
-        return db.add(TBL_ACCOUNTS, entity);
+    allSub: function () {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 ORDER BY Name`);
     },
-    patch: function (entity) {
+    singleNameMain: async function (name) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
+        return rows[0];
+    },
+    singleUrlMain: async function (url) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}'`);
+        return rows[0];
+    },
+    singleNameMainEdit: async function (name, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}' and Id != ${id}`);
+        return rows[0];
+    },
+    singleUrlMainEdit: async function (url, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}' and Id != ${id}`);
+        return rows[0];
+    },
+    singleNameSub: async function (name) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}'`);
+        return rows[0];
+    },
+    singleUrlSub: async function (url) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
+        return rows[0];
+    },
+    singleNameSubEdit: async function (name, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id}`);
+        return rows[0];
+    },
+    singleUrlSubEdit: async function (url, id) {
+        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and Id != ${id}`);
+        return rows[0];
+    },
+    addMain: function (entity) {
+        return db.add(TBL_CATEGORIES, entity);
+    },
+    addSub: function (entity) {
+        return db.add(TBL_CATEGORIES_SUB, entity);
+    },
+    patchMain: function (entity) {
         const condition = {
           Id: entity.Id
         }
         delete entity.Id;
-        return db.patch(TBL_ACCOUNTS, entity, condition);
+        return db.patch(TBL_CATEGORIES, entity, condition);
     },
-    del: function (id) {
+    patchSub: function (entity) {
+        const condition = {
+          Id: entity.Id
+        }
+        delete entity.Id;
+        return db.patch(TBL_CATEGORIES_SUB, entity, condition);
+    },
+    patchIsDelMain: function (id) {
         const condition = {
           Id: id
         }
-        return db.del(TBL_ACCOUNTS, condition);
+        const entity = {
+            IsDelete: 1
+        }
+        return db.patch(TBL_CATEGORIES, entity, condition);
     },
-
-    //Forgot Password
-    LoadToken:(value)=>{
-        return db.load(`SELECT * FROM token WHERE ?? = ? AND ?? = ? AND Expiration > ?`, value);
+    patchIsDelSub: function (id) {
+        const condition = {
+          Id: id
+        }
+        const entity = {
+            IsDelete: 1
+        }
+        return db.patch(TBL_CATEGORIES_SUB, entity, condition);
     },
-
-    UpdateToken:(value)=>{
-        return db.insert("UPDATE token SET ?? = ? WHERE ?? = ?", value);
+    delMain: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.del(TBL_CATEGORIES, condition);
     },
-
-    InsertToken:(value)=>{
-        return db.insert("INSERT INTO token (??, ??, ??, ??) VALUES (?, ?, ?, ?)", value);
+    delSub: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.del(TBL_CATEGORIES_SUB, condition);
     },
-
-    DeleteToken:(value)=>{
-        return db.insert("DELETE FROM token WHERE ?? = ? OR Expiration < ?", value);
-    },
-
-    UpdatePassword:(value)=>{
-        return db.insert(`UPDATE accounts SET Password_hash = ? WHERE Id = (SELECT IdAccount FROM information WHERE Email = ?)`, value);
-    },
-
-    LoadAccount: (value) => {
-        return db.load(`SELECT ac.Id, inf.Name, inf.Email, inf.IdAccount 
-                                FROM accounts ac, information inf 
-                                WHERE ac.Id = inf.IdAccount AND inf.Email = ?`, value);
-    }
 };
