@@ -16,6 +16,7 @@ router.get('/',async function (req, res) {
     const listTag = await tagModel.all();
 
 
+
     res.render('index', {
         Treding: listTreding,
         emptyTreding: listTreding.length === 0,
@@ -57,10 +58,6 @@ router.get('/:id', function(req, res){
         layout: 'home'
     })
 });
-
-
-
-
 
 
 module.exports = router;
