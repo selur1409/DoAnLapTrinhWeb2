@@ -8,8 +8,82 @@
     height: 3rem;
   } 
 
+  #myInput {
+    padding: 20px;
+    margin-top: -6px;
+    border: 0;
+    border-radius: 0;
+    background: #f1f1f1;
+  }
+
+/*Modal detailPost*/
   #modalDetailPost .modal-body{
     max-height: 100vh;
     overflow-y: auto;
 }
-  
+/*Modal detailPost*/
+
+/*Modal success and warning*/
+.modal-confirm .modal-body{
+  padding: 0;
+}
+
+.modal-confirm .modal-body > .alert{
+  margin: 0;
+}
+
+.modal-confirm .modal-footer{
+  border: none;
+}
+/*Modal success, warning*/
+
+/* Mail box*/
+td.mailbox-subject > div {
+  width: 476px;
+  height: 50px;
+  overflow:hidden;
+}
+
+td.mailbox-subject{
+  height: 20px;
+}
+
+td.mailbox-date > div{
+  width:180px;
+}
+
+td.mailbox-date{
+  width: 180px;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+/*Mail box*/
+
+/*Button tag*/
+div > .active, .btnTag :hover {
+  background-color: #007bff;
+  color: white;
+  font-weight:bolder;
+  border-radius: 5px;
+}
+
+
+.jiggle {
+  animation: jiggle 2s forwards ease-in-out;
+}
+
+
+@keyframes jiggle {
+  0% { transform: scale(.9); }
+  10% { transform: scale(1.1); }
+  20% { transform: scale(.9); }
+  30% { transform: scale(1.05); }
+  40% { transform: scale(.95); }
+  50% { transform: scale(1.025); }
+  60% { transform: scale(.975); }
+  70% { transform: scale(1.02); }
+  80% { transform: scale(.985); }
+  90% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+/*Button Tag */

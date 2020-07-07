@@ -1,29 +1,54 @@
 <div class="container-fluid">
     <div class="card">
         <div class="card-header">
-            <h4>Article</h4>
+            <div class="row">
+                <div class="col-6">
+                    <h4>Article</h4>
+                </div>
+                <div class="col-6 d-flex p-1">
+                    <div class="input-group input-group-sm m-1">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <div class="input-group-append">
+                            <div class="btn btn-primary">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btn-group dropdown">
+                        <button class="btn btn-tool dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-filter" aria-hidden="true"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=1">Trong hôm nay</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=2">Trong tuần này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=3">Trong tháng này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=4">Trong năm này</a>
+                        </div>
+                    </div>
+                </div>
+            </div>          
         </div>
         <div class="card-body">
             <div class="row">
-                <nav class="nav nav-pills flex-column flex-sm-row p-2">
-                    <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}"
-                        href="/ViewPost/4/1">Chưa
-                        được
-                        duyệt</a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}"
-                        href="/ViewPost/1/1">Đã
-                        được
-                        duyệt chờ xuất
-                        bản</a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}"
-                        href="/ViewPost/3/1">Bị
-                        từ
-                        chối</a>
-                    <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}"
-                        href="/ViewPost/2/1">Đã
-                        xuất
-                        bản</a>
-                </nav>
+                <div class="col-8">
+                    <nav class="nav nav-pills flex-column flex-sm-row p-2">
+                        <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}" href="/writer/ViewPost/4/1">Chưa
+                            được
+                            duyệt <span class="badge badge-light"> {{NumberOfPost 4}}</span></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}" href="/writer/ViewPost/1/1">Đã
+                            được
+                            duyệt chờ xuất
+                            bản <span class="badge badge-light"> {{NumberOfPost 1}}</span></a></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}" href="/writer/ViewPost/3/1">Bị
+                            từ
+                            chối <span class="badge badge-light"> {{NumberOfPost 3}}</span></a></a>
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}" href="/writer/ViewPost/2/1">Đã
+                            xuất
+                            bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
+                    </nav>
+                </div>
+                <div class="col-4 p-2 d-flex justify-content-end"></div>
             </div>
 
             {{#if this.empty}}
@@ -43,22 +68,24 @@
                                 class="rounded-circle mr-3" height="50px" width="50px" alt="avatar">
 
                             <!-- Content -->
-                            <div>
-
-                                <!-- Title -->
-                                <h4 class="card-title font-weight-bold mb-2">{{Name}}</h4>
+                            <div class="row w-100">
+                                  <!-- Title -->
+                                <div class="col-6 text-left">
+                                    <h4 class="card-title font-weight-bold mb-2">{{Name}}</h4>
+                                </div>
                                 <!-- Subtitle -->
-                                <p class="card-text"><i class="far fa-clock pr-2"></i>{{format_datetime DatePost}}
-                                </p>
-
+                                <div class="col-6 text-right">
+                                    <p class="card-text"><i class="far fa-clock pr-2"></i>{{format_datetime DatePost}}</p>
+                                </div>
                             </div>
 
                         </div>
 
                         <!-- Card image -->
-                        <div class="view">
+                        <div class="view m-1 p-2">
                             {{!-- <img class="card-img-top rounded-0"
                             src="/public/conference/1.jpg" alt="Card image cap"> --}}
+                            <h4 class="card-title font-weight-bold mb-2">{{Title}}</h4>
                             <a href="#!">
                                 <div class="mask rgba-white-slight"></div>
                             </a>
@@ -80,13 +107,17 @@
                                     href="#collapseContent{{@index}}" aria-expanded="false"
                                     aria-controls="collapseContent" id="{{@index}}">Read
                                     More</a>
-                                <a class="btn btnDetail red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
-                                    id="btn{{@index}}">Detail</a>
+                                <a class="btn btnDetail btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed" data-value={{Id}}
+                                    id="btn{{@index}}" href="">Detail</a>
                                     
                                 {{#Update this.IdStatus Id}}
-                                    <a class="btn btnUpdate red-text p-1 my-1 mr-0 mml-1 collapsed" data-value={{this.Id}}
-                                    id="Update{{@index}}" href="/Update/{{this.Id}}">Modify</a>
+                                    <a class="btn btnUpdate btn-outline-primary p-1 my-1 mr-0 mml-1 " data-value={{this.Id}}
+                                    id="Update{{@index}}" href="/writer/Update/{{this.Id}}">Modify</a>
                                 {{/Update}}
+                                {{#FeedBack this.IdStatus Id}}
+                                 <a class="btn btnFeedBack btn-outline-primary p-1 my-1 mr-0 mml-1 " data-value={{this.Id}}
+                                    id="FB{{@index}}" href="/writer/FeedBack_Inbox/{{this.Id}}/1">Feeds Back</a>
+                                {{/FeedBack}}
                             </div>
                         </div>
                     </div>
@@ -97,12 +128,12 @@
                 <nav aria-label="...">
                     <ul class="pagination">
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/1" aria-label="Previous">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/1/?opt={{Opt}}" aria-label="Previous">
                                 <span aria-hidden="true">FIRST</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{prev_value}}" aria-label="Previous">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{prev_value}}/?opt={{Opt}}" aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -116,17 +147,17 @@
                         </li>
                         {{else}}
                         <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-                            <a class="page-link" href="/ViewPost/{{IdStatus}}/{{value}}">{{value}}</a>
+                            <a class="page-link" href="/writer/ViewPost/{{IdStatus}}/{{value}}/?opt={{Opt}}">{{value}}</a>
                         </li>
                         {{/if}}
                         {{/each}}
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{next_value}}" aria-label="Next">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{next_value}}/?opt={{Opt}}" aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/ViewPost/{{this.IdStatus}}/{{last}}" aria-label="Next">
+                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{last}}/?opt={{Opt}}" aria-label="Next">
                                 <span aria-hidden="true">LAST</span>
                             </a>
                         </li>
@@ -178,18 +209,17 @@
                             const BriefCont = dataParsed.Post[0].Content_Summary;
                             const FullCont = dataParsed.Post[0].Content_Full;
                             const Views = dataParsed.Post[0].Views;
-                            const Avatar = dataParsed.Post[0].Avatar;
                             const DatePost = moment(dataParsed.Post[0].DatePost).format('YYYY-MM-DD HH:mm:ss');
                             const DatetimePost = dataParsed.Post[0].DatetimePost;
                             const IdStatus = dataParsed.Status[0].Name;
                             const Categories = dataParsed.Categories[0].CategorieName;
                             const DetailCategories = dataParsed.Categories[0].SubCategories;
-                            console.log(dataParsed);
+                            let Avatar = dataParsed.Post[0].Avatar === null ? dataParsed.Post[0].Avatar : false;
                             document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont });
                             $("#modalDetailPost").modal("show");
                         }
                     }
-                    xhttp.open("GET", "/DetailPost/?id=" + IdPost, true);
+                    xhttp.open("GET", "/writer/DetailPost/?id=" + IdPost, true);
                     xhttp.send();
                 }, true);
             }
@@ -204,5 +234,5 @@
 </script>
 {{/section}}
 {{#section 'css'}}
-<link rel="stylesheet" href="../public/css/styleOfWriter.css">
+<link rel="stylesheet" href="/public/css/styleOfWriter.css">
 {{/section}}

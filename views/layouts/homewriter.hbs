@@ -16,6 +16,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/public/css/adminlte.min.css">
+   <link rel="stylesheet" href="/public/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   {{{_sections.css}}}
@@ -49,7 +50,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               Welcome, <b>{{lcAuthUser.Name}}</b>!
             </a>
             <div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item bg-info" href="/account/profile">
+              <a class="dropdown-item bg-info" href="/writer/Profile">
                 <i class="fa fa-user" aria-hidden="true"></i>
                 Account Profile
               </a>
@@ -215,13 +216,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="/Writer" class="nav-link {{#if IsActivePost}} active {{/if}}">
+                  <a href="/writer/Writer" class="nav-link {{#if IsActivePost}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>New Content</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="/ViewPost/4/1" class="nav-link {{#if IsActive}} active {{/if}}">
+                  <a href="/writer/ViewPost/4/1" class="nav-link {{#if IsActive}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>List Article</p>
                   </a>
@@ -255,7 +256,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </div><!-- /.col -->
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-right">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="/writer/Writer">Home</a></li>
                 {{#if IsActivePost}}
                 <li class="breadcrumb-item active">New Content</li>
                 {{/if}}
@@ -264,6 +265,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 {{/if}}
                 {{#if IsActiveUpdate}}
                 <li class="breadcrumb-item acive">Modify Content</li>
+                {{/if}}
+                {{#if IsActiveFB}}
+                <li class="breadcrumb-item acive">FeedBack</li>
                 {{/if}}
               </ol>
             </div><!-- /.col -->
@@ -369,6 +373,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- AdminLTE App -->
   <script src="/public/js/adminlte.min.js"></script>
+  <script src="/public/plugins/sweetalert2/sweetalert2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
   {{{_sections.js}}}
 

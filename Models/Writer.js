@@ -25,7 +25,15 @@ module.exports = {
     },
 
     LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} LIMIT ${Limit} OFFSET ${Offset}`);
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    LoadPostOfWriterThisWeek:(IdStatus, IdAccount, Limit, Offset)=>{
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    LoadPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, Limit, Offset, DayOrMonthOrYear)=>{
+        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
     },
 
     LoadSinglePost:(value)=>{
@@ -40,8 +48,21 @@ module.exports = {
         return db.load(`SELECT * FROM status_posts s WHERE s.Id = '${value}'`);
     },
 
+    CountAllPost:(IdAccount)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND ac.Id = '${IdAccount}'`);
+
+    },
+
     CountPostOfWriter:(IdStatus, IdAccount)=>{
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}'`);
+    },
+
+    CountPostOfWriterThisWeek:(IdStatus, IdAccount)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE()`);
+    },
+
+    CountPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, ThisDayOrMonthOrYear)=>{
+        return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() , '${ThisDayOrMonthOrYear}') AND CURDATE()`);
     },
 
     UpdatePostOfWriter:(value)=>{
@@ -52,5 +73,33 @@ module.exports = {
     },
     DeleteTagPost:(IdPost)=>{
         return db.load(`DELETE FROM tag_posts WHERE IdPost = ${IdPost}`);
+    },
+
+    CountNumberPost:(IdAccount)=>{
+        return db.load(`SELECT st.*, (SELECT Count(*) FROM posts p, postdetails pd, accounts ac WHERE p.Id = pd.IdPost AND pd.IdAccount = ac.Id AND ac.Id = ${IdAccount} AND st.Id = p.IdStatus)  AS 'Number'
+        FROM status_posts st`);
+    },
+
+    LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        FROM feedback fb, editoraccount ec, information inf 
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete} LIMIT ${Limit} OFFSET ${OffSet}`);
+    },
+
+    LoadFB:(Id)=>{
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        FROM feedback fb, editoraccount ec, information inf
+        WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount`);
+    },
+
+    CountFB:(IdPost, IsDelete)=>{
+        return db.load(`SELECT count(fb.IdPost) AS 'Number'
+        FROM feedback fb, editoraccount ec, information inf 
+        WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete}`);
+    },
+
+    RemoveFB:(value)=>{
+        return db.insert(`INSERT INTO feedback (Id, IsDelete) VALUES ?
+        ON DUPLICATE KEY UPDATE IsDelete=VALUES(IsDelete)`, [value]);
     }
 }
