@@ -19,12 +19,8 @@ require('./middlewares/view.mdw')(app);
 
 
 // Trang chủ Home
-app.get('/', function (req, res) {
-  res.render('index');
-})
-app.get('/index.html', function (req, res) {
-    res.render('index');
-})
+app.use('/', require('./route/home.route'));
+app.use('/index.html', require('./route/home.route'));
 
 // đăng nhập bằng facebook
 app.use(passport.initialize());
@@ -64,7 +60,7 @@ app.use('/account', accountRoute);
 app.use('/auth', require('./route/auth.route'));
 
 // Trang writer
-app.use('/write', exposeTemplates, require('./Route/Writer'));
+app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 app.use(flash());

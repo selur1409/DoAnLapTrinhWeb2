@@ -2,10 +2,10 @@
 -- version 4.9.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Jun 29, 2020 at 03:43 PM
--- Server version: 10.4.8-MariaDB
--- PHP Version: 7.3.10
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th7 07, 2020 lúc 08:25 AM
+-- Phiên bản máy phục vụ: 10.4.8-MariaDB
+-- Phiên bản PHP: 7.3.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `news`
+-- Cơ sở dữ liệu: `news`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `accounts`
+-- Cấu trúc bảng cho bảng `accounts`
 --
 
 CREATE TABLE `accounts` (
@@ -39,7 +39,7 @@ CREATE TABLE `accounts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `accounts`
+-- Đang đổ dữ liệu cho bảng `accounts`
 --
 
 INSERT INTO `accounts` (`Id`, `Username`, `Password_hash`, `DateRegister`, `DateExpired`, `TypeAccount`, `IsDelete`) VALUES
@@ -49,7 +49,7 @@ INSERT INTO `accounts` (`Id`, `Username`, `Password_hash`, `DateRegister`, `Date
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories`
+-- Cấu trúc bảng cho bảng `categories`
 --
 
 CREATE TABLE `categories` (
@@ -61,7 +61,7 @@ CREATE TABLE `categories` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `categories`
+-- Đang đổ dữ liệu cho bảng `categories`
 --
 
 INSERT INTO `categories` (`Id`, `Name`, `Url`, `Description`, `IsDelete`) VALUES
@@ -74,7 +74,7 @@ INSERT INTO `categories` (`Id`, `Name`, `Url`, `Description`, `IsDelete`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `categories_sub`
+-- Cấu trúc bảng cho bảng `categories_sub`
 --
 
 CREATE TABLE `categories_sub` (
@@ -87,7 +87,7 @@ CREATE TABLE `categories_sub` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `categories_sub`
+-- Đang đổ dữ liệu cho bảng `categories_sub`
 --
 
 INSERT INTO `categories_sub` (`Id`, `IdCategoriesMain`, `Name`, `Url`, `Description`, `IsDelete`) VALUES
@@ -116,7 +116,7 @@ INSERT INTO `categories_sub` (`Id`, `IdCategoriesMain`, `Name`, `Url`, `Descript
 -- --------------------------------------------------------
 
 --
--- Table structure for table `comments`
+-- Cấu trúc bảng cho bảng `comments`
 --
 
 CREATE TABLE `comments` (
@@ -131,7 +131,7 @@ CREATE TABLE `comments` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `editoraccount`
+-- Cấu trúc bảng cho bảng `editoraccount`
 --
 
 CREATE TABLE `editoraccount` (
@@ -144,7 +144,7 @@ CREATE TABLE `editoraccount` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `feedback`
+-- Cấu trúc bảng cho bảng `feedback`
 --
 
 CREATE TABLE `feedback` (
@@ -160,7 +160,7 @@ CREATE TABLE `feedback` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `information`
+-- Cấu trúc bảng cho bảng `information`
 --
 
 CREATE TABLE `information` (
@@ -176,7 +176,7 @@ CREATE TABLE `information` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `information`
+-- Đang đổ dữ liệu cho bảng `information`
 --
 
 INSERT INTO `information` (`Id`, `Name`, `Nickname`, `Avatar`, `DOB`, `Email`, `Phone`, `IdAccount`, `Sex`) VALUES
@@ -185,7 +185,7 @@ INSERT INTO `information` (`Id`, `Name`, `Nickname`, `Avatar`, `DOB`, `Email`, `
 -- --------------------------------------------------------
 
 --
--- Table structure for table `postdetails`
+-- Cấu trúc bảng cho bảng `postdetails`
 --
 
 CREATE TABLE `postdetails` (
@@ -196,7 +196,7 @@ CREATE TABLE `postdetails` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `postdetails`
+-- Đang đổ dữ liệu cho bảng `postdetails`
 --
 
 INSERT INTO `postdetails` (`Id`, `IdPost`, `Content_Full`, `IdAccount`) VALUES
@@ -236,7 +236,7 @@ INSERT INTO `postdetails` (`Id`, `IdPost`, `Content_Full`, `IdAccount`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `posts`
+-- Cấu trúc bảng cho bảng `posts`
 --
 
 CREATE TABLE `posts` (
@@ -254,51 +254,51 @@ CREATE TABLE `posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `posts`
+-- Đang đổ dữ liệu cho bảng `posts`
 --
 
 INSERT INTO `posts` (`Id`, `Title`, `Content_Summary`, `Content_Full`, `DatePost`, `Avatar`, `Views`, `DatetimePost`, `IdCategories`, `IdStatus`, `IsDelete`) VALUES
-(1, 'Demo', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-22', 'null', 0, '0000-00-00 00:00:00', 18, 4, 0),
-(2, 'Demo', '<p>Change account</p>', '<p>Hello</p>', '2020-06-22', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(3, 'Demo', '<p>Change account</p>', '<p>Hello</p>', '2020-06-22', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(4, 'demo5', '<p>abc</p>', '<p>defghi</p>', '2020-06-22', 'null', 0, '0000-00-00 00:00:00', 21, 4, 0),
-(5, 'Demo 6', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 14, 4, 0),
-(6, 'Demo 7 ', '<p><span style=\"color: #e03e2d;\">Hello World</span></p>', '<ul>\r\n<li><strong>Hello Kitty</strong></li>\r\n</ul>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 19, 4, 0),
-(7, 'Demo 7', '<p style=\"text-align: center;\"><strong><em>Hello Kitty</em></strong></p>', '<p><em><strong>Hello World</strong></em></p>', '2020-06-25', 'null', 0, '0000-00-00 00:00:00', 10, 4, 0),
-(8, 'Demo8', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 8, 4, 0),
-(9, 'Demo 9', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 10, 4, 0),
-(10, 'demo 0', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 6, 4, 0),
-(11, 'demo 10', 'Hello World', 'Hello Kitty', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 10, 4, 0),
-(12, 'demo 10', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 10, 4, 0),
-(13, 'Demo 11', '<p>demo&nbsp;</p>', '<p>demo&nbsp;</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(14, 'hello', '<p>hello</p>', '<p>hello</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 6, 4, 0),
-(15, 'hello', '<p><strong>hello</strong></p>', '<p><em><strong>hello</strong></em></p>', '2020-06-24', 'null', 0, '0000-00-00 00:00:00', 2, 4, 0),
-(16, 'Demo ty', '<p>g&aacute;df</p>', '<p>sadfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 15, 4, 0),
-(17, 'Demo ty', '<p>g&aacute;df</p>', '<p>sadfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 15, 4, 0),
-(18, 'Demo ty', '<p>g&aacute;df</p>', '<p>sadfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 15, 4, 0),
-(19, 'Demo ty', '<p>g&aacute;df</p>', '<p>sadfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 15, 4, 0),
-(20, 'sadfasdf', '', '', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(21, 'sadfasdf', '<p>sadfsdf</p>', '<p>sadfsdfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(22, 'sadfsdf', '<p>sfsdfsdf</p>', '<p>&aacute;dfsdfsdaf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 10, 4, 0),
-(23, 'sadfsdf', '<p>sadfsdf</p>', '<p>sdfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(24, 'ádfsdf', '<p>sdfs</p>', '<p>&aacute;dfsadf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 11, 4, 0),
-(25, 'ádfsdf', '<p>sdfsdf</p>', '<p>sadfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 2, 2, 0),
-(26, 'sadfsdf', '<p>sdf</p>', '<p>sdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 1, 4, 0),
-(27, 'sdfsdf', '<p>&aacute;dfsadfadsf</p>', '<p>sdafsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 9, 4, 0),
-(28, 'ádfasdf', '<p>sadfsdaf</p>', '<p>sadfsadf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 1, 4, 0),
-(29, 'ádfsdf', '<p>sadfasdf</p>', '<p>sdfasdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 4, 4, 0),
-(30, 'sadfasdf', '<p>sdfsdafsdf</p>', '<p>sadfsdfsdf</p>', '2020-06-23', 'null', 0, '0000-00-00 00:00:00', 11, 4, 0),
-(31, 'demo 19', '<p>&aacute;dfasdf</p>', '<p>fsadfsdf</p>', '2020-06-24', 'null', 0, '0000-00-00 00:00:00', 6, 4, 0),
-(32, 'Demo 10', '<p>&agrave;dsfsd</p>', '<p>ấdfsdfsdaf</p>', '2020-06-24', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(33, 'Demo 100', '<p>&agrave;dssdfsadfsdffsd</p>', '<p>&aacute;dfsdaghghfg</p>', '2020-06-24', 'null', 0, '0000-00-00 00:00:00', 12, 4, 0),
-(34, 'Demo500', '<p>Hello World</p>', '<p>Hello Kitty</p>', '2020-06-25', 'null', 0, '0000-00-00 00:00:00', 11, 4, 0),
-(35, 'Demo501', '<p>Hello World</p>', '<p><strong>Hello Kitty</strong></p>', '2020-06-25', 'null', 0, '0000-00-00 00:00:00', 11, 4, 0),
-(36, '<p>Demo 700</p>', '<p>123</p>', '<p>456</p>', '2020-06-26', 'null', 0, '0000-00-00 00:00:00', 7, 4, 0);
+(1, 'Demo', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-22', 'post_15.jpg', 0, '2020-07-18 00:00:00', 18, 4, 0),
+(2, 'Demo', 'This is content summary', '<p>Hello</p>', '2020-06-22', 'post_15.jpg', 0, '2020-05-14 00:00:00', 12, 4, 0),
+(3, 'Demo', 'This is content summary', '<p>Hello</p>', '2020-06-22', 'post_15.jpg', 0, '2020-06-18 00:00:00', 12, 4, 0),
+(4, 'demo5', 'This is content summary', '<p>defghi</p>', '2020-06-22', 'post_15.jpg', 0, '2020-07-08 00:00:00', 21, 4, 0),
+(5, 'Demo 6', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-14 00:00:00', 14, 4, 0),
+(6, 'Demo 7 ', 'This is content summary', '<ul>\r\n<li><strong>Hello Kitty</strong></li>\r\n</ul>', '2020-06-23', 'post_15.jpg', 0, '2020-07-26 00:00:00', 19, 4, 0),
+(7, 'Demo 7', 'This is content summary', '<p><em><strong>Hello World</strong></em></p>', '2020-06-25', 'post_15.jpg', 0, '1899-07-11 00:00:00', 10, 4, 0),
+(8, 'Demo8', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-23', 'post_15.jpg', 0, '2020-05-15 00:00:00', 8, 4, 0),
+(9, 'Demo 9', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-23', 'post_15.jpg', 0, '2020-04-21 00:00:00', 10, 4, 0),
+(10, 'demo 0', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-14 00:00:00', 6, 4, 0),
+(11, 'demo 10', 'This is content summary', 'Hello Kitty', '2020-06-23', 'post_15.jpg', 0, '2020-05-11 00:00:00', 10, 4, 0),
+(12, 'demo 10', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-23', 'post_15.jpg', 0, '2020-04-13 00:00:00', 10, 4, 0),
+(13, 'Demo 11', 'This is content summary', '<p>demo&nbsp;</p>', '2020-06-23', 'post_15.jpg', 0, '2020-09-04 00:00:00', 12, 4, 0),
+(14, 'hello', 'This is content summary', '<p>hello</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-09 00:00:00', 6, 4, 0),
+(15, 'hello', 'This is content summary', '<p><em><strong>hello</strong></em></p>', '2020-06-24', 'post_15.jpg', 0, '2020-06-16 00:00:00', 2, 4, 0),
+(16, 'Demo ty', 'This is content summary', '<p>sadfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-14 00:00:00', 15, 4, 0),
+(17, 'Demo ty', 'This is content summary', '<p>sadfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-22 00:00:00', 15, 4, 0),
+(18, 'Demo ty', 'This is content summary', '<p>sadfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-20 00:00:00', 15, 4, 0),
+(19, 'Demo ty', 'This is content summary', '<p>sadfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-28 00:00:00', 15, 4, 0),
+(20, 'sadfasdf', 'This is content summary', '', '2020-06-23', 'post_15.jpg', 0, '2020-06-10 00:00:00', 12, 4, 0),
+(21, 'sadfasdf', 'This is content summary', '<p>sadfsdfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-08-07 00:00:00', 12, 4, 0),
+(22, 'sadfsdf', 'This is content summary', '<p>&aacute;dfsdfsdaf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-04-20 00:00:00', 10, 4, 0),
+(23, 'sadfsdf', 'This is content summary', '<p>sdfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-07 00:00:00', 12, 4, 0),
+(24, 'ádfsdf', 'This is content summary', '<p>&aacute;dfsadf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-05-11 00:00:00', 11, 4, 0),
+(25, 'ádfsdf', 'This is content summary', '<p>sadfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-30 00:00:00', 2, 2, 0),
+(26, 'sadfsdf', 'This is content summary', '<p>sdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-14 00:00:00', 1, 4, 0),
+(27, 'sdfsdf', 'This is content summary', '<p>sdafsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-09 00:00:00', 9, 4, 0),
+(28, 'ádfasdf', 'This is content summary', '<p>sadfsadf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-22 00:00:00', 1, 4, 0),
+(29, 'ádfsdf', 'This is content summary', '<p>sdfasdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-06-09 00:00:00', 4, 4, 0),
+(30, 'sadfasdf', 'This is content summary', '<p>sadfsdfsdf</p>', '2020-06-23', 'post_15.jpg', 0, '2020-07-14 00:00:00', 11, 4, 0),
+(31, 'demo 19', 'This is content summary', '<p>fsadfsdf</p>', '2020-06-24', 'post_15.jpg', 0, '2020-07-01 00:00:00', 6, 4, 0),
+(32, 'Demo 10', 'This is content summary', '<p>ấdfsdfsdaf</p>', '2020-06-24', 'post_15.jpg', 0, '2020-07-20 00:00:00', 12, 4, 0),
+(33, 'Demo 100', 'This is content summary', '<p>&aacute;dfsdaghghfg</p>', '2020-06-24', 'post_15.jpg', 0, '2020-07-05 00:00:00', 12, 4, 0),
+(34, 'Demo500', 'This is content summary', '<p>Hello Kitty</p>', '2020-06-25', 'post_15.jpg', 0, '1899-11-08 00:00:00', 11, 4, 0),
+(35, 'Demo501', 'This is content summary', '<p><strong>Hello Kitty</strong></p>', '2020-06-25', 'post_15.jpg', 0, '2020-06-04 00:00:00', 11, 4, 0),
+(36, '<p>Demo 700</p>', 'This is content summary', '<p>456</p>', '2020-06-26', 'post_15.jpg', 0, '2020-08-06 00:00:00', 7, 4, 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `status_posts`
+-- Cấu trúc bảng cho bảng `status_posts`
 --
 
 CREATE TABLE `status_posts` (
@@ -308,7 +308,7 @@ CREATE TABLE `status_posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `status_posts`
+-- Đang đổ dữ liệu cho bảng `status_posts`
 --
 
 INSERT INTO `status_posts` (`Id`, `Name`, `IsDelete`) VALUES
@@ -320,29 +320,37 @@ INSERT INTO `status_posts` (`Id`, `Name`, `IsDelete`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tags`
+-- Cấu trúc bảng cho bảng `tags`
 --
 
 CREATE TABLE `tags` (
   `Id` int(11) NOT NULL,
   `Name` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `TagName` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `ImgURL` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `tags`
+-- Đang đổ dữ liệu cho bảng `tags`
 --
 
-INSERT INTO `tags` (`Id`, `Name`, `IsDelete`) VALUES
-(1, 'Web', 0),
-(2, 'App', 0),
-(3, 'Python', 0),
-(4, 'Ruby', 0);
+INSERT INTO `tags` (`Id`, `Name`, `TagName`, `ImgURL`, `IsDelete`) VALUES
+(1, 'Web', '#web', 'tagweb.jpg', 0),
+(2, 'App', '#app', 'tagapp.jpg', 0),
+(3, 'Python', '#python', 'tagpython.jpg', 0),
+(4, 'Ruby', '#ruby', 'tagruby.jpg', 0),
+(5, 'C/C++', '#c/c++', 'tagc.jpg', 0),
+(6, 'Lập trình game', '#laptrinhgame', 'taggame.jpg', 0),
+(7, 'Lập trình online', '#laptrinhonline', 'tagonline.jpg', 0),
+(8, 'Công nghệ', '#congnghe', 'tagtechnology.jpg', 0),
+(9, 'Khoa học', '#khoahoc', 'tagscience.jpg', 0),
+(10, 'Cấu trúc dữ liệu và giải thuật', '#ctdl&gt', 'tagctdl.jpg', 0);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `tag_posts`
+-- Cấu trúc bảng cho bảng `tag_posts`
 --
 
 CREATE TABLE `tag_posts` (
@@ -352,7 +360,7 @@ CREATE TABLE `tag_posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `tag_posts`
+-- Đang đổ dữ liệu cho bảng `tag_posts`
 --
 
 INSERT INTO `tag_posts` (`Id`, `IdTag`, `IdPost`) VALUES
@@ -421,7 +429,7 @@ INSERT INTO `tag_posts` (`Id`, `IdTag`, `IdPost`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `typeaccount`
+-- Cấu trúc bảng cho bảng `typeaccount`
 --
 
 CREATE TABLE `typeaccount` (
@@ -431,7 +439,7 @@ CREATE TABLE `typeaccount` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Dumping data for table `typeaccount`
+-- Đang đổ dữ liệu cho bảng `typeaccount`
 --
 
 INSERT INTO `typeaccount` (`Id`, `Name`, `IsDelete`) VALUES
@@ -441,31 +449,31 @@ INSERT INTO `typeaccount` (`Id`, `Name`, `IsDelete`) VALUES
 (4, 'Administrator', 0);
 
 --
--- Indexes for dumped tables
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `accounts`
+-- Chỉ mục cho bảng `accounts`
 --
 ALTER TABLE `accounts`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `Accounts_TypeAccount` (`TypeAccount`);
 
 --
--- Indexes for table `categories`
+-- Chỉ mục cho bảng `categories`
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Indexes for table `categories_sub`
+-- Chỉ mục cho bảng `categories_sub`
 --
 ALTER TABLE `categories_sub`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `IdCategoriesMain` (`IdCategoriesMain`);
 
 --
--- Indexes for table `comments`
+-- Chỉ mục cho bảng `comments`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`Id`),
@@ -473,7 +481,7 @@ ALTER TABLE `comments`
   ADD KEY `Comment_Posts` (`IdPost`);
 
 --
--- Indexes for table `editoraccount`
+-- Chỉ mục cho bảng `editoraccount`
 --
 ALTER TABLE `editoraccount`
   ADD PRIMARY KEY (`Id`,`IdAccount`,`IdCategoríe`) USING BTREE,
@@ -481,7 +489,7 @@ ALTER TABLE `editoraccount`
   ADD KEY `EditorAccount_Categories` (`IdCategoríe`);
 
 --
--- Indexes for table `feedback`
+-- Chỉ mục cho bảng `feedback`
 --
 ALTER TABLE `feedback`
   ADD PRIMARY KEY (`Id`),
@@ -489,14 +497,14 @@ ALTER TABLE `feedback`
   ADD KEY `Feedback_Posts` (`IdPost`);
 
 --
--- Indexes for table `information`
+-- Chỉ mục cho bảng `information`
 --
 ALTER TABLE `information`
   ADD PRIMARY KEY (`Id`),
   ADD KEY `Information_Accounts` (`IdAccount`);
 
 --
--- Indexes for table `postdetails`
+-- Chỉ mục cho bảng `postdetails`
 --
 ALTER TABLE `postdetails`
   ADD PRIMARY KEY (`Id`),
@@ -504,7 +512,7 @@ ALTER TABLE `postdetails`
   ADD KEY `PostDetail_Account` (`IdAccount`);
 
 --
--- Indexes for table `posts`
+-- Chỉ mục cho bảng `posts`
 --
 ALTER TABLE `posts`
   ADD PRIMARY KEY (`Id`),
@@ -512,19 +520,19 @@ ALTER TABLE `posts`
   ADD KEY `Posts_SubCategories` (`IdCategories`);
 
 --
--- Indexes for table `status_posts`
+-- Chỉ mục cho bảng `status_posts`
 --
 ALTER TABLE `status_posts`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Indexes for table `tags`
+-- Chỉ mục cho bảng `tags`
 --
 ALTER TABLE `tags`
   ADD PRIMARY KEY (`Id`);
 
 --
--- Indexes for table `tag_posts`
+-- Chỉ mục cho bảng `tag_posts`
 --
 ALTER TABLE `tag_posts`
   ADD PRIMARY KEY (`Id`,`IdTag`,`IdPost`),
@@ -532,145 +540,145 @@ ALTER TABLE `tag_posts`
   ADD KEY `TagPosts_Tags` (`IdTag`);
 
 --
--- Indexes for table `typeaccount`
+-- Chỉ mục cho bảng `typeaccount`
 --
 ALTER TABLE `typeaccount`
   ADD PRIMARY KEY (`Id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `accounts`
+-- AUTO_INCREMENT cho bảng `accounts`
 --
 ALTER TABLE `accounts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `categories`
+-- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `categories_sub`
+-- AUTO_INCREMENT cho bảng `categories_sub`
 --
 ALTER TABLE `categories_sub`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
--- AUTO_INCREMENT for table `comments`
+-- AUTO_INCREMENT cho bảng `comments`
 --
 ALTER TABLE `comments`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `editoraccount`
+-- AUTO_INCREMENT cho bảng `editoraccount`
 --
 ALTER TABLE `editoraccount`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `feedback`
+-- AUTO_INCREMENT cho bảng `feedback`
 --
 ALTER TABLE `feedback`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `information`
+-- AUTO_INCREMENT cho bảng `information`
 --
 ALTER TABLE `information`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT for table `postdetails`
+-- AUTO_INCREMENT cho bảng `postdetails`
 --
 ALTER TABLE `postdetails`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
--- AUTO_INCREMENT for table `posts`
+-- AUTO_INCREMENT cho bảng `posts`
 --
 ALTER TABLE `posts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
--- AUTO_INCREMENT for table `status_posts`
+-- AUTO_INCREMENT cho bảng `status_posts`
 --
 ALTER TABLE `status_posts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `tags`
+-- AUTO_INCREMENT cho bảng `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT for table `tag_posts`
+-- AUTO_INCREMENT cho bảng `tag_posts`
 --
 ALTER TABLE `tag_posts`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
--- AUTO_INCREMENT for table `typeaccount`
+-- AUTO_INCREMENT cho bảng `typeaccount`
 --
 ALTER TABLE `typeaccount`
   MODIFY `Id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `accounts`
+-- Các ràng buộc cho bảng `accounts`
 --
 ALTER TABLE `accounts`
   ADD CONSTRAINT `Accounts_TypeAccount` FOREIGN KEY (`TypeAccount`) REFERENCES `typeaccount` (`Id`);
 
 --
--- Constraints for table `comments`
+-- Các ràng buộc cho bảng `comments`
 --
 ALTER TABLE `comments`
   ADD CONSTRAINT `Comment_Informations` FOREIGN KEY (`IdReader`) REFERENCES `information` (`Id`),
   ADD CONSTRAINT `Comment_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`);
 
 --
--- Constraints for table `editoraccount`
+-- Các ràng buộc cho bảng `editoraccount`
 --
 ALTER TABLE `editoraccount`
   ADD CONSTRAINT `EditorAccount_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`),
   ADD CONSTRAINT `EditorAccount_Categories` FOREIGN KEY (`IdCategoríe`) REFERENCES `categories` (`Id`);
 
 --
--- Constraints for table `feedback`
+-- Các ràng buộc cho bảng `feedback`
 --
 ALTER TABLE `feedback`
   ADD CONSTRAINT `Feedback_EditorAccount` FOREIGN KEY (`IdEditorAccount`) REFERENCES `editoraccount` (`Id`),
   ADD CONSTRAINT `Feedback_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`);
 
 --
--- Constraints for table `information`
+-- Các ràng buộc cho bảng `information`
 --
 ALTER TABLE `information`
   ADD CONSTRAINT `Information_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`);
 
 --
--- Constraints for table `postdetails`
+-- Các ràng buộc cho bảng `postdetails`
 --
 ALTER TABLE `postdetails`
   ADD CONSTRAINT `PostDetail_Account` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`);
 
 --
--- Constraints for table `posts`
+-- Các ràng buộc cho bảng `posts`
 --
 ALTER TABLE `posts`
   ADD CONSTRAINT `Posts_StatusPosts` FOREIGN KEY (`IdStatus`) REFERENCES `status_posts` (`Id`),
   ADD CONSTRAINT `Posts_SubCategories` FOREIGN KEY (`IdCategories`) REFERENCES `categories_sub` (`Id`);
 
 --
--- Constraints for table `tag_posts`
+-- Các ràng buộc cho bảng `tag_posts`
 --
 ALTER TABLE `tag_posts`
   ADD CONSTRAINT `TagPosts_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`),

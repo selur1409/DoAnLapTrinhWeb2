@@ -16,12 +16,12 @@ module.exports = {
           Id: entity.Id
         }
         delete entity.Id;
-        return db.patch(TBL_ACCOUNTS, entity, condition);
+        return db.patch(TBL_TAGS, entity, condition);
     },
     del: function (id) {
         const condition = {
           Id: id
         }
-        return db.del(TBL_ACCOUNTS, condition);
-    },
+        return db.del(TBL_TAGS, condition);
+    }
 };

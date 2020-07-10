@@ -1,0 +1,209 @@
+{{#section 'css'}}
+    <link rel="stylesheet" href="/public/css/styleOfWriter.css">
+{{/section}}
+<section class="content">
+    <div class="row">
+        <div class="col-md-3">
+            {{!-- <a href="compose.html" class="btn btn-primary btn-block mb-3">Compose</a> --}}
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Folders</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item active">
+                            <a href="/writer/FeedBack_Inbox/{{this.IdPost}}/1" class="nav-link">
+                                <i class="fas fa-inbox"></i> Inbox
+                                <span class="badge bg-primary float-right">{{this.NumberOfFB}}</span>
+                            </a>
+                        </li>
+                        {{!-- <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-envelope"></i> Sent
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-file-alt"></i> Drafts
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-filter"></i> Junk
+                                <span class="badge bg-warning float-right">65</span>
+                            </a>
+                        </li> --}}
+                        <li class="nav-item">
+                            <a href="/writer/TrashFeedBack_Inbox/{{this.IdPost}}/1" class="nav-link">
+                                <i class="far fa-trash-alt"></i> Trash
+                                <span class="badge bg-primary float-right">{{this.NumberOfTrashFB}}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+            {{!-- <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Labels</h3>
+
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-card-widget="collapse"><i
+                                class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle text-danger"></i>
+                                Important
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle text-warning"></i> Promotions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="far fa-circle text-primary"></i>
+                                Social
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.card-body -->
+            </div> --}}
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+        <div class="col-md-9">
+            <div class="card card-primary card-outline">
+                <div class="card-header">
+                    <h3 class="card-title">Inbox</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" placeholder="Search Mail">
+                            <div class="input-group-append">
+                                <div class="btn btn-primary">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-tools -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <div class="mailbox-controls">
+                        {{!-- <!-- Check all button -->
+                        <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i
+                                class="far fa-square"></i>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-default btn-sm"><i
+                                    class="far fa-trash-alt"></i></button>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fas fa-reply"></i></button>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i></button>
+                        </div> --}}
+                        <!-- /.btn-group -->
+                        {{!-- <button type="button" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></button> --}}
+                        <div class="float-right">
+                            {{this.PageCurrent}}-{{this.PageEnd}}/{{this.TotalPage}}
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-sm {{#unless can_go_prev}}disabled{{/unless}}" href="/writer/FeedBack_Inbox/{{this.IdPost}}/{{prev_value}}" >
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <a  class="btn btn-default btn-sm {{#unless can_go_next}}disabled{{/unless}}" href="/writer/FeedBack_Inbox/{{this.IdPost}}/{{next_value}}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                            <!-- /.btn-group -->
+                        </div>
+                        <!-- /.float-right -->
+                    </div>
+                    <div class="table-responsive mailbox-messages">
+                        <table class="table table-hover table-striped">
+                            <tbody>
+                                <form action="/writer/FeedBack_Inbox/RemoveFeedBack/{{this.IdPost}}" method="POST" id="formRemove"></form>
+                                {{#each this.Inbox}}
+                                <tr>
+                                    <td>
+                                        <div class="icheck-primary">
+                                            <input class="checkbox" type="checkbox" name="checkbox" value="{{Id}}" id="checkbox{{@index}}" form="formRemove">
+                                            <label for="check1"></label>
+                                        </div>
+                                    </td>
+                                    <td class="mailbox-star"><a href="#"><i class="fas fa-star text-warning"></i></a>
+                                    </td>
+                                    <td class="mailbox-name"><a href="/writer/FeedBack_Read/{{Id}}/{{IdPost}}">{{Name}}</a></td>
+                                    <td class="mailbox-subject"><div><b>AdminLTE 3.0 Issue</b> - {{{Note}}}</div></td>
+                                    {{!-- <td class="mailbox-attachment"></td> --}}
+                                    <td class="mailbox-date"><div>{{format_time DatetimeApproval}}</div></td>
+                                </tr>   
+                                {{/each}}       
+                            </tbody>
+                        </table>
+                        <!-- /.table -->
+                    </div>
+                    <!-- /.mail-box-messages -->
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer p-0">
+                    <div class="mailbox-controls">
+                        <!-- Check all button -->
+                        {{!-- <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i
+                                class="far fa-square"></i>
+                        </button> --}}
+                        {{#if IsFeedBack}}
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-default btn-sm" id="btnRemove" formaction="formRemove" onclick="submit()"><i
+                                    class="far fa-trash-alt"></i></button>
+                            {{!-- <button type="button" class="btn btn-default btn-sm"><i class="fas fa-reply"></i></button>
+                            <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i></button> --}}
+                        </div>
+                        {{/if}}
+                        <!-- /.btn-group -->
+                        {{!-- <button type="button" class="btn btn-default btn-sm"><i class="fas fa-sync-alt"></i></button> --}}
+                        <div class="float-right">
+                            {{this.PageCurrent}}-{{this.PageEnd}}/{{this.TotalPage}}
+                            <div class="btn-group">
+                                <a class="btn btn-default btn-sm {{#unless can_go_prev}}disabled{{/unless}}" href="/writer/FeedBack_Inbox/{{this.IdPost}}/{{prev_value}}" >
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                                <a  class="btn btn-default btn-sm {{#unless can_go_next}}disabled{{/unless}}" href="/writer/FeedBack_Inbox/{{this.IdPost}}/{{next_value}}">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                            <!-- /.btn-group -->
+                        </div>
+                        <!-- /.float-right -->
+                    </div>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+
+{{#section 'js'}}
+<script>
+    function submit()
+    {
+        document.getElementById('formRemove').submit();
+    }
+</script>
+{{/section}}
