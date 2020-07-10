@@ -14,7 +14,7 @@ module.exports = {
         return db.load(`select * from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0`);
     },
     singleEmail: function(email){
-        return db.load(`select IdAccount from information where Email = '${email}' and IsDelete = 0`);
+        return db.load(`select IdAccount from information where Email = '${email}'`);
     },
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);

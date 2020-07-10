@@ -15,8 +15,9 @@
     <thead>
       <tr>
         <th scope="col" class="text-center">#</th>
-        <th scope="col">Thẻ</th>
-        <th scope="col">Đường dẫn tĩnh</th>
+        <th scope="col">Tag</th>
+        <th scope="col">TagName</th>
+        <th scope="col">Img</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
@@ -25,7 +26,8 @@
       <tr>
         <th scope="row" class="text-center">{{Stt}}</th>
         <td>{{Name}}</td>
-        <td>{{Url}}</td>
+        <td>{{TagName}}</td>
+        <td><img src="../../../public/img/{{ImgURL}}" alt="{{ImgURL}}" width="35px" height="35px"></td>
         <td class="text-right">
         <form method="POST" action="/admin/tags/del">
             <a class="btn btn-primary btn-sm" href="/admin/tags/edit/{{Url}}" role="button" title="Edit Category">
