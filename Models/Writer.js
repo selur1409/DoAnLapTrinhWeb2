@@ -26,15 +26,15 @@ module.exports = {
     },
 
     LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
     },
 
     LoadPostOfWriterThisWeek:(IdStatus, IdAccount, Limit, Offset)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN DATE_SUB(CURDATE() , INTERVAL 6 DAY) AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
     },
 
     LoadPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, Limit, Offset, DayOrMonthOrYear)=>{
-        return db.load(`SELECT p.* FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
     },
 
     LoadSinglePost:(value)=>{
@@ -108,8 +108,14 @@ module.exports = {
     /*Feedback*/
 
     /*Profile*/
+    LoadProfile:(value)=>{
+        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
+        FROM accounts a, information i 
+        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and i.IdAccount = '${value}'`);
+    },
+
     UpdateProfile:(value)=>{
-        return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ? WHERE IdAccount = ?`, value);
+        return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ?, Avatar = ? WHERE IdAccount = ?`, value);
     },
 
     UpdatePassword:(value)=>{
