@@ -7,9 +7,17 @@
                 <!-- Profile Image -->
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
-                        <div class="text-center">
-                            <img class="profile-user-img img-fluid img-circle" src="/public/img/user4-128x128.jpg"
+                        <div class="avatar-upload text-center">
+                            <div class="avatar-edit">
+                                <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" name="Avatar" form="formChangeInfo"/>
+                                <label for="imageUpload"><i class="fa fa-camera fa-lg"></i></label>
+                            </div>
+                            <div class="avatar-preview">
+                                <div>
+                                    <img id="imagePreview" class="profile-user-img img-fluid img-circle"  {{#if AvatarEmpty}} src="/public/img/avatar2.png" {{else}} src="/public/img/{{Avatar}}" {{/if}} 
                                 alt="User profile picture">
+                                </div>
+                            </div>
                         </div>
 
                         <h3 class="profile-username text-center">{{Name}}</h3>
@@ -413,7 +421,7 @@
                                                             <div class="form-group row">
                                                                 <div class="offset-sm-2 col-sm-10">
                                                                     <button type="submit"
-                                                                        class="btn btn-danger" id="btnSubmit1">Submit</button>
+                                                                        class="btn btn-danger" id="btnSubmitformChangeInfo">Submit</button>
                                                                 </div>
                                                             </div>
                                                         </form>
@@ -481,6 +489,23 @@
       mask: true,
     });  
 
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').attr("src", e.target.result);
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#imageUpload").change(function () {
+        readURL(this);
+
+    });  
+
      function Submit(form, option) {
             event.preventDefault();
             const xhttp = new XMLHttpRequest();
@@ -491,7 +516,8 @@
                     const dataParsed = JSON.parse(data);
                     if (dataParsed.hasOwnProperty('success')) {
                         document.getElementById("alert").innerHTML = Handlebars.templates.Success({ success: dataParsed.success });
-                        $("#myModal").modal("show");
+                        $("#Success").modal("show");
+
                     }
                     if (dataParsed.hasOwnProperty('fail')) {
                         document.getElementById("alert").innerHTML = Handlebars.templates.Warning({ warning: dataParsed.fail });
@@ -515,29 +541,38 @@
         return true;
     }
 
-     function attendConference() {
-            const form1 = document.getElementById("formChangeInfo");
-            const form2 = document.getElementById("formChangePassword");
-            const btnSubmit1 = document.getElementById("btnSubmit1");
-            const btnSubmit2 = document.getElementById("btnSubmit2");
+    function PostData()
+    {
+        const form1 = document.getElementById("formChangeInfo");
+        const form2 = document.getElementById("formChangePassword");
+        const btnSubmit1 = document.getElementById("btnSubmitformChangeInfo");
+        const btnSubmit2 = document.getElementById("btnSubmit2");
 
-            btnSubmit1.addEventListener("click", function(){
-                if(validate() === true)
-                {
-                    Submit(form1, 1);
-                }
-            },true);
-            btnSubmit2.addEventListener("click", function(){
-                if(validate() === true)
-                {
-                    Submit(form2, 2);
-                }
-            }, true);
+        btnSubmit1.addEventListener("click", function () {   
+                Submit(form1, 1);  
+        }, true);
+
+        btnSubmit2.addEventListener("click", function () {
+            if (validate() === true) {
+                Submit(form2, 2);
+                console.log(2);
+            }
+        }, true);
+
+
     }
 
+    $(document).on('hidden.bs.modal', '#Success', function () {
+        console.log("Success");
+        window.location.replace("http://localhost:3000/writer/Profile");
+
+    });
+
     window.onload = function () {
-            attendConference();
+           PostData();
         };
+
+    
 </script>
 {{/section}}
 {{#section 'css'}}

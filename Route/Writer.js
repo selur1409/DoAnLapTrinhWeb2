@@ -3,6 +3,7 @@ const router = express.Router();
 const flash = require('express-flash');
 const config = require('../config/default.json');
 const bcrypt = require('bcryptjs');
+const multer = require('multer');
 const moment = require('moment'); moment.locale("vi");
 const db = require('../models/Writer');
 const account = require('../models/account.model');
@@ -52,6 +53,25 @@ function Authories(req, res, next)
     }
 }
 
+const storage = multer.diskStorage({
+    filename(req, file, cb) {
+        cb(null, file.originalname);
+    },
+    destination(req, file, cb) {
+        cb(null, './public/img');
+    }
+})
+
+const upload = multer({ storage, 
+    fileFilter: function (req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
+            req.fileValidationError = 'Only image files are allowed!';
+            return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+    }
+});
+
 router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
 
@@ -90,7 +110,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
     }
 }); 
 
-router.post('/Writer', restrict, Authories, async (req,res, next)=>{
+router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
 
         let checkbox = JSON.parse(req.body.arrCheck);
@@ -105,7 +125,7 @@ router.post('/Writer', restrict, Authories, async (req,res, next)=>{
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
-    
+
         if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
             res.json({ fail: 'Please complete all fields in the form' });
         }
@@ -216,6 +236,14 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
                 format_datetime: function (value) {
                     const date = moment(value).format("DD-MM-YYYY HH:MM TT");
                     return date;
+                },
+
+                AvatarPost: function (value){
+                    if(value !== null)
+                    {
+                        return '/public/img/' + value;
+                    }
+                    return 'https://img.favpng.com/25/7/23/computer-icons-user-profile-avatar-image-png-favpng-LFqDyLRhe3PBXM0sx2LufsGFU.jpg';
                 },
 
                 Update: function (value, id, options) {
@@ -467,7 +495,7 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
     }
 });
 
-router.post('/FeedBack_Inbox/RemoveFeedBack/:id', async (req, res, next)=>{
+router.post('/FeedBack_Inbox/RemoveFeedBack/:id', restrict, Authories, upload.fields([]), async (req, res, next)=>{
     try{
         const IdPost = req.params.id;
         const checkbox = req.body.checkbox;
@@ -564,17 +592,19 @@ router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,re
 router.get('/Profile', restrict, Authories, async (req, res, next)=>{
     try{
         const IdAccount = res.locals.lcAuthUser.Id;
-        const NumberOfPost = await db.CountAllPost(IdAccount);
+        const [AccountProfile, NumberOfPost]  = await Promise.all([db.LoadProfile(IdAccount), db.CountAllPost(IdAccount)]);
+        req.session.authAccount = AccountProfile[0];
         res.render('vwWriter/profile',{
             layout:'homewriter',
-            Username:res.locals.lcAuthUser.Username,
-            Name:res.locals.lcAuthUser.Name,
-            Nickname:res.locals.lcAuthUser.Nickname,
-            DateOfBirth: moment(res.locals.lcAuthUser.DOB).format('DD/MM/YYYY'),
-            Email:res.locals.lcAuthUser.Email,
-            Phone:res.locals.lcAuthUser.Phone,
-            Sex:res.locals.lcAuthUser.Sex,
-            Avatar:res.locals.lcAuthUser.Avatar,
+            Username:AccountProfile[0].Username,
+            Name:AccountProfile[0].Name,
+            Nickname:AccountProfile[0].Nickname,
+            DateOfBirth: moment(AccountProfile[0].DOB).format('DD/MM/YYYY'),
+            Email:AccountProfile[0].Email,
+            Phone:AccountProfile[0].Phone,
+            Sex:AccountProfile[0].Sex,
+            Avatar:AccountProfile[0].Avatar,
+            AvatarEmpty:AccountProfile[0].Avatar === null,
             NumberOfPost:NumberOfPost[0].Number,
             IsActiveProfile:true
         });
@@ -584,42 +614,46 @@ router.get('/Profile', restrict, Authories, async (req, res, next)=>{
     }
 });
 
-router.post('/Profile', restrict, Authories, async (req, res, next)=>{
+router.post('/Profile/', restrict, Authories, upload.single('Avatar'), async (req, res, next)=>{
     try{
-       const option = +req.query.opt;
+        const option = +req.query.opt;
+        
        if(option === 1)
        {
+
            if (req.body.Name === "" ||
                moment(req.body.DOB, "DD/MM/YYYY").isValid === false ||
-               req.body.Email === "") 
-            {
-               res.json({fail:"These fields cannot not be emtpy!"});
-            }
-            else
-            {
-                const dt_now = moment().format('YYYY-MM-DD');
-                const DOB = moment(req.body.DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
-                const Name = req.body.Name;
-                const Email = req.body.Email;
-                const Phone = req.body.Phone; 
-                const Nickname = req.body.Nickname;
-                const IdAccount = res.locals.lcAuthUser.IdAccount;
-                const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${IdAccount}`];
-                if(DOB > dt_now)
-                {
-                    res.json({fail: 'Your birthday cannot be greater than current date'});
-                }
-                else
-                {
-                    await db.UpdateProfile(value);
-                    res.json({success: "The change process is successful"});
-                }
-            }
+               req.body.Email === "") {
+               res.json({ fail: "These fields cannot not be emtpy!" });
+           }
+           else {
+               const dt_now = moment().format('YYYY-MM-DD');
+               const DOB = moment(req.body.DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
+               const Name = req.body.Name;
+               const Email = req.body.Email;
+               const Phone = req.body.Phone; 
+               const Nickname = req.body.Nickname;
+               const IdAccount = res.locals.lcAuthUser.IdAccount;  
+               const Avatar = req.file !== undefined ? req.file.originalname : null;   
+       
+               const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${IdAccount}`];
+               if (DOB > dt_now) {
+                   res.json({ fail: 'Your birthday cannot be greater than current date' });
+               }
+               else {
+                   const result = await db.UpdateProfile(value);
+                   if (result.affectedRows === 0) {
+                       res.json({ fail: 'Your birthday cannot be greater than current date' });
+                   }
+                   else {
+                       res.json({ success: "The change process is successful" });
+                   }
+               }
+           }
        }
        else if(option === 2)
        {
             const Result = await account.single(res.locals.lcAuthUser.Username);
-            console.log(Result);
             const verification = bcrypt.compareSync(req.body.CurrentPassword, Result[0].Password_hash);
             const Id = res.locals.lcAuthUser.Id;
             if(req.body.NewPassword !== req.body.ConfirmNewPassword)
@@ -643,5 +677,6 @@ router.post('/Profile', restrict, Authories, async (req, res, next)=>{
         console.log(e);
     }
 });
+
 
 module.exports = router;
