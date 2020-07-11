@@ -9,6 +9,8 @@ moment.locale("vi");
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const session = require('express-session');
+const multer = require('multer');
+const upload = multer();
 
 router.get('/ForgotPW', (req, res)=>{
     res.render('vwAccount/ForgotPassword',{
@@ -95,7 +97,7 @@ router.get('/reset/:token', async(req, res, next)=>{
     res.render('vwAccount/ResetPassword', {layout:false});
 });
 
-router.post('/reset/', async(req, res, next)=>{
+router.post('/reset/',  upload.fields([]), async(req, res, next)=>{
 
     const Password = req.body.NewPassword;
     const RePassword = req.body.RePassword;
