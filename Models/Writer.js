@@ -34,7 +34,7 @@ module.exports = {
     },
 
     LoadPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, Limit, Offset, DayOrMonthOrYear)=>{
-        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'function', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
     },
 
     LoadSinglePost:(value)=>{
