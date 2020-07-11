@@ -1,21 +1,11 @@
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <h4>CATEGORIES</h4>
-    {{!-- <div>
-    <label for="select">Liệt kê:</label>
-    <select name="select" onchange="
-    windowdotlocation
-    =this.value">
-      <option value="/admin/categories?select=full" {{#if this.selectedFull}} selected {{/if}}>Tất cả chuyên mục</option>
-      <option value="/admin/categories?select=main" {{#if this.selectedMain}} selected {{/if}}>Chỉ chuyên mục cấp 1</option>
-      <option value="/admin/categories?select=sub" {{#if this.selectedSub}} selected {{/if}}>Chỉ chuyên mục cấp 2</option>
-    </select> 
-    </div> --}}
     <a class="btn btn-outline-success" href="/admin/categories/addLv1/{{Url}}" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>
       Thêm chuyên mục cấp 1
     </a>
-    <a class="btn btn-secondary" href="/admin/views/all" role="button">
+    <a class="btn btn-secondary" href="/admin/categories/list-of-all" role="button">
       <i class="fas fa-list-ol"></i>
       Danh sách các chuyên mục
     </a>

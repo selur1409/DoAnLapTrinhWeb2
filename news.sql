@@ -86,7 +86,7 @@ CREATE TABLE `categories_sub` (
   `Url` varchar(100) NOT NULL,
   `Description` text DEFAULT NULL,
   `IsDelete` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `categories_sub`
@@ -139,7 +139,7 @@ CREATE TABLE `comments` (
 CREATE TABLE `editoraccount` (
   `Id` int(11) NOT NULL,
   `IdAccount` int(11) NOT NULL,
-  `IdCategoríe` int(11) NOT NULL,
+  `IdCategories` int(11) NOT NULL,
   `IsDelete` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -147,7 +147,7 @@ CREATE TABLE `editoraccount` (
 -- Dumping data for table `editoraccount`
 --
 
-INSERT INTO `editoraccount` (`Id`, `IdAccount`, `IdCategoríe`, `IsDelete`) VALUES
+INSERT INTO `editoraccount` (`Id`, `IdAccount`, `IdCategories`, `IsDelete`) VALUES
 (1, 6, 5, 0),
 (2, 6, 1, 0),
 (3, 6, 3, 0),
@@ -500,9 +500,9 @@ ALTER TABLE `comments`
 -- Indexes for table `editoraccount`
 --
 ALTER TABLE `editoraccount`
-  ADD PRIMARY KEY (`Id`,`IdAccount`,`IdCategoríe`) USING BTREE,
+  ADD PRIMARY KEY (`Id`,`IdAccount`,`IdCategories`) USING BTREE,
   ADD KEY `EditorAccount_Accounts` (`IdAccount`),
-  ADD KEY `EditorAccount_Categories` (`IdCategoríe`);
+  ADD KEY `EditorAccount_Categories` (`IdCategories`);
 
 --
 -- Indexes for table `feedback`
@@ -665,7 +665,7 @@ ALTER TABLE `comments`
 --
 ALTER TABLE `editoraccount`
   ADD CONSTRAINT `EditorAccount_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`),
-  ADD CONSTRAINT `EditorAccount_Categories` FOREIGN KEY (`IdCategoríe`) REFERENCES `categories` (`Id`);
+  ADD CONSTRAINT `EditorAccount_Categories` FOREIGN KEY (`IdCategories`) REFERENCES `categories` (`Id`);
 
 --
 -- Constraints for table `feedback`
