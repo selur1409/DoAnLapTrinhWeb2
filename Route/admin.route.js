@@ -4,6 +4,7 @@ const passport = require('passport');
 const categoryModel = require('../models/category.model');
 const notification = require('../config/notification.json');
 const tagModel = require('../models/tag.model');
+const editoraccountModel = require('../models/editoraccount.model');
 
 const router = express.Router();
 
@@ -16,8 +17,10 @@ router.get('/', function(req, res){
 router.get('/categories', async function(req, res){
     try {
         const sl = req.query.select;
+        console.log(sl);
         if (sl === 'full'){
             const list = await categoryModel.all();
+            console.log(list);
         
             return res.render('vwAdmin/vwCategories/listCategory', {
                 layout: 'homeadmin',
@@ -25,12 +28,14 @@ router.get('/categories', async function(req, res){
                 empty: list.length == 0,
                 categories: list,
                 selectedFull: true
-            })
+            });
         }
         if (sl === 'main'){
-            const list = await categoryModel.allMain();
+            const list = await categoryModel.allMain();            
             for(c of list){
-                c.Manage = 'fsdfsad';
+                const editor = await editoraccountModel.singleIdCat(c.Id);
+                c.Manage = editor[0].Name;
+                c.IdManage = editor[0].IdAccount;
             }
             return res.render('vwAdmin/vwCategories/listCategory', {
                 layout: 'homeadmin',
@@ -38,7 +43,7 @@ router.get('/categories', async function(req, res){
                 empty: list.length == 0,
                 categories: list,
                 selectedMain: true
-            })
+            });
         }
         if (sl === 'sub'){
             const list = await categoryModel.allSub();
@@ -53,7 +58,7 @@ router.get('/categories', async function(req, res){
                 empty: list.length == 0,
                 categories: list,
                 selectedSub: true
-            })
+            });
         }
 
         res.redirect('/admin/categories?select=main')
@@ -67,6 +72,8 @@ router.get('/categories', async function(req, res){
 router.get('/categories/view/:url', async function(req, res){
     const url = req.params.url;
     const cat = await categoryModel.singleUrlMain(url);
+    const manage = await editoraccountModel.singleIdCat(cat.Id);
+    console.log(manage);
 
     if (!cat){
         res.redirect('/admin/categories?select=main');
@@ -82,6 +89,7 @@ router.get('/categories/view/:url', async function(req, res){
         layout: 'homeAdmin',
         Name: cat.Name,
         UrlMain: cat.Url,
+        Manage: manage[0],
         categories: catSub,
         empty: catSub.length === 0
     });
