@@ -76,7 +76,7 @@ router.get('/categories/views/:url', async function(req, res){
 router.get('/categories/add', async function(req, res){
     const catMain = await categoryModel.allMain();
 
-    res.render('vwAdmin/vwCategories/addCategory', {
+    res.render('vwAdmin/vwCategories/addCategoryLv1', {
         layout: 'homeAdmin',
         catMain: catMain
     });
@@ -97,7 +97,7 @@ router.get('/categories/add/:url', async function(req, res){
         }
     }
 
-    res.render('vwAdmin/vwCategories/addCategory', {
+    res.render('vwAdmin/vwCategories/addCategoryLv1', {
         layout: 'homeAdmin',
         catMain: catMain,
         comback: selectedCat.Url
@@ -135,7 +135,7 @@ router.post('/categories/add', async function(req, res){
     const isNameSub = await categoryModel.singleNameSub(name);
     if (isNameMain || isNameSub)
     {  
-        return res.render('vwAdmin/vwCategories/addCategory',{
+        return res.render('vwAdmin/vwCategories/addCategoryLv1',{
             layout: 'homeAdmin',
             err: 'Tên chuyên mục đã tồn tại.',
             catMain: catMain,
@@ -146,7 +146,7 @@ router.post('/categories/add', async function(req, res){
     const isUrlMain = await categoryModel.singleUrlMain(url);
     const isUrlSub = await categoryModel.singleUrlSub(url);
     if (isUrlMain || isUrlSub){
-        return res.render('vwAdmin/vwCategories/addCategory',{
+        return res.render('vwAdmin/vwCategories/addCategoryLv1',{
             layout: 'homeAdmin',
             err: 'Url đã tồn tại.',
             catMain: catMain,
@@ -174,7 +174,7 @@ router.post('/categories/add', async function(req, res){
         await categoryModel.addSub(entity);
     }
 
-    res.render('vwAdmin/vwCategories/addCategory',{
+    res.render('vwAdmin/vwCategories/addCategoryLv1',{
         layout: 'homeAdmin',
         success: `Thêm chuyên mục ${name} thành công.`,
         catMain: catMain,
