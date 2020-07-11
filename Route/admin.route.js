@@ -15,68 +15,46 @@ router.get('/', function(req, res){
 });
 
 router.get('/categories', async function(req, res){
-    try {
-        const sl = req.query.select;
-        console.log(sl);
-        if (sl === 'full'){
-            const list = await categoryModel.all();
-            console.log(list);
-        
-            return res.render('vwAdmin/vwCategories/listCategory', {
-                layout: 'homeadmin',
-                IsActiveCat: true,
-                empty: list.length == 0,
-                categories: list,
-                selectedFull: true
-            });
+    try{
+        const list = await categoryModel.allMain();            
+        for(c of list){
+            const editor = await editoraccountModel.singleManageCat(c.Id);
+            c.Manage = editor[0].Name;
         }
-        if (sl === 'main'){
-            const list = await categoryModel.allMain();            
-            for(c of list){
-                const editor = await editoraccountModel.singleIdCat(c.Id);
-                c.Manage = editor[0].Name;
-                c.IdManage = editor[0].IdAccount;
-            }
-            return res.render('vwAdmin/vwCategories/listCategory', {
-                layout: 'homeadmin',
-                IsActiveCat: true,
-                empty: list.length == 0,
-                categories: list,
-                selectedMain: true
-            });
-        }
-        if (sl === 'sub'){
-            const list = await categoryModel.allSub();
-            for(c of list){
-                const nameMain = await categoryModel.getNameMain(c.Id);
-                
-                c.NameMain = nameMain[0].Name;
-            }
-            return res.render('vwAdmin/vwCategories/listCategory', {
-                layout: 'homeadmin',
-                IsActiveCat: true,
-                empty: list.length == 0,
-                categories: list,
-                selectedSub: true
-            });
-        }
-
-        res.redirect('/admin/categories?select=main')
-        
+        return res.render('vwAdmin/vwCategories/listCategory', {
+            layout: 'homeadmin',
+            IsActiveCat: true,
+            empty: list.length == 0,
+            categories: list,
+        });
     } catch (error) {
-        res.redirect('/admin/categories?select=main')
+        res.redirect(`/admin/error500`)
     }
-
 });
 
-router.get('/categories/view/:url', async function(req, res){
+router.get('/categories/list-of-all', async function(req, res){
+    try{
+        const list = await categoryModel.all();
+
+        return res.render('vwAdmin/vwCategories/viewAllCategories', {
+            layout: 'homeadmin',
+            IsActiveCat: true,
+            empty: list.length == 0,
+            categories: list,
+            selectedFull: true
+        });
+    } catch (error) {
+        res.redirect('/admin/error500');
+    }
+});
+
+router.get('/categories/views/:url', async function(req, res){
     const url = req.params.url;
     const cat = await categoryModel.singleUrlMain(url);
     const manage = await editoraccountModel.singleIdCat(cat.Id);
-    console.log(manage);
 
     if (!cat){
-        res.redirect('/admin/categories?select=main');
+        res.redirect('/admin/categories');
     }
 
     const catSub = await categoryModel.allSub_Id(cat.Id);
@@ -210,14 +188,12 @@ router.get('/categories/edit/:url', async function(req, res){
     const isUrlMain = await categoryModel.singleUrlMain(url);
     if (isUrlMain){
         const catMain = await categoryModel.allMain();
-        console.log(catMain);
         
         for (const c of catMain) {
             if (c.Id === isUrlMain.Id) {
                 catMain.splice(catMain.indexOf(c), 1);
             }
         }
-        console.log(catMain);
         return res.render('vwAdmin/vwCategories/editCategory', {
             layout: 'homeAdmin',
             catMain: catMain,

@@ -5,8 +5,8 @@ module.exports = {
     all: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_EDITORACCOUNT} t where IsDelete = 0`);
     },
-    singleIdCat: function (id) {
-        return db.load(`SELECT e.Id, e.IdAccount, i.Name FROM ${TBL_EDITORACCOUNT} e, information i WHERE e.IdAccount = i.IdAccount and e.IdCategories = ${id} and e.IsDelete = 0`);        
+    singleManageCat: function (id) {
+        return db.load(`SELECT i.Name FROM ${TBL_EDITORACCOUNT} e, information i WHERE e.IdAccount = i.IdAccount and e.IdCategories = ${id} and e.IsDelete = 0`);        
     },
     add: function (entity) {
         return db.add(TBL_EDITORACCOUNT, entity);

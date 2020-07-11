@@ -1,13 +1,21 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/categories?select=main" role="button">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+    <a class="btn btn-secondary" href="#" role="button">
+    {{this.Name}}
+    </a>
+    <a class="btn btn-secondary" href="/admin/views/information/{{this.Manage.IdAccount}}" role="button">
+    {{this.Manage.Name}}
+    </a>
+</div>
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <h4>CATEGORIES</h4>
-    <a class="btn btn-outline-success" href="/admin/categories/addLv1/{{Url}}" role="button">
+    <a class="btn btn-outline-success" href="/admin/categories/add/{{this.UrlMain}}" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>
-      Thêm chuyên mục cấp 1
-    </a>
-    <a class="btn btn-secondary" href="/admin/categories/list-of-all" role="button">
-      <i class="fas fa-list-ol"></i>
-      Danh sách các chuyên mục
+      Thêm chuyên mục cấp 2
     </a>
   </div>
   {{#if this.empty}}
@@ -21,7 +29,7 @@
         <th scope="col" class="text-center">#</th>
         <th scope="col">Chuyên mục</th>
         <th scope="col">Đường dẫn tĩnh</th>
-        <th scope="col">Manage</th>
+        <th scope="col">Chuyên mục cha</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
@@ -31,12 +39,9 @@
         <th scope="row" class="text-center">{{Stt}}</th>
         <td>{{Name}}</td>
         <td>{{Url}}</td>
-        <td>{{Manage}}</td>
+        <td>{{NameMain}}</td>
         <td class="text-right">
         <form method="POST" action="/admin/categories/del">
-            <a class="btn btn-primary btn-sm" href="/admin/categories/views/{{Url}}" role="button" title="View Category">
-                <i class="fas fa-eye"></i>
-            </a>          
             <a class="btn btn-primary btn-sm" href="/admin/categories/edit/{{Url}}" role="button" title="Edit Category">
                 <i class="fas fa-pen"></i>
             </a>
