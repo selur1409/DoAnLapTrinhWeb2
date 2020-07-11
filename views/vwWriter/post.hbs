@@ -224,7 +224,7 @@ tinymce.init({
                     if(dataParsed.hasOwnProperty('success'))
                     {
                       document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
-                      $("#myModal").modal("show");
+                      $("#Success").modal("show");
                     }
                     if(dataParsed.hasOwnProperty('fail'))
                     {
