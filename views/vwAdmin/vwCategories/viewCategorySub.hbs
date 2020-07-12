@@ -1,19 +1,19 @@
 <div class="col mb-2 mt-2 ml-3">
-    <a class="btn btn-info" href="/admin/categories?select=main" role="button">
+    <a class="btn btn-info" href="/admin/categories" role="button">
       <i class="fas fa-reply"></i>
       Trở về
     </a>
     <a class="btn btn-secondary" href="#" role="button">
     {{this.Name}}
     </a>
-    <a class="btn btn-secondary" href="/admin/views/information/{{this.Manage.IdAccount}}" role="button">
+    <a class="btn btn-secondary" href="#" role="button">
     {{this.Manage.Name}}
     </a>
 </div>
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <h4>CATEGORIES</h4>
-    <a class="btn btn-outline-success" href="/admin/categories/add/{{this.UrlMain}}" role="button">
+    <a class="btn btn-outline-success" href="/admin/categories/addlv2/{{UrlMain}}" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>
       Thêm chuyên mục cấp 2
     </a>
@@ -29,7 +29,7 @@
         <th scope="col" class="text-center">#</th>
         <th scope="col">Chuyên mục</th>
         <th scope="col">Đường dẫn tĩnh</th>
-        <th scope="col">Chuyên mục cha</th>
+        <th scope="col">Thuộc chuyên mục cấp 1</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
@@ -41,12 +41,12 @@
         <td>{{Url}}</td>
         <td>{{NameMain}}</td>
         <td class="text-right">
-        <form method="POST" action="/admin/categories/del">
-            <a class="btn btn-primary btn-sm" href="/admin/categories/edit/{{Url}}" role="button" title="Edit Category">
+        <form method="POST" action="">
+            <a class="btn btn-primary btn-sm" href="#" role="button" title="Edit Category">
                 <i class="fas fa-pen"></i>
             </a>
             <input type="hidden" name="Url" value="{{Url}}">            
-            <button type="submit" class="btn btn-danger btn-sm">
+            <button type="submit" class="btn btn-danger btn-sm" title="Delete Category">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>

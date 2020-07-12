@@ -26,26 +26,20 @@
         <input type="text" class="form-control" id="txtCatName" name="Name" autofocus value="{{this.Category.Name}}">
       </div>
       <div class="form-group">
-        <label for="txtUrl">Url (chứa kí tự thường, số, dấu '-')</label>
-        <input type="text" class="form-control" id="txtUrl" name="Url" pattern="([a-z]){1}([a-z0-9-]){2,99}" 
-        title="Chuỗi bao gồm kí tự thường, số và dấu '-'" value="{{this.Category.Url}}">
-      </div>
-      <div class="form-group">
-        <label for="ControlSelect">Chuyên mục hiện tại (Trống là chuyên mục cha)</label>
-        <select class="form-control" id="ControlSelect" name="Select">
-        <option value="Empty" {{#if isSelectMain}} selected {{/if}}>Trống</option>
-        {{#each this.catMain}}
-        <option value="{{Id}}" {{#if isActive}} selected {{/if}}>{{Name}}</option>
-        {{/each}}
+        <label for="ControlSelectManage">Người quản lý</label>
+        <select class="form-control" id="ControlSelectManage" name="Manage">
+          <option value="Empty">Trống</option>
+          {{#each this.ListManage}}
+          <option value="{{IdAccount}}" {{#if SelectedManage}} selected {{/if}}>{{Name}}</option>
+          {{/each}}
         </select>
       </div>
       <div class="form-group">
         <label for="ControlTextarea">Mô tả</label>
-        <textarea class="form-control" id="ControlTextarea" rows="3" name="textArea">{{this.Category.Description}}</textarea>
+        <textarea class="form-control" id="ControlTextarea" rows="3" name="Description">{{this.Category.Description}}</textarea>
       </div>
 
       <input type="hidden" name="Id" value="{{this.Category.Id}}">
-      <input type="hidden" name="Type" value="{{#if isSelectMain}}Main{{else}}Sub{{/if}}">
 
       <a class="btn btn-success" href="/admin/categories" role="button" title="Back to List">
         <i class="fa fa-backward" aria-hidden="true"></i>

@@ -66,7 +66,6 @@ app.use('/writer', exposeTemplates, require('./Route/Writer'));
 app.use(flash());
 app.use('/account', require('./route/ForgotPW'));
 
-
 app.use('/admin', require('./route/admin.route'));
 
 app.use(function (req, res) {

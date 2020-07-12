@@ -1,6 +1,6 @@
 <div class="card">
   <div class="card-header">
-    <h4>Thêm chuyên mục mới</h4>
+    <h4>Thêm mới chuyên mục cấp 2</h4>
   </div>
   <div class="card-body">
     {{#if err}}
@@ -20,19 +20,14 @@
       {{success}}
     </div>
     {{/if}}
-    <form method="POST" action="/admin/categories/add">
+    <form method="POST" action="/admin/categories/addlv2/{{this.url}}">
       <div class="form-group">
         <label for="txtCatName">Name</label>
         <input type="text" class="form-control" id="txtCatName" name="Name" autofocus>
       </div>
       <div class="form-group">
-        <label for="txtUrl">Url (chứa kí tự thường, số, dấu '-')</label>
-        <input type="text" class="form-control" id="txtUrl" name="Url" pattern="([a-z]){1}([a-z0-9-]){2,99}" 
-        title="Chuỗi bao gồm kí tự thường, số và dấu '-'">
-      </div>
-      <div class="form-group">
-        <label for="ControlSelect">Chuyên mục hiện tại (Trống là chuyên mục cha)</label>
-        <select class="form-control" id="ControlSelect" name="Select">
+        <label for="ControlSelect">Thuộc chuyên mục cấp 1</label>
+        <select class="form-control" id="ControlSelect" name="Select" readonly>
           <option value="Empty">Trống</option>
           {{#each this.catMain}}
           <option value="{{Id}}" {{#if Selected}} selected {{/if}} >{{Name}}</option>
@@ -41,20 +36,20 @@
       </div>
       <div class="form-group">
         <label for="ControlSelectManage">Manage</label>
-        <select class="form-control" id="ControlSelectManage" name="IdManage">
-          <option value="Empty"></option>
+        <select class="form-control" id="ControlSelectManage" name="IdManage" readonly>
+          <option value="Empty">Trống</option>
           {{#each this.ListManage}}
-          <option value="{{IdManage}}" {{#if SelectedManage}} selected {{/if}} >{{Manage}}</option>
+          <option value="{{IdManage}}" {{#if SelectedManage}} selected {{/if}}>{{Name}}</option>
           {{/each}}
         </select>
       </div>
       <div class="form-group">
         <label for="ControlTextarea">Mô tả</label>
-        <textarea class="form-control" id="ControlTextarea" rows="3" name="textArea"></textarea>
+        <textarea class="form-control" id="ControlTextarea" rows="3" name="Description"></textarea>
       </div>
       <input type="hidden" name="comback" value="{{this.comback}}">
-      <a class="btn btn-success" href="/admin/categories{{#if this.comback}}/view/{{this.comback}}{{/if}}" role="button" title="Back to List">
-        <i class="fa fa-backward" aria-hidden="true"></i>
+      <a class="btn btn-success" href="/admin/categories/views/{{this.url}}" role="button" title="Back to List">
+        <i class="fas fa-reply"></i>
         Trở về
       </a>
       <button type="submit" class="btn btn-primary">

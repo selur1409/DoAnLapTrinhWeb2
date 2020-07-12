@@ -23,37 +23,29 @@ module.exports = {
         return db.load(`SELECT c.Name FROM ${TBL_CATEGORIES_SUB} s, ${TBL_CATEGORIES} c WHERE s.Id = ${id} and s.IdCategoriesMain = c.Id`);
         
     },
-    singleNameMain: async function (name) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
-        return rows[0];
+    singleNameMain: function (name) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
     },
-    singleUrlMain: async function (url) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}'`);
-        return rows[0];
+    singleUrlMain: function (url) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}'`);
     },
-    singleNameMainEdit: async function (name, id) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}' and Id != ${id}`);
-        return rows[0];
+    singleNameMainEdit: function (name, id) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}' and Id != ${id}`); 
     },
-    singleUrlMainEdit: async function (url, id) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}' and Id != ${id}`);
-        return rows[0];
+    singleUrlMainEdit: function (url, id) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Url = '${url}' and Id != ${id}`);
     },
-    singleNameSub: async function (name) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}'`);
-        return rows[0];
+    singleNameSub: function (name) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}'`);
     },
     singleUrlSub: async function (url) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
-        return rows[0];
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
     },
     singleNameSubEdit: async function (name, id) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id}`);
-        return rows[0];
+        return await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id}`);
     },
-    singleUrlSubEdit: async function (url, id) {
-        const rows = await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and Id != ${id}`);
-        return rows[0];
+    singleUrlSubEdit: function (url, id) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and Id != ${id}`);
     },
     addMain: function (entity) {
         return db.add(TBL_CATEGORIES, entity);
