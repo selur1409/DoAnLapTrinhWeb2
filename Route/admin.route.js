@@ -37,10 +37,9 @@ router.get('/categories/list-of-all', async function(req, res){
 
         return res.render('vwAdmin/vwCategories/viewAllCategories', {
             layout: 'homeadmin',
-            IsActiveCat: true,
             empty: list.length == 0,
             categories: list,
-            selectedFull: true
+            IsActiveCat: true
         });
     } catch (error) {
         res.redirect('/admin/error500');
@@ -52,36 +51,52 @@ router.get('/categories/addlv1', async function(req, res){
 
     res.render('vwAdmin/vwCategories/addCategoryLv1', {
         layout: 'homeAdmin',
-        ListManage: manage
+        ListManage: manage,
+        IsActiveCat: true
     });
 });
 
 router.post('/categories/addlv1', async function(req, res){
     const name = check.mark_name(req.body.Name);
-    const url = check.mark_url(name);
+    const url = check.mark_url(req.body.Url);
     const manage = req.body.Manage;
     const description = req.body.Description;
     const catMain = await categoryModel.allMain();  
     const ListManage = await accountModel.allEditor();
-    if (!name || manage === 'Empty')
+    if (!name || !url || manage === 'Empty')
     {   
         return res.render('vwAdmin/vwCategories/addCategoryLv1',{
             layout: 'homeAdmin',
             err: 'Mục bắt buộc không được để trống.',
             catMain: catMain,
-            ListManage: ListManage
+            ListManage: ListManage,
+            IsActiveCat: true
+        });
+    }
+
+    const isNameMain = await categoryModel.singleNameMain(name);
+    const isNameSub = await categoryModel.singleNameSub(name);
+    if (isNameMain.length !== 0 || isNameSub.length !== 0)
+    {  
+        return res.render('vwAdmin/vwCategories/addCategoryLv1',{
+            layout: 'homeAdmin',
+            err: 'Tên chuyên mục đã tồn tại',
+            catMain: catMain,
+            ListManage: ListManage,
+            IsActiveCat: true
         });
     }
 
     const isUrlMain = await categoryModel.singleUrlMain(url);
-
-    if (isUrlMain.length !== 0)
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
     {  
         return res.render('vwAdmin/vwCategories/addCategoryLv1',{
             layout: 'homeAdmin',
-            err: `${url}`,
+            err: 'Đường dẫn đã tồn tại',
             catMain: catMain,
-            ListManage: ListManage
+            ListManage: ListManage,
+            IsActiveCat: true
         });
     }
    
@@ -132,7 +147,8 @@ router.get('/categories/edit/:url', async function(req, res){
         return res.render('vwAdmin/vwCategories/editCategory', {
             layout: 'homeAdmin',
             Category: cat,
-            ListManage: ListManage
+            ListManage: ListManage,
+            IsActiveCat: true
         });
     }
     
@@ -143,7 +159,7 @@ router.post('/categories/edit/:url', async function(req, res){
     const urlParam = req.params.url;
     const idCat = req.body.Id;
     const name = check.mark_name(req.body.Name);
-    const url = check.mark_url(name);
+    const url = check.mark_url(req.body.Url);
     const idManage = req.body.Manage;
     const description = req.body.Description;
     
@@ -152,11 +168,19 @@ router.post('/categories/edit/:url', async function(req, res){
         return res.redirect(`/admin/categories/${urlParam}`);
     }
     const isNameMain = await categoryModel.singleNameMainEdit(name, idCat);
-    const isNameSub= await categoryModel.singleNameSubEdit(name, idCat);
+    const isNameSub = await categoryModel.singleNameSub(name);
 
     if (isNameMain.length !== 0 || isNameSub.length !== 0)
     {  
         return res.send('Tên chuyên mục sửa đã tồn tại!');
+    }
+
+    const isUrlMain = await categoryModel.singleUrlMainEdit(url, idCat);
+    const isUrlSub= await categoryModel.singleUrlSub(url);
+
+    if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
+    {  
+        return res.send('Đường dẫn tĩnh của chuyên mục sửa đã tồn tại!');
     }
     
     const entity = {
@@ -177,7 +201,6 @@ router.post('/categories/edit/:url', async function(req, res){
         IdAccount: idManage,
         IdCategories: idCat
     };
-
 
     await categoryModel.patchMain(entity);
     await editoraccountModel.patch(entity_editor);
@@ -213,7 +236,8 @@ router.get('/categories/views/:url', async function(req, res){
         UrlMain: cat.Url,
         Manage: manage[0],
         categories: catSub,
-        empty: catSub.length === 0
+        empty: catSub.length === 0,
+        IsActiveCat: true
     });
 });
 
@@ -251,12 +275,143 @@ router.get('/categories/addlv2/:url', async function(req, res){
         layout: 'homeAdmin',
         catMain: catMain,
         ListManage: manage,
-        url: url
+        url: url,
+        Category: isUrlMain[0],
+        ManageCat: manageCat[0],
+        IsActiveCat: true
     });
 });
 
 router.post('/categories/addlv2/:url', async function(req, res){
-    res.send('Ok');
+    const urlParams = req.params.url;
+
+    const name = check.mark_name(req.body.Name);
+    const url = check.mark_url(req.body.Url);
+
+    if (!name || !url){
+        return res.send('Mục bắt buộc không được để trống');
+    }
+
+    const isNameMain = await categoryModel.singleNameMain(name);
+    const isNameSub = await categoryModel.singleNameSub(name);
+    if (isNameMain.length !== 0 || isNameSub.length !== 0)
+    {  
+        return res.send('Tên chuyên mục đã tồn tại.');
+    }
+
+    const isUrlMain = await categoryModel.singleUrlMain(url);
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
+    {  
+        return res.send('Đường dẫn tĩnh đã tồn tại.');
+    }
+
+    const select = req.body.Select;
+    const idManage = req.body.IdManage;
+    const description = req.body.Description;
+
+    const entity = {
+        IdCategoriesMain: parseInt(select),
+        Name: name,
+        Url: url,
+        Description: description,
+        IsDelete: 0
+    };
+    await categoryModel.addSub(entity);
+
+    return res.redirect(`/admin/categories/views/${urlParams}`);
+});
+
+router.get('/categories/editlv2/:url', async function (req, res){
+    const url = req.params.url;
+    const isUrlSub = await categoryModel.singleUrlSub(url);
+    if (isUrlSub.length === 0){
+        return res.send('Đường dẫn không tồn tại.');
+    }
+
+    const isUrlMain = await categoryModel.singleIdMain(isUrlSub[0].IdCategoriesMain);
+    if (isUrlMain.length === 0){
+        return res.send('Chuyên mục con không có chuyên mục cha.');
+    }
+
+    const catMain = await categoryModel.allMain();
+
+    for (c of catMain){
+        if (c.Id === isUrlSub[0].IdCategoriesMain){
+            c.Selected = true;
+        }
+    }
+
+    const manageCat = await editoraccountModel.singleManageCat(isUrlMain[0].Id);
+
+    const manage = await accountModel.allEditor();
+    for (m of manage){
+        if (m.IdAccount === manageCat[0].IdAccount){
+            m.SelectedManage = true;
+        }
+    }
+    
+    return res.render('vwAdmin/vwCategories/editCategoryLv2',{
+        layout: 'homeAdmin',
+        Url: isUrlMain[0].Url,
+        Name: isUrlMain[0].Name,
+        catMain: catMain,
+        ListManage: manage,
+        Category: isUrlSub[0],
+        ManageCat: manageCat[0],
+        IsActiveCat: true
+    });
+});
+router.post('/categories/editlv2/:url', async function (req, res){
+    const urlParam = req.params.url;
+    const catSub = await categoryModel.singleUrlSub(urlParam);
+    if (catSub.length === 0){
+        return res.send(`Đường dẫn ${urlParam} không tồn tại.`);
+    }
+
+    const catMain = await categoryModel.singleIdMain(catSub[0].IdCategoriesMain);
+    if (catMain.length === 0){
+        return res.send('Chuyên mục con không có chuyên mục cha.');
+    }
+
+    const id = req.body.Id;
+    const name = check.mark_name(req.body.Name);
+    const url = check.mark_url(req.body.Url);
+    
+    if (!name || !url){
+        return res.send('Mục bắt buộc không được để trống.');
+    }
+
+    const isNameMain = await categoryModel.singleNameMain(name);
+    const isNameSub= await categoryModel.singleNameSubEdit(name, id);
+    
+    if (isNameMain.length !== 0 || isNameSub.length !== 0)
+    {  
+        return res.send('Tên chuyên mục sửa đã tồn tại!');
+    }
+    
+    const isUrlMain = await categoryModel.singleUrlMain(url);
+    const isUrlSub= await categoryModel.singleUrlSubEdit(url, id);
+
+    if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
+    {
+        return res.send('Đường dẫn tĩnh của chuyên mục sửa đã tồn tại!');
+    }
+
+    const idCategoriesMain = req.body.Select;
+    const description = req.body.Description;
+
+    const entity = {
+        Id: parseInt(id),
+        IdCategoriesMain: parseInt(idCategoriesMain),
+        Name: name,
+        Url: url,
+        Description: description,
+        IsDelete: 0
+    };
+    await categoryModel.patchSub(entity);
+
+    return res.redirect(`/admin/categories/views/${catMain[0].Url}`);
 });
 
 
@@ -266,22 +421,21 @@ router.get('/tags', async function(req, res){
         layout: 'homeadmin',
         IsActiveTag: true,
         tags: list
-    })
+    });
 });
 
 router.get('/posts', function(req, res){
     res.render('vwAdmin/vwPosts/listPost', {
         layout: 'homeadmin',
         IsActivePos: true
-    })
+    });
 });
-
 
 router.get('/account', function(req, res){
     res.render('vwAdmin/vwAccount/listAccount', {
         layout: 'homeadmin',
         IsActiveAcc: true
-    })
+    });
 });
 
 module.exports = router;

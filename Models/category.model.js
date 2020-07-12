@@ -23,6 +23,9 @@ module.exports = {
         return db.load(`SELECT c.Name FROM ${TBL_CATEGORIES_SUB} s, ${TBL_CATEGORIES} c WHERE s.Id = ${id} and s.IdCategoriesMain = c.Id`);
         
     },
+    singleIdMain: function (id) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Id = '${id}'`);
+    },
     singleNameMain: function (name) {
         return db.load(`SELECT * FROM ${TBL_CATEGORIES} WHERE Name = '${name}'`);
     },
