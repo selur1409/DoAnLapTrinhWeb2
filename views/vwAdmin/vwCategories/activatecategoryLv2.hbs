@@ -1,5 +1,5 @@
 <div class="col mb-2 mt-2 ml-3">
-    <a class="btn btn-info" href="/admin/categories" role="button">
+    <a class="btn btn-info" href="/admin/categories/views/{{this.UrlMain}}" role="button">
       <i class="fas fa-reply"></i>
       Trở về
     </a>
@@ -12,22 +12,33 @@
 </div>
 <div class="card">
   <div class="card-header d-flex justify-content-between">
-    <h4>CATEGORIES</h4>
-    <a class="btn btn-outline-success" href="/admin/categories/addlv2/{{this.UrlMain}}" role="button">
-      <i class="fa fa-plus" aria-hidden="true"></i>
-      Thêm chuyên mục cấp 2
-    </a>
-    <a class="btn btn-outline-warning" href="/admin/categories/activatelv2/{{this.UrlMain}}" role="button" title="List of all">
-      <i class="fas fa-key"></i>
-      Kích hoạt cấp 2
-    </a>
+    <h4>ACTIVATE CATEGORIES LV2</h4>
   </div>
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        {{success}}
+    </div>
+    {{/if}}
+
   {{#if this.empty}}
   <div class="card-body">
     <p class="card-text">Không có dữ liệu.</p>
   </div>
   {{else}}
-  <table class="table table-hover">
+  <table class="table table-hover table-dark">
     <thead>
       <tr>
         <th scope="col" class="text-center">#</th>
@@ -45,13 +56,10 @@
         <td>{{Url}}</td>
         <td>{{NameMain}}</td>
         <td class="text-right">
-        <form method="POST" action="/admin/categories/dellv2/{{UrlMain}}">
-            <a class="btn btn-primary btn-sm" href="/admin/categories/editlv2/{{Url}}" role="button" title="Edit Category">
-                <i class="fas fa-pen"></i>
-            </a>
+        <form method="POST" action="/admin/categories/activatelv2/{{UrlMain}}">
             <input type="hidden" name="Id" value="{{Id}}">            
-            <button type="submit" class="btn btn-danger btn-sm" title="Delete Category">
-                <i class="fas fa-trash-alt"></i>
+            <button type="submit" class="btn btn-warning btn-sm">
+                <i class="fas fa-key"></i>
             </button>
         </form>
         </td>

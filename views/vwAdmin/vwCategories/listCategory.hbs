@@ -9,9 +9,9 @@
       <i class="fas fa-list-ol"></i>
       Danh sách các chuyên mục
     </a>
-    <a class="btn btn-outline-warning" href="#" role="button" title="List of all">
+    <a class="btn btn-outline-warning" href="/admin/categories/activatelv1" role="button" title="List of all">
       <i class="fas fa-key"></i>
-      Kích hoạt
+      Kích hoạt cấp 1
     </a>
   </div>
   {{#if this.empty}}
@@ -37,7 +37,7 @@
         <td>{{Url}}</td>
         <td>{{Manage}}</td>
         <td class="text-right">
-        <form method="POST" action="/admin/categories/del">
+        <form method="POST" action="/admin/categories/dellv1">
             <a class="btn btn-primary btn-sm" href="/admin/categories/views/{{Url}}" role="button" title="View Category">
                 <i class="fas fa-eye"></i>
             </a>          
@@ -45,7 +45,7 @@
                 <i class="fas fa-pen"></i>
             </a>
             
-            <input type="text" name="Id" value="{{Id}}">            
+            <input type="hidden" name="Id" value="{{Id}}">            
             <button type="submit" class="btn btn-danger btn-sm">
                 <i class="fas fa-trash-alt"></i>
             </button>
