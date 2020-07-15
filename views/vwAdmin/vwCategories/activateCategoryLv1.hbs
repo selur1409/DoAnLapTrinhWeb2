@@ -26,7 +26,7 @@
         {{success}}
     </div>
     {{/if}}
-    
+
   {{#if this.empty}}
   <div class="card-body">
     <p class="card-text">Không có dữ liệu.</p>
@@ -62,4 +62,33 @@
     </tbody>
   </table>
   {{/if}}
+
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {{#each this.page_items}}
+        {{#if isActive}}
+        <li class="page-item active" aria-current="page">
+          <span class="page-link">
+            {{value}}
+            <span class="sr-only">(current)</span>
+          </span>
+        </li>
+        {{else}}
+        <li class="page-item {{#if isDisabled}}disabled{{/if}}">
+          <a class="page-link" href="?page={{value}}">{{value}}</a>
+        </li>
+        {{/if}}
+        {{/each}}
+        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{next_value}}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
 </div>

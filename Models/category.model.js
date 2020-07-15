@@ -3,26 +3,65 @@ const TBL_CATEGORIES = 'categories';
 const TBL_CATEGORIES_SUB = 'categories_sub';
 
 module.exports = {
-    all: function () {
+    all: function (limit, offset) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.Id, t.Name, t.Url, t.Description 
                         from (SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 
                         UNION 
-                        SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES} WHERE IsDelete = 0) as t ORDER BY t.Name`);
+                        SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES} 
+                        WHERE IsDelete = 0) as t ORDER BY t.Name
+                        limit ${limit} offset ${offset}`);
     },
-    allMain: function () {
-        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES} WHERE IsDelete = 0 ORDER BY Name`);
+    allMain: function (limit, offset) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES} 
+        WHERE IsDelete = 0 ORDER BY Name
+        limit ${limit} offset ${offset}`);
     },
-    allMainProvisional: function () {
-        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES} WHERE IsDelete = 1 ORDER BY Name`);
+    countAll: function () {
+        return db.load(`SELECT count(*) as SoLuong
+                        from (SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 
+                        UNION 
+                        SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES} 
+                        WHERE IsDelete = 0) as t ORDER BY t.Name`);
+    },
+    countAllMain: function () {
+        return db.load(`SELECT count(*) as 'SoLuong' FROM ${TBL_CATEGORIES} WHERE IsDelete = 0`);
+    },
+    allMainProvisional: function (limit, offset) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES} 
+        WHERE IsDelete = 1 ORDER BY Name
+        limit ${limit} offset ${offset}`);
+    },
+    countAllMainProvisional: function () {
+        return db.load(`SELECT count(*) as 'SoLuong' 
+        FROM ${TBL_CATEGORIES} 
+        WHERE IsDelete = 1 ORDER BY Name`);
     },
     allSub: function () {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 ORDER BY Name`);
     },
-    allSub_Id: function (id) {
-        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name`);
+    allSub_Id: function (id, limit, offset) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name
+        limit ${limit} offset ${offset}`);
     },
-    allSub_Id_Provisional: function (id) {
-        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 1 AND IdCategoriesMain = ${id} ORDER BY Name`);
+    countAllSub_Id: function (id) {
+        return db.load(`SELECT count(*) as 'SoLuong'
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name`);
+    },
+    allSub_Id_Provisional: function (id, limit, offset) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 1 AND IdCategoriesMain = ${id} ORDER BY Name
+        limit ${limit} offset ${offset}`);
+    },
+    countAllSub_Id_Provisional: function (id) {
+        return db.load(`SELECT count(*) as 'SoLuong' 
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 1 AND IdCategoriesMain = ${id} ORDER BY Name`);
     },
     
     getNameMain: function(id){

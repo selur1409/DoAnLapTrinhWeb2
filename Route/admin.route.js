@@ -4,8 +4,8 @@ const tagModel = require('../models/tag.model');
 const editoraccountModel = require('../models/editoraccount.model');
 const accountModel = require('../models/account.model');
 const check = require('../js/check');
-const { singleIdMain } = require('../models/category.model');
-
+const config = require('../config/default.json');
+const pageination = require('../js/pagination');
 const router = express.Router();
 
 router.get('/', function(req, res){
@@ -16,16 +16,32 @@ router.get('/', function(req, res){
 
 router.get('/categories', async function(req, res){
     try{
-        const list = await categoryModel.allMain();            
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+       
+        const [list, total] = await Promise.all([
+            categoryModel.allMain(config.pagination.limit, offset),
+            categoryModel.countAllMain()
+        ]);
+         
         for(c of list){
             const editor = await editoraccountModel.singleManageCat(c.Id);
             c.Manage = editor[0].Name;
         }
+     
+        const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+
         return res.render('vwAdmin/vwCategories/listCategory', {
             layout: 'homeadmin',
             IsActiveCat: true,
             empty: list.length == 0,
             categories: list,
+            page_items,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages
         });
     } catch (error) {
         return res.redirect(`/admin/error500`);
@@ -34,14 +50,29 @@ router.get('/categories', async function(req, res){
 
 router.get('/categories/list-of-all', async function(req, res){
     try{
-        const list = await categoryModel.all();
-
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+       
+        const [list, total] = await Promise.all([
+            categoryModel.all(config.pagination.limit, offset),
+            categoryModel.countAll()
+        ]);
+        
+        const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+     
         return res.render('vwAdmin/vwCategories/viewAllCategories', {
             layout: 'homeadmin',
+            IsActiveCat: true,
             empty: list.length == 0,
             categories: list,
-            IsActiveCat: true
+            page_items,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages
         });
+        
     } catch (error) {
         return res.redirect('/admin/error500');
     }
@@ -226,17 +257,31 @@ router.post('/categories/dellv1', async function(req, res){
 
 // kích hoạt category (IsDelete = 0) lv1
 router.get('/categories/activatelv1', async function (req, res){
-    const list = await categoryModel.allMainProvisional();            
+    const page = +req.query.page || 1;
+    if (page < 0) page = 1;
+    const offset = (page - 1) * config.pagination.limit;
+   
+    const [list, total] = await Promise.all([
+        categoryModel.allMainProvisional(config.pagination.limit, offset),
+        categoryModel.countAllMainProvisional()
+    ]);
+    
     for(c of list){
         const editor = await editoraccountModel.singleManageCat(c.Id);
         c.Manage = editor[0].Name;
     }
-
+    const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+       
     return res.render('vwAdmin/vwCategories/activateCategoryLv1', {
         layout: 'homeadmin',
         IsActiveCat: true,
         empty: list.length == 0,
         categories: list,
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages
     });
 });
 
@@ -280,21 +325,36 @@ router.get('/categories/views/:url', async function(req, res){
 
     const manage = await editoraccountModel.singleManageCat(cat.Id);
 
-    const catSub = await categoryModel.allSub_Id(cat.Id);
-    for(c of catSub){
-        const nameMain = await categoryModel.getNameMain(c.Id);
+    const page = +req.query.page || 1;
+    if (page < 0) page = 1;
+    const offset = (page - 1) * config.pagination.limit;
+   
+    const [list, total] = await Promise.all([
+        categoryModel.allSub_Id(cat.Id, config.pagination.limit, offset),
+        categoryModel.countAllSub_Id(cat.Id)
+    ]);
+    
+    for(l of list){
+        const nameMain = await categoryModel.getNameMain(l.Id);
         
-        c.NameMain = nameMain[0].Name;
-        c.UrlMain = cat.Url;
+        l.NameMain = nameMain[0].Name;
+        l.UrlMain = cat.Url;
     }
+    const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+       
     return res.render('vwAdmin/vwCategories/viewCategorySub',{
         layout: 'homeAdmin',
         Name: cat.Name,
         UrlMain: cat.Url,
         Manage: manage[0],
-        categories: catSub,
-        empty: catSub.length === 0,
-        IsActiveCat: true
+        categories: list,
+        empty: list.length === 0,
+        IsActiveCat: true,
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages
     });
 });
 
@@ -317,13 +377,23 @@ router.get('/categories/activatelv2/:Url', async function (req, res){
 
     const manage = await editoraccountModel.singleManageCat(cat.Id);
 
-    const catSub = await categoryModel.allSub_Id_Provisional(cat.Id);
-    for(c of catSub){
-        const nameMain = await categoryModel.getNameMain(c.Id);
+
+    const page = +req.query.page || 1;
+    if (page < 0) page = 1;
+    const offset = (page - 1) * config.pagination.limit;
+   
+    const [list, total] = await Promise.all([
+        categoryModel.allSub_Id_Provisional(cat.Id, config.pagination.limit, offset),
+        categoryModel.countAllSub_Id_Provisional(cat.Id)
+    ]);
+    
+    for(l of list){
+        const nameMain = await categoryModel.getNameMain(l.Id);
         
-        c.NameMain = nameMain[0].Name;
-        c.UrlMain = cat.Url;
+        l.NameMain = nameMain[0].Name;
+        l.UrlMain = cat.Url;
     }
+    const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
 
 
     return res.render('vwAdmin/vwCategories/activateCategoryLv2',{
@@ -331,9 +401,14 @@ router.get('/categories/activatelv2/:Url', async function (req, res){
         Name: cat.Name,
         UrlMain: cat.Url,
         Manage: manage[0],
-        categories: catSub,
-        empty: catSub.length === 0,
-        IsActiveCat: true
+        categories: list,
+        empty: list.length === 0,
+        IsActiveCat: true,
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages
     });
 });
 
