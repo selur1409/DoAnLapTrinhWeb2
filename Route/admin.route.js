@@ -8,6 +8,8 @@ const config = require('../config/default.json');
 const pageination = require('../js/pagination');
 const router = express.Router();
 
+require('../middlewares/localsAdmin.mdw')(router);
+
 router.get('/', function(req, res){
     return res.render('vwAdmin/index', {
         layout: 'homeadmin'
@@ -16,6 +18,12 @@ router.get('/', function(req, res){
 
 router.get('/categories', async function(req, res){
     try{
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'categories') {
+              c.isActive = true;
+            }
+        }
+
         const page = +req.query.page || 1;
         if (page < 0) page = 1;
         const offset = (page - 1) * config.pagination.limit;
@@ -34,7 +42,6 @@ router.get('/categories', async function(req, res){
 
         return res.render('vwAdmin/vwCategories/listCategory', {
             layout: 'homeadmin',
-            IsActiveCat: true,
             empty: list.length == 0,
             categories: list,
             page_items,
@@ -50,6 +57,12 @@ router.get('/categories', async function(req, res){
 
 router.get('/categories/list-of-all', async function(req, res){
     try{
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'categories') {
+              c.isActive = true;
+            }
+        }
+
         const page = +req.query.page || 1;
         if (page < 0) page = 1;
         const offset = (page - 1) * config.pagination.limit;
@@ -63,7 +76,6 @@ router.get('/categories/list-of-all', async function(req, res){
      
         return res.render('vwAdmin/vwCategories/viewAllCategories', {
             layout: 'homeadmin',
-            IsActiveCat: true,
             empty: list.length == 0,
             categories: list,
             page_items,
@@ -79,12 +91,17 @@ router.get('/categories/list-of-all', async function(req, res){
 });
 
 router.get('/categories/addlv1', async function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const manage = await accountModel.allEditor();
 
     return res.render('vwAdmin/vwCategories/addCategoryLv1', {
         layout: 'homeAdmin',
-        ListManage: manage,
-        IsActiveCat: true
+        ListManage: manage
     });
 });
 
@@ -101,8 +118,7 @@ router.post('/categories/addlv1', async function(req, res){
             layout: 'homeAdmin',
             err: 'Mục bắt buộc không được để trống.',
             catMain: catMain,
-            ListManage: ListManage,
-            IsActiveCat: true
+            ListManage: ListManage
         });
     }
 
@@ -114,8 +130,7 @@ router.post('/categories/addlv1', async function(req, res){
             layout: 'homeAdmin',
             err: 'Tên chuyên mục đã tồn tại',
             catMain: catMain,
-            ListManage: ListManage,
-            IsActiveCat: true
+            ListManage: ListManage
         });
     }
 
@@ -127,8 +142,7 @@ router.post('/categories/addlv1', async function(req, res){
             layout: 'homeAdmin',
             err: 'Đường dẫn đã tồn tại',
             catMain: catMain,
-            ListManage: ListManage,
-            IsActiveCat: true
+            ListManage: ListManage
         });
     }
    
@@ -159,6 +173,12 @@ router.post('/categories/addlv1', async function(req, res){
 
 
 router.get('/categories/edit/:url', async function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const url = req.params.url;
     const isUrlMain = await categoryModel.singleUrlMain(url);
     if (isUrlMain.length !== 0){
@@ -179,8 +199,7 @@ router.get('/categories/edit/:url', async function(req, res){
         return res.render('vwAdmin/vwCategories/editCategory', {
             layout: 'homeAdmin',
             Category: cat,
-            ListManage: ListManage,
-            IsActiveCat: true
+            ListManage: ListManage
         });
     }
     
@@ -257,6 +276,12 @@ router.post('/categories/dellv1', async function(req, res){
 
 // kích hoạt category (IsDelete = 0) lv1
 router.get('/categories/activatelv1', async function (req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const page = +req.query.page || 1;
     if (page < 0) page = 1;
     const offset = (page - 1) * config.pagination.limit;
@@ -274,7 +299,6 @@ router.get('/categories/activatelv1', async function (req, res){
        
     return res.render('vwAdmin/vwCategories/activateCategoryLv1', {
         layout: 'homeadmin',
-        IsActiveCat: true,
         empty: list.length == 0,
         categories: list,
         page_items,
@@ -316,6 +340,12 @@ router.post('/categories/activatelv1', async function (req, res){
 });
 
 router.get('/categories/views/:url', async function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const url = req.params.url;
     const rows = await categoryModel.singleUrlMain(url);
     if (rows.length === 0){
@@ -349,7 +379,6 @@ router.get('/categories/views/:url', async function(req, res){
         Manage: manage[0],
         categories: list,
         empty: list.length === 0,
-        IsActiveCat: true,
         page_items,
         prev_value: page - 1,
         next_value: page + 1,
@@ -368,6 +397,12 @@ router.post('/categories/dellv2/:Url', async function(req, res){
 });
 
 router.get('/categories/activatelv2/:Url', async function (req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const url = req.params.Url;
     const rows = await categoryModel.singleUrlMain(url);
     if (rows.length === 0){
@@ -403,7 +438,6 @@ router.get('/categories/activatelv2/:Url', async function (req, res){
         Manage: manage[0],
         categories: list,
         empty: list.length === 0,
-        IsActiveCat: true,
         page_items,
         prev_value: page - 1,
         next_value: page + 1,
@@ -451,6 +485,12 @@ router.post('/categories/activatelv2/:Url', async function (req, res){
 });
 
 router.get('/categories/addlv2/:url', async function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const url = req.params.url;
     const isUrlMain = await categoryModel.singleUrlMain(url);
     if (isUrlMain.length === 0){
@@ -481,8 +521,7 @@ router.get('/categories/addlv2/:url', async function(req, res){
         ListManage: manage,
         url: url,
         Category: isUrlMain[0],
-        ManageCat: manageCat[0],
-        IsActiveCat: true
+        ManageCat: manageCat[0]
     });
 });
 
@@ -527,6 +566,12 @@ router.post('/categories/addlv2/:url', async function(req, res){
 });
 
 router.get('/categories/editlv2/:url', async function (req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'categories') {
+          c.isActive = true;
+        }
+    }
+
     const url = req.params.url;
     const isUrlSub = await categoryModel.singleUrlSub(url);
     if (isUrlSub.length === 0){
@@ -562,8 +607,7 @@ router.get('/categories/editlv2/:url', async function (req, res){
         catMain: catMain,
         ListManage: manage,
         Category: isUrlSub[0],
-        ManageCat: manageCat[0],
-        IsActiveCat: true
+        ManageCat: manageCat[0]
     });
 });
 router.post('/categories/editlv2/:url', async function (req, res){
@@ -620,25 +664,40 @@ router.post('/categories/editlv2/:url', async function (req, res){
 
 
 router.get('/tags', async function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'tags') {
+          c.isActive = true;
+        }
+    }
+
     const list = await tagModel.all();
     return res.render('vwAdmin/vwTags/listTag', {
         layout: 'homeadmin',
-        IsActiveTag: true,
         tags: list
     });
 });
 
 router.get('/posts', function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'posts') {
+          c.isActive = true;
+        }
+    }
+
     return res.render('vwAdmin/vwPosts/listPost', {
-        layout: 'homeadmin',
-        IsActivePos: true
+        layout: 'homeadmin'
     });
 });
 
-router.get('/account', function(req, res){
+router.get('/accounts', function(req, res){
+    for (const c of res.locals.lcManage) {
+        if (c.link === 'accounts') {
+          c.isActive = true;
+        }
+    }
+
     return res.render('vwAdmin/vwAccount/listAccount', {
-        layout: 'homeadmin',
-        IsActiveAcc: true
+        layout: 'homeadmin'
     });
 });
 
