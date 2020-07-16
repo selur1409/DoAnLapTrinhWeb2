@@ -13,16 +13,16 @@
 
           <!-- Portfolio Item Row -->
           <div class="row">
-
-            <div class="col-md-8">
-              {{#if Avatar}}
-                <img class="img-fluid" src="" alt="">
-              {{else}}
-                <img class="img-fluid" src="http://placehold.it/750x500" alt="">
-              {{/if}}
+            <div class = 'col-sm-8 p-0'>
+                {{#if AvatarEmpty}}
+                <img class="img-fluid" src="http://placehold.it/750x500" alt="Responsive image">
+                {{else}}
+                <img class="img-fluid" src="{{Avatar}}" alt="Responsive image">
+                {{/if}}
             </div>
+            
 
-            <div class="col-md-4">
+            <div class="col-sm-4">
               <h3 class="my-3">Description</h3>
               <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque
                 urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies,

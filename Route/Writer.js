@@ -4,7 +4,10 @@ const flash = require('express-flash');
 const config = require('../config/default.json');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
+let upload = multer();
 const moment = require('moment'); moment.locale("vi");
+const fs = require('fs');
+const path = require('path');
 const db = require('../models/Writer');
 const account = require('../models/account.model');
 const {restrict, referer} = require('../middlewares/auth.mdw');
@@ -39,7 +42,7 @@ function exposeTemplates(req, res, next) {
         setImmediate(next);
     })
     .catch(next);
-  }
+}
 
 function Authories(req, res, next)
 {
@@ -53,23 +56,90 @@ function Authories(req, res, next)
     }
 }
 
-const storage = multer.diskStorage({
-    filename(req, file, cb) {
-        cb(null, file.originalname);
-    },
-    destination(req, file, cb) {
-        cb(null, './public/img');
-    }
-})
+function getTagImg(value)
+{
+  let result;
+  let res = [];
+  const regex = RegExp(`<img.*?src="([^">]*\/([^">]*?))".*?>`, 'g');
+  while((result = regex.exec(value)))
+  {
+    res.push(result[2]);
+  }
+  return res;
+}
 
-const upload = multer({ storage, 
-    fileFilter: function (req, file, cb) {
-        if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
-            req.fileValidationError = 'Only image files are allowed!';
-            return cb(new Error('Only image files are allowed!'), false);
+function RemoveImage(directoryPath, tagsImg)
+{
+    fs.readdir(directoryPath, function (err, files) {
+        //handling error
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
         }
-        cb(null, true);
+        //listing all files using forEach
+        files.forEach(file => {
+            if (tagsImg.includes(file)) {
+                console.log("file exists");
+            }
+            else {
+                fs.unlinkSync(directoryPath + '\\' + file);
+            }
+        });
+    });
+}
+
+function UploadIMG(DirName, req, res)
+{
+    const storage = multer.diskStorage({
+        filename(req, file, cb) {
+            cb(null, file.originalname);
+        },
+        destination(req, file, cb) {
+            cb(null, './public/img/ImagePost/' + DirName);
+        }
+    })
+  
+    upload = multer({
+        storage,
+        fileFilter: function (req, file, cb) {
+            if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
+                req.fileValidationError = 'Only image files are allowed!';
+                return cb(new Error('Only image files are allowed!'), false);
+            }
+            cb(null, true);
+        }
+    });
+
+    upload.array('file', 1)(req, res, function (err) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            console.log(req.files);
+            console.log("Success");
+            Path = 'http://localhost:3000/public/img/ImagePost/' + DirName + '/' + req.files[0].filename;
+            res.json({ location: Path });
+        }
+    });
+}
+
+router.post('/Upload_IMG', restrict, Authories, async(req, res)=>{
+    const folderName = './public/img/ImagePost/temp';
+    try {
+        if (!fs.existsSync(folderName)) {
+            fs.mkdirSync(folderName, {recursive: true}, function (err) {
+                if (err) {
+                    console.log(err)
+                }
+                else {
+                    console.log("New directory successfully created.");
+                }
+            });
+        }
     }
+    catch (err) {
+        console.log(err);
+    }
+    UploadIMG('temp', req, res);
 });
 
 router.get('/Writer', restrict, Authories, async (req,res)=>{
@@ -112,7 +182,8 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
 
 router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
-
+        // const tmp = await db.LoadTheLastPost();
+        // const Id = tmp[0].Id + 1;
         let checkbox = JSON.parse(req.body.arrCheck);
         const IsDelete = 0;
         const IdStatus = 4;
@@ -126,11 +197,14 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
 
+        //get tagImg in full content
+        const tagsImg = getTagImg(FullContent);
+        const directoryPath = path.join(__dirname, '../public/img/ImagePost/temp');
+        
         if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
             res.json({ fail: 'Please complete all fields in the form' });
         }
         else {
-
             let Temp = [];
             const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
             const Result = await db.InsertPost(ValueOfPost);
@@ -146,16 +220,38 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
             const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
             const result = await db.InsertTagPost(ValueOfTagPost);
+
+            //remove image is not exists in full content 
+            RemoveImage(directoryPath, tagsImg);
+
+            //Update src for img tag in Full Content 
+            const NewTagImg = '/../public/img/ImagePost/' + Result.insertId;
+            const regex = RegExp(`(<img.*?src=")([^">]*)(\/[^">]*?")(.*?>)`, 'g');
+            let NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
+            let NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+
+            await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
+
+            // Rename folder containt image of post by post's Id
+            const NewDirName = path.join(__dirname, '../public/img/ImagePost/' + Result.insertId);
+            try {
+                if(fs.existsSync('../public/img/ImagePost/temp'))
+                {
+                    fs.renameSync(directoryPath, NewDirName);
+                    console.log("Directory renamed successfully.");
+                }
+                else
+                {
+                    console.log('Directory does not exists!');
+                }
+            }
+            catch (error) {
+                console.log(error);
+            }
+            
             if (result !== null) {
                 res.json({ success: 'This article has been sent successfully!' });
             }
-            // console.log(Temp);
-            // console.log(DatePost);
-            // console.log(DateTimePost);
-            // console.log(IdCategories);
-            // console.log(req.body.BriefCont);
-            // console.log(req.body.FullCont);
-            // console.log(Result.insertId);
         }
     }
     catch(e)
@@ -241,7 +337,7 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
                 AvatarPost: function (value){
                     if(value !== null)
                     {
-                        return '/public/img/' + value;
+                        return '/public/img/Avatar/' + value;
                     }
                     return 'https://img.favpng.com/25/7/23/computer-icons-user-profile-avatar-image-png-favpng-LFqDyLRhe3PBXM0sx2LufsGFU.jpg';
                 },
@@ -303,6 +399,11 @@ router.get('/DetailPost/', restrict, Authories, async (req, res)=>{
     const Status = await db.LoadStatusById(Post[0].IdStatus);
     const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
     res.json({Post, Status, Categories});
+});
+
+router.post('/UpdateIMG', restrict, Authories, async (req, res)=>{
+    const idPost = +req.query.id;
+    UploadIMG(idPost, req, res);
 });
 
 router.get('/Update/:id', restrict, Authories, async (req, res)=>{
@@ -369,7 +470,7 @@ router.get('/Update/:id', restrict, Authories, async (req, res)=>{
     }   
 });
 
-router.post('/Update/', restrict, Authories, async (req,res, next)=>{
+router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
         let checkbox = JSON.parse(req.body.arrCheck);
         const IdPost = +req.query.id;
@@ -378,7 +479,7 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
         const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
         const DateTimePost = null;
         const View = 0;
-        const Avatar = null;
+        let Avatar = null;
         const IdCategories = req.body.Categories;
         const Title = req.body.Title;
         const FullContent = req.body.FullCont;
@@ -390,6 +491,8 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
             res.json({fail:' Please complete all fields in the form'});
         }
         else{
+            const TagsImg = getTagImg(FullContent);
+            Avatar = '/../public/img/ImagePost/' + IdPost + '/' +TagsImg[0];
             const ValueOfPost = [`${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
             const Result = await db.UpdatePostOfWriter(ValueOfPost);
             await db.UpdatePostDetail(FullContent, IdPost);
@@ -403,6 +506,11 @@ router.post('/Update/', restrict, Authories, async (req,res, next)=>{
             }
             const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
             const result = await db.InsertTagPost(ValueOfTagPost);
+
+            //remove image is not exists in full content 
+            const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
+            RemoveImage(directoryPath, TagsImg);
+
             if (result !== null) {
                 res.json({success:'This article has been sent successfully!'});
             }
@@ -614,63 +722,113 @@ router.get('/Profile', restrict, Authories, async (req, res, next)=>{
     }
 });
 
-router.post('/Profile/', restrict, Authories, upload.single('Avatar'), async (req, res, next)=>{
+router.post('/Profile/', restrict, Authories, async (req, res, next)=>{
+    
+    let Name = '';
+    let Email = '';
+    let DOB = '';
+    let Phone = '';
+    let Nickname = '';
+    let Avatar = '';
+    const IdAccount = res.locals.lcAuthUser.IdAccount;
+
     try{
         const option = +req.query.opt;
-        
        if(option === 1)
        {
+            const storage = multer.diskStorage({
+                filename(req, file, cb) {
+                    cb(null, IdAccount + path.extname(file.originalname));
+                },
+                destination(req, file, cb) {
+                    cb(null, './public/img/Avatar');
+                }
+            });
 
-           if (req.body.Name === "" ||
-               moment(req.body.DOB, "DD/MM/YYYY").isValid === false ||
-               req.body.Email === "") {
-               res.json({ fail: "These fields cannot not be emtpy!" });
-           }
-           else {
-               const dt_now = moment().format('YYYY-MM-DD');
-               const DOB = moment(req.body.DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
-               const Name = req.body.Name;
-               const Email = req.body.Email;
-               const Phone = req.body.Phone; 
-               const Nickname = req.body.Nickname;
-               const IdAccount = res.locals.lcAuthUser.IdAccount;  
-               const Avatar = req.file !== undefined ? req.file.originalname : null;   
-       
-               const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${IdAccount}`];
-               if (DOB > dt_now) {
-                   res.json({ fail: 'Your birthday cannot be greater than current date' });
-               }
-               else {
-                   const result = await db.UpdateProfile(value);
-                   if (result.affectedRows === 0) {
-                       res.json({ fail: 'Your birthday cannot be greater than current date' });
-                   }
-                   else {
-                       res.json({ success: "The change process is successful" });
-                   }
-               }
-           }
+            const upload = multer({ storage, 
+                fileFilter: function (req, file, cb) {
+                    if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
+                        req.fileValidationError = 'Only image files are allowed!';
+                        return cb(new Error('Only image files are allowed!'), false);
+                    }
+                    cb(null, true);
+                }
+            });
+
+            upload.single('Avatar')(req, res, async error => {
+                if(error)
+                {
+                    console.log(error);
+                }
+                else
+                {
+                    Name = req.body.Name;
+                    DOB = req.body.DOB;
+                    Email = req.body.Email;
+                    Phone = req.body.Phone; 
+                    Nickname = req.body.Nickname;
+                    Avatar = req.file !== undefined ? IdAccount + path.extname(req.file.originalname) : null;   
+
+                    if (Name === "" ||
+                        moment(DOB, "DD/MM/YYYY").isValid === false ||
+                        Email === "") {
+                        console.log(Name);
+                        console.log(DOB);
+                        console.log(Email);
+                        res.json({ fail: "These fields cannot not be emtpy!" });
+                    }
+                    else {
+                        const dt_now = moment().format('YYYY-MM-DD');
+                        DOB = moment(DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
+
+                        const IdAccount = res.locals.lcAuthUser.IdAccount;
+
+                        const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${IdAccount}`];
+                        if (DOB > dt_now) {
+                            res.json({ fail: 'Your birthday cannot be greater than current date' });
+                        }
+                        else {
+                            const result = await db.UpdateProfile(value);
+                            if (result.affectedRows === 0) {
+                                res.json({ fail: 'Your birthday cannot be greater than current date' });
+                            }
+                            else {
+                                res.json({ success: "The change process is successful" });
+                            }
+                        }
+                    }
+                }
+            });
        }
        else if(option === 2)
        {
-            const Result = await account.single(res.locals.lcAuthUser.Username);
-            const verification = bcrypt.compareSync(req.body.CurrentPassword, Result[0].Password_hash);
-            const Id = res.locals.lcAuthUser.Id;
-            if(req.body.NewPassword !== req.body.ConfirmNewPassword)
-            {
-                res.json({fail: 'Confirmation password does not match the New Password'});
-            }
-            else if(verification === false)
-            {   
-                res.json({fail: 'Your current password is incorrect'});
-            }
-            else
-            {
-                const NewPassword = bcrypt.hashSync(req.body.NewPassword, config.authentication.saltRounds);
-                const ValuePassword = [`${NewPassword}`, `${Id}`];
-                await db.UpdatePassword(ValuePassword);
-                res.json({success: "The change process is successful"});
-            }
+            upload.fields([])(req, res, async error => {
+                if(error)
+                {
+                    console.log(error);
+                }
+                else
+                {
+                    const Result = await account.single(res.locals.lcAuthUser.Username);
+                    const verification = bcrypt.compareSync(req.body.CurrentPassword, Result[0].Password_hash);
+                    const Id = res.locals.lcAuthUser.Id;
+                    if(req.body.NewPassword !== req.body.ConfirmNewPassword)
+                    {
+                        res.json({fail: 'Confirmation password does not match the New Password'});
+                    }
+                    else if(verification === false)
+                    {   
+                        res.json({fail: 'Your current password is incorrect'});
+                    }
+                    else
+                    {
+                        const NewPassword = bcrypt.hashSync(req.body.NewPassword, config.authentication.saltRounds);
+                        const ValuePassword = [`${NewPassword}`, `${Id}`];
+                        await db.UpdatePassword(ValuePassword);
+                        res.json({success: "The change process is successful"});
+                    }
+                }
+            });
        }
     }
     catch(e){

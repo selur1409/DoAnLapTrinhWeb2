@@ -215,8 +215,9 @@
                             const IdStatus = dataParsed.Status[0].Name;
                             const Categories = dataParsed.Categories[0].CategorieName;
                             const DetailCategories = dataParsed.Categories[0].SubCategories;
-                            let Avatar = dataParsed.Post[0].Avatar === null ? dataParsed.Post[0].Avatar : false;
-                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont });
+                            let Avatar = dataParsed.Post[0].Avatar !== null ? dataParsed.Post[0].Avatar : false;
+                            let AvatarEmpty = Avatar === 'null';
+                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont, AvatarEmpty });
                             $("#modalDetailPost").modal("show");
                         }
                     }

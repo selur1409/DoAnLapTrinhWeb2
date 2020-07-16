@@ -37,6 +37,10 @@ module.exports = {
         return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'function', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() ,'${DayOrMonthOrYear}') AND CURDATE() ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`)
     },
 
+    LoadTheLastPost:()=>{
+        return db.load(`SELECT p.* FROM posts p ORDER BY Id DESC LIMIT 1`);
+    },
+
     LoadSinglePost:(value)=>{
         return db.load(`SELECT p.* FROM posts p WHERE p.Id = '${value}'`);
     },
@@ -64,6 +68,10 @@ module.exports = {
 
     CountPostOfWriterThisDayOrThisMonthOrThisYear:(IdStatus, IdAccount, ThisDayOrMonthOrYear)=>{
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() , '${ThisDayOrMonthOrYear}') AND CURDATE()`);
+    },
+
+    UpdateFullContent:(Content, Avatar, Id)=>{
+        return db.insert(`UPDATE posts SET Content_Full = '${Content}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
     },
 
     UpdatePostOfWriter:(value)=>{
