@@ -1,15 +1,15 @@
 const db = require('../utils/db');
-const TBL_TAGS = 'tags'
+const TBL_TAGS = 'tags';
 
 module.exports = {
     all: function () {
-        return db.load(`select * from ${TBL_TAGS}`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where IsDelete = 0`);
     },
     single: function (id) {
-        return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = '${id}'`);
+        return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 0`);
     },
     add: function (entity) {
-        return db.add(TBL_TAGS, entity);
+        return db.add(TBL_ACCOUNTS, entity);
     },
     patch: function (entity) {
         const condition = {

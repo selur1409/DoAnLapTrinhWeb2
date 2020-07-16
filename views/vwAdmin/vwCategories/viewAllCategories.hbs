@@ -1,0 +1,38 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/categories" role="button">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>LIST-OF-ALL CATEGORIES</h4>
+  </div>
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">#</th>
+        <th scope="col">Chuyên mục</th>
+        <th scope="col">Đường dẫn tĩnh</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.categories}}
+      <tr>
+        <th scope="row" class="text-center">{{Stt}}</th>
+        <td>{{Name}}</td>
+        <td>{{Url}}</td>
+        <td class="text-right">
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>

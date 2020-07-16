@@ -5,17 +5,23 @@
   <table class="table table-hover">
     <thead>
       <tr>
+
+        <th scope="col" class="text-center">No.</th>
         <th scope="col" class="text-center">Title</th>
-        <th scope="col">Status</th>
-        <th scope="col">DatePost</th>
-        <th scope="col">&nbsp;</th>
+        <th scope="col" class="text-center">Categories</th>
+        <th scope="col" class="text-center">DatePost</th>
+        <th scope="col" class="text-center">Status</th>
+        <th scope="col" class="text-center">&nbsp;</th>
       </tr>
     </thead>
     <tbody>
-      {{#each this.pendingPost}}
+      {{#each this.listPost}}
       <tr>
-        <th scope="row" class="text-center">{{Title}}</th>
-        <td>{{DatePost}}</td>
+        <th scope="row" class="text-center">#</th>
+        <td class="text-center">{{Title}}</td>
+        <td class="text-center">{{cateName}}</td>
+        <td class="text-center">{{DatePost}}</td>
+        <td class="text-center">{{statusName}}</td>
         <td class="text-right">
           <a class="btn btn-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
           Review

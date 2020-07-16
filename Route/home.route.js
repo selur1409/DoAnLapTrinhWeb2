@@ -53,11 +53,11 @@ router.get('/',async function (req, res) {
 
 }) 
 
-router.get('/:id', function(req, res){
-    res.render('vwPost/detailPost', {
-        layout: 'home'
-    })
-});
+// router.get('/:id', function(req, res){
+//     res.render('vwPost/detailPost', {
+//         layout: 'home'
+//     })
+// });
 
 
 module.exports = router;

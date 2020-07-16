@@ -6,9 +6,22 @@
     </h5>
     </div>
     <div class="text-center"> <h2>{{this.reviewPost.Title}}</h2></div>
-    <div>{{{this.reviewPost.Content_Full}}}</div>
+    <div >
+        <i>Author: {{this.author.Nickname}}</i>
+        <br>
+        <i>Date post: {{this.reviewPost.DatePost}}</i>
+    </div>
+    <div class="mt-5">
+        {{{this.reviewPost.Content_Full}}}</div>
+    <div>Tags:</div>
+    <div>
+        {{#each this.listTag}}
+        <i class="bg-info text-white">{{TagName}}</i>
+        {{/each}}
+    </div>
+
 </div>
 <div class="text-center">
     <button type="button" class="btn btn-success">Accepted</button>
-<button type="button" class="btn btn-danger">Denied</button>
+<a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Denied</a>
     </div>

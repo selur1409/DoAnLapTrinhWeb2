@@ -40,13 +40,16 @@
           <label for="">Tags</label>
           <div class="row">
             {{#each this.ListTag}}
-              <div class="col">
+              {{!-- <div class="col">
                   <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="checkbox{{@index}}"  value="{{Id}}">
                     <label class="custom-control-label" for="checkbox{{@index}}">{{this.Name}}</label>
                   </div>
+              </div> --}}
+                <div class="p-1">
+                    <button type="button" class="btn btnTag btn-outline-primary" id="checkbox{{@index}}"  value="{{Id}}">{{Name}}</button>
               </div>
-              {{{count_index @index}}}
+              {{!-- {{{count_index @index}}} --}}
             {{/each}}
           </div>
         </div>
@@ -88,7 +91,7 @@ tinymce.init({
     toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
 });
 
- function checkbox() {
+ /*function checkbox() {
     const ckbox = document.getElementsByClassName("custom-control-input");
     let arrchkbox = [];
     for (let i = 0; i < ckbox.length; i++) {
@@ -102,12 +105,32 @@ tinymce.init({
       });
     }
     return arrchkbox;
-  }
+  } */
 
+ function active(){
+    const btnTag = document.getElementsByClassName('btnTag');
+    let arrchkbox = [];
+    for(let i = 0; i < btnTag.length; i++)
+    {
+        btnTag[i].addEventListener('click', function(){
+            if(arrchkbox.includes(document.getElementById("checkbox" + i).value))
+            {
+              this.className = this.className.replace('active', '');
+              arrchkbox.splice(arrchkbox.indexOf(document.getElementById("checkbox" + i).value), 1);
+            }
+            else
+            {
+              this.className += ' active';
+              arrchkbox.push(document.getElementById("checkbox" + i).value);
+            }
+        });
+    }
+    return arrchkbox;
+  }
    function attendConference() {
         const form = document.getElementById("formPost");
         const btnSubmit = document.getElementById("submit");
-        const arrChecked = checkbox();
+        const arrChecked = active();
         const id = document.getElementById("IdPost").value;
         btnSubmit.addEventListener("click", function () {
             tinymce.triggerSave();
@@ -134,15 +157,26 @@ tinymce.init({
                     
                 }
             }
-            xhttp.open("POST", "/Update/?id=" + id, true);
+            xhttp.open("POST", "/writer/Update/?id=" + id, true);
             xhttp.send(FD);
         }, true)
     }
 
+    $('.btnTag').mousedown(function () {
+        $(this).removeClass('jiggle').addClass('shrink')
+      });
+      $('.btnTag').mouseup(function () {
+        $(this).removeClass('shrink').addClass('jiggle')
+      });
+
+
     window.onload = function(){
-        checkbox();
+        active();
         attendConference(); 
     };
         
 </script>
+{{/section}}
+{{#section 'css'}}
+  <link rel="stylesheet" href="/public/css/styleOfWriter.css">
 {{/section}}

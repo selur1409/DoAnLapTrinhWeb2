@@ -11,7 +11,7 @@ const flash = require('express-flash');
 const app = express();
 app.use(upload.array()); 
 app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static('public'))
+app.use('/public', express.static('public'));
 // middlewares
 require('./middlewares/session.mdw')(app);
 require('./middlewares/locals.mdw')(app);
@@ -60,27 +60,27 @@ app.use('/account', accountRoute);
 app.use('/auth', require('./route/auth.route'));
 
 // Trang writer
-app.use('/write', exposeTemplates, require('./route/Writer'));
+app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 app.use(flash());
 app.use('/account', require('./route/ForgotPW'));
 
+app.use('/admin', require('./route/admin.route'));
+
 //Trang editor
 app.use('/editor', require('./route/editor.route'));
 
-app.use('/admin', require('./route/admin.route'));
-
 app.use(function (req, res) {
   res.render('404', { layout: false });
-})
+});
 
 app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(500).render('500', { layout: false });
-})
+});
 
 const PORT = 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
-})
+});

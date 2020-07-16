@@ -73,9 +73,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="" class="brand-link">
-        <img src="/public/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+        <img src="/public/img/Editor_Logo.png" alt="Editor Logo" class="brand-image img-circle elevation-3"
           style="opacity: .8">
-        <span class="brand-text font-weight-light">Admin</span>
+        <span class="brand-text font-weight-light">Editor </span>
       </a>
 
       <!-- Sidebar -->
@@ -106,20 +106,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="/editor/pending" class="nav-link {{#if IsActiveCat}} active {{/if}}">
+                  <a href="/editor/pending" class="nav-link {{#if IsActivePending}} active {{/if}}">
                      {{!-- <i class="fas fa-circle"></i> --}}
                     <i class="far fa-circle nav-icon"></i>
                     <p>Pending</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="/editor/accepted" class="nav-link {{#if IsActiveTag}} active {{/if}}">
+                  <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Accepted</p>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="/editor/denied" class="nav-link {{#if IsActiveTag}} active {{/if}}">
+                  <a href="/editor/denied" class="nav-link {{#if IsActiveDenied}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Denied</p>
                   </a>
