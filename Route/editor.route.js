@@ -24,10 +24,18 @@ router.get('/pending', async function (req, res) {
     const IdStatus=4;
     const IsActivePending=true;
     const idCategories=await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-    const list = await editorModel.LoadPostIsPending(IdStatus,idCategories[0].IdCategories);
-    for (d of list){
-      d.DatePost =  moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
+    var list = [];
+    for (id = 0; id < idCategories.length; id++)
+    {
+      const temp = await editorModel.LoadPostIsPending(IdStatus, idCategories[id].IdCategories);   
+      for (d of temp){
+        d.DatePost =  moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
+        list.push(d);
+      }
+
     }
+
+
     res.render('vwEditor/listPost', {
       IsActivePending:IsActivePending,
       listPost: list,
