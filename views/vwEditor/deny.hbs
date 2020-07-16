@@ -1,0 +1,32 @@
+<form action="/editor/denyPost" method="POST" onsubmit="return validateForm">
+  <div class="form-group">
+    <label for="exampleInputTitle1">Tilte</label>
+    <input type="text" class="form-control" id="postName" value="{{this.denyPost.Title}}" readonly>
+    <label for="exampleInputAuthor1">Author: </label>
+    <input type="text" class="form-control" id="postAuthor" value="{{this.denyPost.Nickname}}" readonly>
+    <label for="exampleInputAuthor1">Categories: </label>
+    <input type="text" class="form-control" id="postContent" value="{{this.categories.CateName}}" readonly>
+    <label for="exampleInputAuthor1">Summary: </label>
+    <input type="text" class="form-control" id="postContent" value="{{this.denyPost.Content_Summary}}" readonly>
+
+     <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
+     <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
+  </div>
+  <div class="form-group">
+    <label for="exampleFormControlTextarea1">Reason for the rejection</label>
+    <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required pattern="\S+.*"></textarea>
+  </div>
+  <a type="button" href="#"class="btn btn-primary">Back</a>
+  <button type="submit" class="btn btn-primary">Send</button>
+</form>
+
+<script type = "text/javascript">
+         function validateForm()  {
+             var u = document.getElementById("exampleFormControlTextarea1").value;
+ 
+             if(u== "") {
+                 return false;
+             }
+             return true;
+         }
+      </script>

@@ -68,6 +68,9 @@ app.use('/account', require('./route/ForgotPW'));
 
 app.use('/admin', require('./route/admin.route'));
 
+//Trang editor
+app.use('/editor', require('./route/editor.route'));
+
 app.use(function (req, res) {
   res.render('404', { layout: false });
 });
