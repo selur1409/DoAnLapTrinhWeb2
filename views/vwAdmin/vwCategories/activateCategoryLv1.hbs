@@ -1,25 +1,38 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/categories" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+
 <div class="card">
   <div class="card-header d-flex justify-content-between">
-    <h4>CATEGORIES</h4>
-    <a class="btn btn-outline-success" href="/admin/categories/addlv1" role="button" title="Add Category Lv1">
-      <i class="fa fa-plus" aria-hidden="true"></i>
-      Thêm chuyên mục cấp 1
-    </a>
-    <a class="btn btn-secondary" href="/admin/categories/list-of-all" role="button" title="List of all">
-      <i class="fas fa-list-ol"></i>
-      Danh sách các chuyên mục
-    </a>
-    <a class="btn btn-outline-warning" href="/admin/categories/activatelv1" role="button" title="List of all">
-      <i class="fas fa-key"></i>
-      Kích hoạt cấp 1
-    </a>
+    <h4>ACTIVATE CATEGORIES LV1</h4>
   </div>
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        {{success}}
+    </div>
+    {{/if}}
+
   {{#if this.empty}}
   <div class="card-body">
     <p class="card-text">Không có dữ liệu.</p>
   </div>
   {{else}}
-  <table class="table table-hover">
+  <table class="table table-hover table-dark">
     <thead>
       <tr>
         <th scope="col" class="text-center">#</th>
@@ -37,17 +50,10 @@
         <td>{{Url}}</td>
         <td>{{Manage}}</td>
         <td class="text-right">
-        <form method="POST" action="/admin/categories/dellv1">
-            <a class="btn btn-primary btn-sm" href="/admin/categories/views/{{Url}}" role="button" title="View Category">
-                <i class="fas fa-eye"></i>
-            </a>          
-            <a class="btn btn-primary btn-sm" href="/admin/categories/edit/{{Url}}" role="button" title="Edit Category">
-                <i class="fas fa-pen"></i>
-            </a>
-            
+        <form method="POST" action="/admin/categories/activatelv1">                  
             <input type="hidden" name="Id" value="{{Id}}">            
-            <button type="submit" class="btn btn-danger btn-sm">
-                <i class="fas fa-trash-alt"></i>
+            <button type="submit" class="btn btn-warning btn-sm">
+                <i class="fas fa-key"></i>
             </button>
         </form>
         </td>
@@ -57,7 +63,7 @@
   </table>
   {{/if}}
 
-  <nav aria-label="...">
+    <nav aria-label="...">
       <ul class="pagination">
         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
           <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">

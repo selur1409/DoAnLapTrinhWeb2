@@ -9,7 +9,7 @@ module.exports = {
         return db.load(`SELECT Id FROM ${TBL_EDITORACCOUNT} WHERE IdCategories = ${idCat} and IsDelete = 0`);        
     },    
     singleManageCat: function (id) {
-        return db.load(`SELECT i.IdAccount, i.Name FROM ${TBL_EDITORACCOUNT} e, information i WHERE e.IdAccount = i.IdAccount and e.IdCategories = ${id} and e.IsDelete = 0`);        
+        return db.load(`SELECT i.IdAccount, i.Name FROM ${TBL_EDITORACCOUNT} e, information i WHERE e.IdAccount = i.IdAccount and e.IdCategories = ${id}`);        
     },
     add: function (entity) {
         return db.add(TBL_EDITORACCOUNT, entity);

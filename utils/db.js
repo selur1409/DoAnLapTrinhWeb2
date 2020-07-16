@@ -64,9 +64,9 @@ module.exports = {
         });
       });
     },
-    activated: function (table, condition) {
+    activate: function (table, condition) {
       return new Promise(function (resolve, reject) {
-        const sql = `update ${table} set isDelete = 1 where ?`;
+        const sql = `update ${table} set isDelete = 0 where ?`;
         pool.query(sql, condition, function (error, results) {
           if (error) {
             return reject(error);
