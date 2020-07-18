@@ -8,6 +8,11 @@ module.exports = {
     single: function (id) {
         return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 0`);
     },
+    tagByIdPost: function (IdPost) {
+        return db.load(`SELECT DISTINCT(t.Name) FROM tag_posts tp, ${TBL_TAGS} t 
+                        WHERE tp.IdTag = t.Id AND tp.IdPost = '${IdPost}' 
+                        AND t.IsDelete = 0`);
+    },
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);
     },
