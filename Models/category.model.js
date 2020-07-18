@@ -11,7 +11,12 @@ module.exports = {
                         WHERE IsDelete = 0) as t ORDER BY t.Name
                         limit ${limit} offset ${offset}`);
     },
-    allMain: function (limit, offset) {
+    allMain: function () {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES} 
+        WHERE IsDelete = 0 ORDER BY Name`);
+    },
+    allMain_Limit: function (limit, offset) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
         FROM ${TBL_CATEGORIES} 
         WHERE IsDelete = 0 ORDER BY Name
@@ -41,7 +46,12 @@ module.exports = {
     allSub: function () {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 ORDER BY Name`);
     },
-    allSub_Id: function (id, limit, offset) {
+    allSub_Id: function (id) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name`);
+    },
+    allSub_Id_Limit: function (id, limit, offset) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
         FROM ${TBL_CATEGORIES_SUB} 
         WHERE IsDelete = 0 AND IdCategoriesMain = ${id} ORDER BY Name
