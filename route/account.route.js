@@ -176,4 +176,6 @@ router.post('/logout', auth.restrict, function (req, res) {
     res.redirect(req.headers.referer);
 })
 
+
+
 module.exports = router;

@@ -22,9 +22,10 @@
 
                         <h3 class="profile-username text-center">{{Name}}</h3>
 
-                        <p class="text-muted text-center">Writer</p>
+                        <p class="text-muted text-center">{{TypeAccount}}</p>
 
                         <ul class="list-group list-group-unbordered mb-3">
+                            {{#if IsNotUser}}
                             <li class="list-group-item">
                                 <b>Articles</b> <a class="float-right">{{NumberOfPost}}</a>
                             </li>
@@ -34,6 +35,7 @@
                             <li class="list-group-item">
                                 <b>Friends</b> <a class="float-right">13,287</a>
                             </li>
+                            {{/if}}
                         </ul>
 
                         {{!-- <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a> --}}
@@ -43,6 +45,7 @@
                 <!-- /.card -->
 
                 <!-- About Me Box -->
+                {{#if IsNotUser}}
                 <div class="card card-primary">
                     <div class="card-header">
                         <h3 class="card-title">About Me</h3>
@@ -82,6 +85,7 @@
                     </div>
                     <!-- /.card-body -->
                 </div>
+                {{/if}}
                 <!-- /.card -->
             </div>
             <!-- /.col -->
@@ -525,7 +529,7 @@
                     }
                 }
             }
-            xhttp.open("POST", "/writer/Profile/?opt=" + option, true);
+            xhttp.open("POST", "/account/Profile/?opt=" + option, true);
             xhttp.send(FD);
         };
 
@@ -564,7 +568,7 @@
 
     $(document).on('hidden.bs.modal', '#Success', function () {
         console.log("Success");
-        window.location.replace("http://localhost:3000/writer/Profile");
+       // window.location.replace("http://localhost:3000/account/Profile/");
 
     });
 

@@ -4,34 +4,9 @@ const passportfb = require('passport-facebook').Strategy;
 const db = require('./models/account.model');
 
 // Phần của Khương mới thêm
-// const multer = require('multer');
-// const upload = multer();
 const flash = require('express-flash');
 
 const app = express();
-
-// app.use(upload.array());
-
-// const storage = multer.diskStorage({
-//   filename(req, file, cb) {
-//       cb(null, file.originalname);
-//   },
-//   destination(req, file, cb) {
-//       cb(null, './public/img');
-//   }
-// })
-
-//  upload = multer({ storage, 
-//   fileFilter: function (req, file, cb) {
-//       if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
-//           req.fileValidationError = 'Only image files are allowed!';
-//           return cb(new Error('Only image files are allowed!'), false);
-//       }
-//       cb(null, true);
-//   }
-// });
-
-// app.use(upload.array('Avatar', 1));
 
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'))
@@ -92,6 +67,9 @@ app.use('/writer', exposeTemplates, require('./Route/Writer'));
 // Trang forgot password
 app.use(flash());
 app.use('/account', require('./route/ForgotPW'));
+
+//Trang Profile
+app.use('/account', exposeTemplates, require('./route/profile'));
 
 
 app.use('/admin', require('./route/admin.route'));

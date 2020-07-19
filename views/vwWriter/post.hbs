@@ -142,7 +142,7 @@ tinymce.init({
       {
         failure('HTTP Error: ' + xhr.status);
       }
-      //json = xhr.responseText;
+     
       json = JSON.parse(xhr.responseText);
       if(!json || typeof json.location !== 'string')
       {
@@ -304,6 +304,7 @@ tinymce.init({
                     {
                       document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
                       $("#Success").modal("show");
+                      document.getElementsByTagName('textarea').value = '';
                     }
                     if(dataParsed.hasOwnProperty('fail'))
                     {

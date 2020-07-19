@@ -9,12 +9,16 @@ module.exports = {
         return db.load(`SELECT * FROM categories`);
     },
 
+    CheckTitleIsExists:(value)=>{
+        return db.load(`SELECT * FROM posts WHERE Title = '${value}'`);
+    },
+
     LoadSubCategories:()=>{
         return db.load(`SELECT * FROM categories_sub`);
     },
 
     InsertPost:(value)=>{
-        return db.insert(`INSERT INTO posts(??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, value);
+        return db.insert(`INSERT INTO posts(??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, value);
     },
     
     InsertTagPost:(value)=>{
@@ -22,7 +26,7 @@ module.exports = {
     },
 
     InsertPostDetail:(value)=>{
-        return db.insert(`INSERT INTO postdetails(??, ??, ??) VALUES (?, ?, ?)`, value);
+        return db.insert(`INSERT INTO postdetails(??, ??) VALUES (?, ?)`, value);
     },
 
     LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
@@ -117,9 +121,9 @@ module.exports = {
 
     /*Profile*/
     LoadProfile:(value)=>{
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
-        FROM accounts a, information i 
-        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and i.IdAccount = '${value}'`);
+        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount, ta.Name AS 'Type' 
+        FROM accounts a, information i, typeaccount ta 
+        WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
     },
 
     UpdateProfile:(value)=>{

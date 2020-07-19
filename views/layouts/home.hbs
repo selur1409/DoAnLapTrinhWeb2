@@ -91,10 +91,11 @@
 								Welcome, <b>{{lcAuthUser.Name}}</b>!
 								</a>
 								<div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
-								<a class="dropdown-item bg-info" href="/account/profile">
+								<a class="dropdown-item bg-info" href="/account/Profile/{{lcAuthUser.TypeAccount}}">
 									<i class="fa fa-user" aria-hidden="true"></i>
-									Account Profil
+									Account Profile
 								</a>
+								<!-- Dropdown to change page -->
 								<div class="dropdown-divider"></div>
 								{{#if lcIsSubscriber}}
 									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
