@@ -28,16 +28,16 @@
     </div>
     {{/if}}
     <form method="POST" action="/admin/categories/edit/{{this.Category.Url}}">
-      <div class="form-group">
-        <label for="txtCatName">Tên chuyên mục cấp 1</label>
+      <div class="form-group required">
+        <label class="control-label" for="txtCatName">Tên chuyên mục cấp 1</label>
         <input type="text" class="form-control" id="txtCatName" name="Name" autofocus value="{{this.Category.Name}}">
       </div>
-      <div class="form-group">
-        <label for="txtCatUrl">Url</label>
+      <div class="form-group required">
+        <label class="control-label" for="txtCatUrl">Đường dẫn tĩnh(gồm kí tự thường, dấu'-' và kí tự số)</label>
         <input type="text" class="form-control" id="txtCatName" name="Url" value="{{this.Category.Url}}">
       </div>
-      <div class="form-group">
-        <label for="ControlSelectManage">Người quản lý</label>
+      <div class="form-group required">
+        <label class="control-label" for="ControlSelectManage">Người quản lý</label>
         <select class="form-control" id="ControlSelectManage" name="Manage">
           <option value="Empty">Trống</option>
           {{#each this.ListManage}}
