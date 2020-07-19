@@ -18,7 +18,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="/public/css/adminlte.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-  {{{_sections.css}}}
+
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -105,14 +105,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </p>
               </a>
               <ul class="nav nav-treeview">
+                {{#each lcManage}}
                 <li class="nav-item">
-                  <a href="/admin/categories" class="nav-link {{#if IsActiveCat}} active {{/if}}">
+                  <a href="/admin/{{link}}" class="nav-link {{#if isActive}} active {{/if}}">
                      {{!-- <i class="fas fa-circle"></i> --}}
                     <i class="far fa-circle nav-icon"></i>
-                    <p>Categories</p>
+                    <p>{{title}}</p>
                   </a>
                 </li>
-                <li class="nav-item">
+                {{/each}}
+                {{!-- <li class="nav-item">
                   <a href="/admin/tags" class="nav-link {{#if IsActiveTag}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Tags</p>
@@ -131,7 +133,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <i class="far fa-circle nav-icon"></i>
                     <p>Accounts</p>
                   </a>
-                </li>
+                </li> --}}
               </ul>
             </li>           
           </ul>
@@ -144,7 +146,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <div class="content-wrapper">
       {{{body}}}
     </div>
-    <!-- /.content-wrapper --
+    <!-- /.content-wrapper -->
 
     <!-- Main Footer -->
     <footer class="main-footer">
@@ -166,17 +168,5 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- AdminLTE App -->
   <script src="/public/js/adminlte.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
-  {{{_sections.js}}}
-
 </body>
-
 </html>
-<script>
-  (function () {
-    var revive = Handlebars.template,
-      templates = Handlebars.templates = Handlebars.templates || {};
-    {{#templates}}
-    templates['{{{name}}}'] = revive({{{ template }}});
-  {{/templates}}
-  } ());
-</script>

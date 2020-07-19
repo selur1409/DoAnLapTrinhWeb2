@@ -1,0 +1,61 @@
+<div class="col mb-2 mt-2 ml-3">
+  <a class="btn btn-info" href="/admin/categories" role="button" title="Back to List">
+    <i class="fas fa-reply"></i>
+    Trở về
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Chỉnh sửa chuyên mục</h4>
+  </div>
+  <div class="card-body">
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    <form method="POST" action="/admin/categories/edit/{{this.Category.Url}}">
+      <div class="form-group">
+        <label for="txtCatName">Tên chuyên mục cấp 1</label>
+        <input type="text" class="form-control" id="txtCatName" name="Name" autofocus value="{{this.Category.Name}}">
+      </div>
+      <div class="form-group">
+        <label for="txtCatUrl">Url</label>
+        <input type="text" class="form-control" id="txtCatName" name="Url" value="{{this.Category.Url}}">
+      </div>
+      <div class="form-group">
+        <label for="ControlSelectManage">Người quản lý</label>
+        <select class="form-control" id="ControlSelectManage" name="Manage">
+          <option value="Empty">Trống</option>
+          {{#each this.ListManage}}
+          <option value="{{IdAccount}}" {{#if SelectedManage}} selected {{/if}}>{{Name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="ControlTextarea">Mô tả</label>
+        <textarea class="form-control" id="ControlTextarea" rows="3" name="Description">{{this.Category.Description}}</textarea>
+      </div>
+
+      <input type="hidden" name="Id" value="{{this.Category.Id}}">
+
+      <button type="submit" class="btn btn-success">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Lưu
+      </button>
+    </form>
+  </div>
+</div>

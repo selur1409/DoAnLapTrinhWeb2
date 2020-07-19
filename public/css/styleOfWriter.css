@@ -60,7 +60,7 @@ td.mailbox-date{
 /*Mail box*/
 
 /*Button tag*/
-.Tag > .active, .btnTag :hover{
+div > .active, .btnTag :hover {
   background-color: #007bff;
   color: white;
   font-weight:bolder;

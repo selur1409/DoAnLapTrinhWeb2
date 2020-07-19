@@ -1,0 +1,78 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/categories/views/{{this.url}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+    <a class="btn btn-secondary" href="/admin/categories/views/{{this.url}}" role="button">
+    {{this.Category.Name}}
+    </a>
+    <a class="btn btn-secondary" href="#" role="button">
+    {{this.ManageCat.Name}}
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Thêm mới chuyên mục cấp 2</h4>
+  </div>
+  <div class="card-body">
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    <form method="POST" action="/admin/categories/addlv2/{{this.url}}">
+      <div class="form-group">
+        <label for="txtCatName">Tên chuyên mục cấp 2</label>
+        <input type="text" class="form-control" id="txtCatName" name="Name" autofocus>
+      </div>
+      <div class="form-group">
+        <label for="txtCatUrl">Đường dẫn tĩnh</label>
+        <input type="text" class="form-control" id="txtCatUrl" name="Url">
+      </div>
+      <div class="form-group">
+        <label for="ControlSelect">Thuộc chuyên mục cấp 1</label>
+        <select class="form-control" id="ControlSelect" disabled="disabled">
+          <option value="Empty">Trống</option>
+          {{#each this.catMain}}
+          <option value="{{Id}}" {{#if Selected}} selected {{/if}} >{{Name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <input type="hidden" name="Select" value="{{this.Category.Id}}">
+      
+      <div class="form-group">
+        <label for="ControlSelectManage">Manage</label>
+        <select class="form-control" id="ControlSelectManage" name="IdManage" disabled="disabled">
+          <option value="Empty">Trống</option>
+          {{#each this.ListManage}}
+          <option value="{{IdAccount}}" {{#if SelectedManage}} selected {{/if}}>{{Name}}</option>
+          {{/each}}
+        </select>
+      </div>
+      {{!-- <input type="hidden" name="IdManage" value="{{this.ManageCat.IdAccount}}"> --}}
+
+      <div class="form-group">
+        <label for="ControlTextarea">Mô tả</label>
+        <textarea class="form-control" id="ControlTextarea" rows="3" name="Description"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-success">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Thêm chuyên mục
+      </button>
+    </form>
+  </div>
+</div>

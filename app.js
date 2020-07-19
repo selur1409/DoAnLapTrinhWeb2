@@ -9,7 +9,7 @@ const flash = require('express-flash');
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
-app.use('/public', express.static('public'))
+app.use('/public', express.static('public'));
 // middlewares
 require('./middlewares/session.mdw')(app);
 require('./middlewares/locals.mdw')(app);
@@ -17,12 +17,8 @@ require('./middlewares/view.mdw')(app);
 
 
 // Trang chủ Home
-app.get('/', function (req, res) {
-  res.render('index');
-})
-app.get('/index.html', function (req, res) {
-    res.render('index');
-})
+app.use('/', require('./route/home.route'));
+app.use('/index.html', require('./route/home.route'));
 
 // đăng nhập bằng facebook
 app.use(passport.initialize());
@@ -68,22 +64,26 @@ app.use('/writer', exposeTemplates, require('./Route/Writer'));
 app.use(flash());
 app.use('/account', require('./route/ForgotPW'));
 
+
 //Trang Profile
 app.use('/account', exposeTemplates, require('./route/profile'));
 
 
 app.use('/admin', require('./route/admin.route'));
 
+//Trang editor
+app.use('/editor', require('./route/editor.route'));
+
 app.use(function (req, res) {
   res.render('404', { layout: false });
-})
+});
 
 app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(500).render('500', { layout: false });
-})
+});
 
 const PORT = 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
-})
+});

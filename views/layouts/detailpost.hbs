@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>SelurProjectWeb2</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="Demo project">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" type="text/css" href="/public/styles/bootstrap4/bootstrap.min.css">
+<link href="/public/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
+<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
+<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/animate.css">
+<link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
+<link rel="stylesheet" type="text/css" href="/public/styles/post.css">
+<link rel="stylesheet" type="text/css" href="/public/styles/post_responsive.css">
+<body>
+
+<div class="super_container">
+	<!-- Header -->
+
+	<header class="header">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col">
+					<div class="header_content d-flex flex-row align-items-center justify-content-start">
+						<div class="logo"><a href="#">avision</a></div>
+						<nav class="main_nav">
+							<ul>
+								<li class="active"><a href="index.html">Home</a></li>
+								<li><a href="#">Fashion</a></li>
+								<li><a href="#">Gadgets</a></li>
+								<li><a href="#">Lifestyle</a></li>
+								<li><a href="#">Video</a></li>
+								<li><a href="contact.html">Contact</a></li>
+							</ul>
+						</nav>
+						<div class="search_container ml-5">
+							<!-- <div class="weather">
+								<div class="temperature">+10°</div>
+								<img class="weather_icon" src="images/cloud.png" alt="">
+							</div> -->
+							<form action="#">
+								<input type="search" class="header_search_input" required="required" placeholder="Type to Search...">
+								<img class="header_search_icon" src="/public/images/search.png" alt="">
+							</form>							
+						</div>
+
+						{{!-- register_login --}}
+						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
+						<nav class="main_nav">
+							<ul>
+							{{#if lcIsSubscriber}}
+							<li>		
+								<a class="nav-link" href="/subcriber" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>SUBSCRIBER</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsWriter}}
+							<li>		
+								<a class="nav-link" href="/write/Writer" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>WRITER</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsEditor}}
+							<li>		
+								<a class="nav-link" href="/editor" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>EDITOR</b>
+								</a>	
+							</li>
+							{{/if}}								
+							{{#if lcIsAdmin}}
+							<li>		
+								<a class="nav-link" href="/admin" role="button"
+								aria-haspopup="true" aria-expanded="false">
+								<b>ADMINISTRATOR</b>
+								</a>	
+							</li>
+							{{/if}}
+							{{#if lcIsAuthenticated}}
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="false">
+								<i class="fa fa-user" aria-hidden="true"></i>
+								Welcome, <b>{{lcAuthUser.Name}}</b>!
+								</a>
+								<div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
+								<a class="dropdown-item bg-info" href="/account/profile">
+									<i class="fa fa-user" aria-hidden="true"></i>
+									Account Profil
+								</a>
+								<div class="dropdown-divider"></div>
+								{{#if lcIsSubscriber}}
+									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>SUBSCRIBER</b>
+									</a>
+								{{/if}}
+								{{#if lcIsWriter}}
+									<a class="nav-link" href="/writer/Writer" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>WRITER</b>
+									</a>
+								{{/if}}
+								{{#if lcIsEditor}}
+									<a class="nav-link" href="/editor" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>EDITOR</b>
+									</a>
+								{{/if}}
+								{{#if lcIsAdmin}}
+									<a class="nav-link" href="/admin" role="button" aria-haspopup="true" aria-expanded="false">
+										<b>ADMINISTRATOR</b>
+									</a>
+								{{/if}}
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
+									<i class="fa fa-sign-out" aria-hidden="true"></i>
+									Logout
+								</a>
+								</div>
+							</li>
+							{{else}}
+							<li class="nav-item">
+								<a class="nav-link" href="/account/login">
+								<i class="fa fa-sign-in" aria-hidden="true"></i>
+								Login
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="/account/register">
+								<i class="fa fa-user-plus" aria-hidden="true"></i>
+								Register
+								</a>
+							</li>
+							{{/if}}	
+							</ul>
+						</nav>
+						
+						{{!-- /register_login --}}
+
+						<div class="hamburger ml-auto menu_mm">
+							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Menu -->
+
+	<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
+		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
+		<div class="logo menu_mm"><a href="index.html">Avision</a></div>
+		<div class="search">
+			<form action="#">
+				<input type="search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
+				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
+			</form>
+		</div>
+		<nav class="menu_nav">
+			<ul class="menu_mm">
+				<li class="menu_mm"><a href="index.html">home</a></li>
+				<li class="menu_mm"><a href="#">Fashion</a></li>
+				<li class="menu_mm"><a href="#">Gadgets</a></li>
+				<li class="menu_mm"><a href="#">Lifestyle</a></li>
+				<li class="menu_mm"><a href="#">Video</a></li>
+				<li class="menu_mm"><a href="contact.html">Contact</a></li>
+			</ul>
+		</nav>
+	</div>
+
+	<!-- Home -->
+
+	<div class="home">
+		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="/public/images/{{this.post.Avatar}}" data-speed="0.8"></div>
+		<div class="home_content">
+			<div class="post_title">{{this.post.Title}}</div>
+		</div>
+	</div>
+
+
+	<!-- Page Content -->
+    
+    {{{body}}}
+
+	<!-- Footer -->
+
+	<footer class="footer">
+		<div class="container">
+			<div class="row row-lg-eq-height">
+				<div class="col-lg-9 order-lg-1 order-2">
+					<div class="footer_content">
+						<div class="footer_logo"><a href="#">avision</a></div>
+						<div class="footer_social">
+							<ul>
+								<li class="footer_social_facebook"><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+								<li class="footer_social_twitter"><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+								<li class="footer_social_pinterest"><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+								<li class="footer_social_vimeo"><a href="#"><i class="fa fa-vimeo" aria-hidden="true"></i></a></li>
+								<li class="footer_social_instagram"><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+								<li class="footer_social_google"><a href="#"><i class="fa fa-google" aria-hidden="true"></i></a></li>
+							</ul>
+						</div>
+						<div class="copyright"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></div>
+					</div>
+				</div>
+				<div class="col-lg-3 order-lg-2 order-1">
+					<div class="subscribe">
+						<div class="subscribe_background"></div>
+						<div class="subscribe_content">
+							<div class="subscribe_title">Subscribe</div>
+							<form action="#">
+								<input type="email" class="sub_input" placeholder="Your Email" required="required">
+								<button class="sub_button">
+									<svg version="1.1" id="link_arrow_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+										 width="19px" height="13px" viewBox="0 0 19 13" enable-background="new 0 0 19 13" xml:space="preserve">
+										<polygon fill="#FFFFFF" points="12.475,0 11.061,0 17.081,6.021 0,6.021 0,7.021 17.038,7.021 11.06,13 12.474,13 18.974,6.5 "/>
+									</svg>
+								</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+</div>
+
+<script src="/public/js/jquery-3.2.1.min.js"></script>
+<script src="/public/styles/bootstrap4/popper.js"></script>
+<script src="/public/styles/bootstrap4/bootstrap.min.js"></script>
+<script src="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
+<script src="/public/plugins/easing/easing.js"></script>
+<script src="/public/plugins/masonry/masonry.js"></script>
+<script src="/public/plugins/parallax-js-master/parallax.min.js"></script>
+<script src="/public/js/post.js"></script>
+</body>
+</html>
+
+

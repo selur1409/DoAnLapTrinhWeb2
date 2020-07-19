@@ -1,0 +1,100 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/categories/views/{{this.UrlMain}}" role="button">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+    <a class="btn btn-secondary" href="#" role="button">
+    {{this.Name}}
+    </a>
+    <a class="btn btn-secondary" href="#" role="button">
+    {{this.Manage.Name}}
+    </a>
+</div>
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>ACTIVATE CATEGORIES LV2</h4>
+  </div>
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        {{success}}
+    </div>
+    {{/if}}
+
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+  <table class="table table-hover table-dark">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">#</th>
+        <th scope="col">Chuyên mục</th>
+        <th scope="col">Đường dẫn tĩnh</th>
+        <th scope="col">Thuộc chuyên mục cấp 1</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.categories}}
+      <tr>
+        <th scope="row" class="text-center">{{Stt}}</th>
+        <td>{{Name}}</td>
+        <td>{{Url}}</td>
+        <td>{{NameMain}}</td>
+        <td class="text-right">
+        <form method="POST" action="/admin/categories/activatelv2/{{UrlMain}}">
+            <input type="hidden" name="Id" value="{{Id}}">            
+            <button type="submit" class="btn btn-warning btn-sm">
+                <i class="fas fa-key"></i>
+            </button>
+        </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+
+    <nav aria-label="...">
+      <ul class="pagination">
+        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+        {{#each this.page_items}}
+        {{#if isActive}}
+        <li class="page-item active" aria-current="page">
+          <span class="page-link">
+            {{value}}
+            <span class="sr-only">(current)</span>
+          </span>
+        </li>
+        {{else}}
+        <li class="page-item {{#if isDisabled}}disabled{{/if}}">
+          <a class="page-link" href="?page={{value}}">{{value}}</a>
+        </li>
+        {{/if}}
+        {{/each}}
+        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{next_value}}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+</div>

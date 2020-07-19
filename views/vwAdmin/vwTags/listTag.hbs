@@ -1,0 +1,46 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>TAGS</h4>
+    <a class="btn btn-outline-success" href="/admin/tags/add" role="button">
+      <i class="fa fa-plus" aria-hidden="true"></i>
+      Thêm thẻ
+    </a>
+  </div>
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">#</th>
+        <th scope="col">Tag</th>
+        <th scope="col">TagName</th>
+        <th scope="col">Img</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.tags}}
+      <tr>
+        <th scope="row" class="text-center">{{Stt}}</th>
+        <td>{{Name}}</td>
+        <td>{{TagName}}</td>
+        <td><img src="../../../public/img/{{ImgURL}}" alt="{{ImgURL}}" width="35px" height="35px"></td>
+        <td class="text-right">
+        <form method="POST" action="/admin/tags/del">
+            <a class="btn btn-primary btn-sm" href="/admin/tags/edit/{{Url}}" role="button" title="Edit Category">
+                <i class="fas fa-pen"></i>
+            </a>            
+            <button type="submit" class="btn btn-danger btn-sm">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>

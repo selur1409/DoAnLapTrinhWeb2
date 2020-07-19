@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../models/Writer');
 const flash = require('express-flash');
 const config = require('../config/default.json');
+<<<<<<< HEAD
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 let upload = multer();
@@ -10,6 +12,10 @@ const fs = require('fs');
 const path = require('path');
 const db = require('../models/Writer');
 const account = require('../models/account.model');
+=======
+const moment = require('moment');
+moment.locale("vi");
+>>>>>>> master
 const {restrict, referer} = require('../middlewares/auth.mdw');
 const { route } = require('./account.route');
 const { CountFB } = require('../models/Writer');
@@ -854,6 +860,4 @@ router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,re
 //         console.log(e);
 //     }
 // });
-
-
 module.exports = router;
