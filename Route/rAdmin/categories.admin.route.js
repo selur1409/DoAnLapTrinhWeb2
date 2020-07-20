@@ -5,7 +5,7 @@ const accountModel = require('../../models/account.model');
 const check = require('../../js/check');
 const config = require('../../config/default.json');
 const pageination = require('../../js/pagination');
-const que = require('../../js/query');
+const notify = require('../../config/notify.json');
 
 module.exports = (router) => {
     //Xem tất cả theo từng chuyên mục
@@ -31,24 +31,7 @@ module.exports = (router) => {
                 c.Manage = editor[0].Name;
             }
          
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
-
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }    
+            const [nPages, page_items] = pageination.page(page, total[0].SoLuong); 
     
             return res.render('vwAdmin/vwCategories/listCategory', {
                 layout: 'homeadmin',
@@ -59,8 +42,8 @@ module.exports = (router) => {
                 next_value: page + 1,
                 can_go_prev: page > 1,
                 can_go_next: page < nPages,
-                err,
-                success
+                err: req.flash('error'),
+                success: req.flash('success')
             });
         } catch (error) {
             console.log(error);
@@ -113,29 +96,12 @@ module.exports = (router) => {
             }
             
             const manage = await accountModel.allEditor();
-            
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }
         
             return res.render('vwAdmin/vwCategories/addCategoryLv1', {
                 layout: 'homeAdmin',
                 ListManage: manage,
-                err,
-                success
+                err: req.flash('error'),
+                success: req.flash('success')
             })
         }
         catch(error){
@@ -152,23 +118,26 @@ module.exports = (router) => {
             const description = req.body.Description;
             if (!name || !url || manage === 'Empty')
             {   
-                return res.redirect('/admin/categories/addlv1?notify=muc-bat-buoc');
+                req.flash('error', notify.mucbb)
+                return res.redirect('/admin/categories/addlv1');
             }
         
             const isNameMain = await categoryModel.singleNameMain(name);
             const isNameSub = await categoryModel.singleNameSub(name);
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect('/admin/categories/addlv1?notify=ten-ton-tai');
+                req.flash('error', notify.tentontai)
+                return res.redirect('/admin/categories/addlv1');
             }
-        
+            
             const isUrlMain = await categoryModel.singleUrlMain(url);
             const isUrlSub = await categoryModel.singleUrlSub(url);
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                return res.redirect('/admin/categories/addlv1?notify=duong-dan-ton-tai');
+                req.flash('error', notify.duongdantontai)
+                return res.redirect('/admin/categories/addlv1');
             }
-           
+            
             const entity = {
                 Name: name,
                 Url: url,
@@ -176,17 +145,18 @@ module.exports = (router) => {
                 IsDelete: 0
             };
             await categoryModel.addMain(entity);
-        
+            
             const idCat = await categoryModel.singleUrlMain(url);
-        
+            
             const entity_Editor = {
                 IdAccount: manage,
                 IdCategories: idCat[0].Id,
                 IsDelete: 0
             };
             await editoraccountModel.add(entity_Editor);
-        
-            return res.redirect('/admin/categories/addlv1?notify=them-thanh-cong');
+            
+            req.flash('success', `${notify.themthanhcong} ${name}`)
+            return res.redirect('/admin/categories/addlv1');
         }
         catch(error){
             console.log(error);
@@ -218,31 +188,14 @@ module.exports = (router) => {
                     if (l.IdAccount === cat.IdManage){
                         l.SelectedManage = true;
                     }
-                }
-
-                const notify = req.query.notify || "";
-                var err = "";
-                var success = "";
-    
-                for(q of que.notify){
-                    if (notify === q.value){
-                        if (q.type === 'error'){
-                            err = q.notify;
-                            break;
-                        }
-                        else if (q.type === 'success'){
-                            success = q.notify;
-                            break;
-                        }
-                    }
                 }    
         
                 return res.render('vwAdmin/vwCategories/editCategory', {
                     layout: 'homeAdmin',
                     Category: cat,
                     ListManage: ListManage,
-                    err,
-                    success
+                    err: req.flash('error'),
+                    success: req.flash('success')
                 })
             }
             
@@ -266,22 +219,25 @@ module.exports = (router) => {
             
             if (!name || idManage === 'Empty')
             {
-                return res.redirect(`/admin/categories/edit/${urlParam}?notify=muc-bat-buoc`);
+                res.flash('error', notify.mucbb)
+                return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
             const isNameMain = await categoryModel.singleNameMainEdit(name, idCat);
             const isNameSub = await categoryModel.singleNameSub(name);
-        
+            
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/edit/${urlParam}?notify=ten-ton-tai`);
+                res.flash('error', notify.tentontai)
+                return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
-        
+            
             const isUrlMain = await categoryModel.singleUrlMainEdit(url, idCat);
             const isUrlSub= await categoryModel.singleUrlSub(url);
-        
+            
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/edit/${urlParam}?notify=duong-dan-ton-tai`);
+                res.flash('error', notify.duongdantontai)
+                return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
             
             const entity = {
@@ -294,7 +250,8 @@ module.exports = (router) => {
             
             const idEditor = await editoraccountModel.singleId(idCat);
             if (idEditor.length === 0){
-                return res.redirect(`/admin/categories/edit/${urlParam}?notify=khong-co-quan-ly`);
+                req.flash('error', notify.khongcoquanly)
+                return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
         
             const entity_editor = {
@@ -307,7 +264,8 @@ module.exports = (router) => {
             await editoraccountModel.patch(entity_editor);
         
             // load thành công 
-            return res.redirect(`/admin/categories/edit/${urlParam}?notify=chinh-sua-thanh-cong`);
+            req.flash('success', `${notify.chinhsuathanhcong} ${name}`)
+            return res.redirect(`/admin/categories/edit/${urlParam}`);
         }
         catch(error){
             console.log(error);
@@ -358,23 +316,6 @@ module.exports = (router) => {
                 c.Manage = editor[0].Name;
             }
             const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
-
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }
                
             return res.render('vwAdmin/vwCategories/activateCategoryLv1', {
                 layout: 'homeadmin',
@@ -385,8 +326,8 @@ module.exports = (router) => {
                 next_value: page + 1,
                 can_go_prev: page > 1,
                 can_go_next: page < nPages,
-                err,
-                success
+                err: req.flash('error'),
+                success: req.flash('success')
             })
         }
         catch(error){
@@ -401,7 +342,8 @@ module.exports = (router) => {
         
             const list = await categoryModel.singleIdMain_Provision(id);
             if (list.length === 0){
-                return res.redirect('/admin/categories/activatelv1?notify=khong-kich-hoat');
+                req.flash('error', notify.khongcochuyenmuc)
+                return res.redirect('/admin/categories/activatelv1');
             }
             const cat = list[0];
             
@@ -410,7 +352,8 @@ module.exports = (router) => {
             
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect('/admin/categories/activatelv1?notify=ten-kich-hoat-ton-tai');
+                req.flash('error', notify.tenkichhoattontai)
+                return res.redirect('/admin/categories/activatelv1');
             }
             
             const isUrlMain = await categoryModel.singleUrlMainEdit(cat.Url, cat.Id);
@@ -418,7 +361,8 @@ module.exports = (router) => {
             
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                return res.redirect('/admin/categories/activatelv1?notify=duong-dan-kich-hoat-ton-tai');
+                req.flash('error', notify.duongdankichhoattontai)
+                return res.redirect('/admin/categories/activatelv1');
             }
             
             await categoryModel.activateMain(id);
@@ -522,23 +466,6 @@ module.exports = (router) => {
                     m.SelectedManage = true;
                 }
             }
-
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }
         
             return res.render('vwAdmin/vwCategories/addCategoryLv2', {
                 layout: 'homeAdmin',
@@ -547,7 +474,8 @@ module.exports = (router) => {
                 url: url,
                 Category: isUrlMain[0],
                 ManageCat: manageCat[0],
-                err, success
+                err: req.flash('error'),
+                success: req.flash('success')
             })
         }
         catch(error){
@@ -564,21 +492,24 @@ module.exports = (router) => {
             const url = check.mark_url(req.body.Url);
         
             if (!name || !url){
-                return res.redirect(`/admin/categories/addlv2/${urlParams}?notify=muc-bat-buoc`);
+                req.flash('error', notify.mucbb)
+                return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
             const isNameMain = await categoryModel.singleNameMain(name);
             const isNameSub = await categoryModel.singleNameSub(name);
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/addlv2/${urlParams}?notify=ten-ton-tai`);
+                req.flash('error', notify.tentontai)
+                return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
             const isUrlMain = await categoryModel.singleUrlMain(url);
             const isUrlSub = await categoryModel.singleUrlSub(url);
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/addlv2/${urlParams}?notify=duong-dan-ton-tai`);
+                req.flash('error', notify.duongdantontai)
+                return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
             const select = req.body.Select;
@@ -593,8 +524,8 @@ module.exports = (router) => {
                 IsDelete: 0
             };
             await categoryModel.addSub(entity);
-        
-            return res.redirect(`/admin/categories/addlv2/${urlParams}?notify=them-thanh-cong`);
+            req.flash('success', `${notify.themthanhcong} ${name}`)
+            return res.redirect(`/admin/categories/addlv2/${urlParams}`);
         }
         catch(error){
             console.log(error);
@@ -633,23 +564,6 @@ module.exports = (router) => {
                     m.SelectedManage = true;
                 }
             }
-
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }
             
             return res.render('vwAdmin/vwCategories/editCategoryLv2',{
                 layout: 'homeAdmin',
@@ -659,8 +573,8 @@ module.exports = (router) => {
                 ListManage: manage,
                 Category: isUrlSub[0],
                 ManageCat: manageCat[0],
-                err,
-                success
+                err: req.flash('error'),
+                success: req.flash('success')
             })
         }
         catch(error){
@@ -679,7 +593,8 @@ module.exports = (router) => {
             
             const catMain = await categoryModel.singleIdMain(catSub[0].IdCategoriesMain);
             if (catMain.length === 0){
-                return res.redirect(`/admin/categories/editlv2/${urlParam}?notify=khong-co-cha`);
+                req.flash('error', notify.khongcocha)
+                return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
             
             const id = req.body.Id;
@@ -687,7 +602,8 @@ module.exports = (router) => {
             const url = check.mark_url(req.body.Url);
             
             if (!name || !url){
-                return res.redirect(`/admin/categories/editlv2/${urlParam}?notify=muc-bat-buoc`);
+                req.flash('error', notify.mucbb)
+                return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
         
             const isNameMain = await categoryModel.singleNameMain(name);
@@ -695,7 +611,8 @@ module.exports = (router) => {
             
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/editlv2/${urlParam}?notify=ten-ton-tai`);
+                req.flash('error', notify.tentontai)
+                return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
             
             const isUrlMain = await categoryModel.singleUrlMain(url);
@@ -703,7 +620,8 @@ module.exports = (router) => {
         
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {
-                return res.redirect(`/admin/categories/editlv2/${urlParam}?notify=duong-dan-ton-tai`);
+                req.flash('error', notify.duongdantontai)
+                return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
         
             const idCategoriesMain = req.body.Select;
@@ -776,24 +694,6 @@ module.exports = (router) => {
                 l.UrlMain = cat.Url;
             }
             const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
-        
-        
-            const notify = req.query.notify || "";
-            var err = "";
-            var success = "";
-
-            for(q of que.notify){
-                if (notify === q.value){
-                    if (q.type === 'error'){
-                        err = q.notify;
-                        break;
-                    }
-                    else if (q.type === 'success'){
-                        success = q.notify;
-                        break;
-                    }
-                }
-            }
 
             return res.render('vwAdmin/vwCategories/activateCategoryLv2',{
                 layout: 'homeAdmin',
@@ -807,8 +707,8 @@ module.exports = (router) => {
                 next_value: page + 1,
                 can_go_prev: page > 1,
                 can_go_next: page < nPages,
-                err,
-                success
+                err: req.flash('error'),
+                success: req.flash('success')
             })
         }
         catch(error){
@@ -831,7 +731,8 @@ module.exports = (router) => {
             const id = req.body.Id;
             const list = await categoryModel.singleIdSub_Provision(id);
             if (list.length === 0){
-                return res.redirect(`/admin/categories/activatelv2/${url}?notify=khong-kich-hoat`);
+                req.flash('error', notify.khongcochuyenmuc)
+                return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
             const cat = list[0];
             
@@ -840,7 +741,8 @@ module.exports = (router) => {
         
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/activatelv2/${url}?notify=ten-kich-hoat-ton-tai`);
+                req.flash('error', notify.tenkichhoattontai)
+                return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
         
             const isUrlSub = await categoryModel.singleUrlSubEdit(cat.Url, cat.Id);
@@ -848,7 +750,8 @@ module.exports = (router) => {
         
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                return res.redirect(`/admin/categories/activatelv2/${url}?notify=duong-dan-kich-hoat-ton-tai`);
+                req.flash('error', notify.duongdankichhoattontai)
+                return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
         
             await categoryModel.activateSub(id);
