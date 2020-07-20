@@ -118,7 +118,7 @@ function UploadIMG(DirName, req, res)
         else {
             console.log(req.files);
             console.log("Success");
-            Path = 'http://localhost:3000/public/img/ImagePost/' + DirName + '/' + req.files[0].filename;
+            Path = '/../public/img/ImagePost/' + DirName + '/' + req.files[0].filename;
             res.json({ location: Path });
         }
     });
