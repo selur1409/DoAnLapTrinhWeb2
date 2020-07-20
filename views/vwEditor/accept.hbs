@@ -1,0 +1,20 @@
+<form action="/editor/acceptPost" method="POST">
+  <div class="form-group">
+    <label for="exampleInputTitle1">Tilte</label>
+    <input type="text" class="form-control" id="postName" value="{{this.inforOfPost.Title}}" readonly>
+    <label for="exampleFormControlSelect1">Categories</label>
+    <select class="form-control" id="exampleFormControlSelect1" name="subCate">
+      <option selected>{{this.categoriesSubOfPost}}</option>
+      {{#each this.listCategoriesSub}}
+      <option>{{Name}}</option>
+      {{/each}}
+    </select>
+      <button class="btn btn-info" onclick="goBack()"><i class="fas fa-reply"></i> Back</button>
+  <button type="submit" class="btn btn-primary">Send</button>
+  </div>
+</form>
+<script>
+function goBack() {
+  window.history.back();
+}
+</script>

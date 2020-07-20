@@ -4,6 +4,9 @@ module.exports = {
     LoadTagOfPost:(idPost)=>{
         return db.load(`SELECT t.Name,t.TagName FROM tag_posts tp, tags t, posts p WHERE t.Id=tp.IdTag AND tp.IdPost=p.Id AND p.Id=${idPost}`);
     },
+    LoadCategoriesOfPost:(idPost)=>{
+        return db.load(`SELECT DISTINCT catesub.IdCategoriesMain, p.IdCategories FROM posts p, categories_sub catesub WHERE p.Id=${idPost} AND p.IdCategories=catesub.Id`)
+    },
 
     LoadCategoriesOfEditor:(IdAccount)=>{
         return db.load(`SELECT * FROM editoraccount WHERE IdAccount =${IdAccount}`);
@@ -27,7 +30,7 @@ module.exports = {
     },
 
     LoadSinglePost:(value)=>{
-        return db.load(`SELECT DISTINCT p.Id,p.Title,p.Content_Full,p.DatePost,p.Avatar,p.IdCategories, i.Nickname FROM posts p, postdetails pdt, information i WHERE p.IsDelete=0 AND pdt.IdPost=p.Id AND pdt.IdAccount=i.Id AND p.Id=${value}`);
+        return db.load(`SELECT p.Id,p.Title,p.Content_Full,p.DatePost FROM posts p WHERE p.Id=${value}`);
     },
 
     LoadCategoriesById:(value)=>{
@@ -38,7 +41,7 @@ module.exports = {
         return db.load(`SELECT * FROM status_posts s WHERE s.Id = ${value}`);
     },
     LoadAuthorOfPost:(idPost)=>{
-        return db.load(`SELECT i.Nickname, p.Title, p.Content_Summary,p.Id, p.IdCategories FROM posts p, postdetails pdt, information i WHERE p.Id=pdt.IdPost AND pdt.IdAccount=i.Id AND p.Id=${idPost}`)
+        return db.load(`SELECT i.Nickname FROM posts p, postdetails pdt, information i WHERE p.Id=pdt.IdPost AND pdt.IdAccount=i.IdAccount AND p.Id=${idPost}`)
     },
     LoadIdEditor:(idEditor,idCategories)=>{
         return db.load(`SELECT edtacc.id FROM accounts acc, editoraccount edtacc WHERE acc.Id=edtacc.IdAccount AND acc.Id=${idEditor} AND edtacc.IdCategories=${idCategories}`)
@@ -52,6 +55,9 @@ module.exports = {
     },
     InsertFeedbackPost:(value)=>{
         return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?)`,value);
+    },
+    LoadSubCategories:(idCategories)=>{
+        return db.load(`SELECT catesub.Name,catesub.Id from categories_sub catesub WHERE catesub.IdCategoriesMain=${idCategories}`)
     }
 
 }
