@@ -5,8 +5,26 @@ module.exports = {
     all: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where IsDelete = 0`);
     },
+    allActivate: function () {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where IsDelete = 1`);
+    },
     single: function (id) {
         return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 0`);
+    },
+    singleActivate: function (id) {
+        return db.load(`SELECT Id, Name, TagName FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 1`);
+    },
+    singleName: function (name) {
+        return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Name = '${name}' and IsDelete = 0`);
+    },
+    singleTagName: function (tagName) {
+        return db.load(`SELECT * FROM ${TBL_TAGS} WHERE TagName = '${tagName}' and IsDelete = 0`);
+    },
+    singleNameDuplicate: function (name, id) {
+        return db.load(`SELECT Id FROM ${TBL_TAGS} WHERE Name = '${name}' and Id != ${id} and IsDelete = 0`);
+    },
+    singleTagNameDuplicate: function (tagName, id) {
+        return db.load(`SELECT Id FROM ${TBL_TAGS} WHERE TagName = '${tagName}' and Id != ${id} and IsDelete = 0`);
     },
     tagByIdPost: function (IdPost) {
         return db.load(`SELECT DISTINCT(t.Name) FROM tag_posts tp, ${TBL_TAGS} t 
@@ -14,7 +32,7 @@ module.exports = {
                         AND t.IsDelete = 0`);
     },
     add: function (entity) {
-        return db.add(TBL_ACCOUNTS, entity);
+        return db.add(TBL_TAGS, entity);
     },
     patch: function (entity) {
         const condition = {
@@ -28,5 +46,17 @@ module.exports = {
           Id: id
         }
         return db.del(TBL_TAGS, condition);
+    },
+    Provision: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.del_provisional(TBL_TAGS, condition);
+    },
+    activate: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.activate(TBL_TAGS, condition);
     }
 };

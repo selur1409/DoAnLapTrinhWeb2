@@ -272,7 +272,7 @@ module.exports = (router) => {
             return res.redirect('/admin/categories/err6'); 
         }       
     })
-    
+
     // xóa category (update IsDelete = 1)
     router.post('/categories/dellv1', async function(req, res){
         try{
@@ -292,7 +292,7 @@ module.exports = (router) => {
             return res.redirect('/admin/categories/err7'); 
         }
     })
-    
+
     // kích hoạt category (IsDelete = 0) lv1
     router.get('/categories/activatelv1', async function (req, res){
         try{
