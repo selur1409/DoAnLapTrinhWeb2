@@ -27,7 +27,7 @@ module.exports = {
         return db.load(`SELECT Id FROM ${TBL_TAGS} WHERE TagName = '${tagName}' and Id != ${id} and IsDelete = 0`);
     },
     tagByIdPost: function (IdPost) {
-        return db.load(`SELECT DISTINCT(t.Name) FROM tag_posts tp, ${TBL_TAGS} t 
+        return db.load(`SELECT DISTINCT(t.Name), t.TagName FROM tag_posts tp, ${TBL_TAGS} t 
                         WHERE tp.IdTag = t.Id AND tp.IdPost = '${IdPost}' 
                         AND t.IsDelete = 0`);
     },

@@ -9,28 +9,28 @@ module.exports = {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 10`);
     },
     postnew: function () {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     postByCategories: function (id) {
@@ -41,8 +41,12 @@ module.exports = {
                         WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
                         ORDER BY RAND() LIMIT 5`);
     },
-    postByTag: function (id) {
-        return db.load(`SELECT * FROM ${TBL_POSTS} WHERE IdTag = '${id}'`);
+    postByTag: function (tn) {
+        return db.load(`select DISTINCT(p.Id), p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost
+                        from posts p, accounts a, information i, postdetails pt, tag_posts tp, tags t 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND tp.IdPost = p.Id AND t.Id = tp.IdTag 
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND t.TagName = '${tn}' 
+                        ORDER BY p.DatetimePost DESC`);
     },
     single: function (url) {
         return db.load(`SELECT p.*, i.Nickname, i.Avatar AS 'AvatarWriter', i.IdAccount
