@@ -1,19 +1,19 @@
 const db = require('../utils/db');
 module.exports = {
     LoadTag:()=>{
-        return db.load(`SELECT * FROM tags`);
+        return db.load(`SELECT * FROM tags WHERE IsDelete = 0`);
     },
 
     LoadCategories:()=>{
-        return db.load(`SELECT * FROM categories`);
+        return db.load(`SELECT * FROM categories WHERE IsDelete = 0`);
     },
 
-    CheckTitleIsExists:(value)=>{
-        return db.load(`SELECT * FROM posts WHERE Title = '${value}'`);
+    CheckTitleIsExists:(value, IdPost = null)=>{
+        return db.load(`SELECT * FROM posts WHERE Title = '${value}' AND Id != ${IdPost}`);
     },
 
     LoadSubCategories:()=>{
-        return db.load(`SELECT * FROM categories_sub`);
+        return db.load(`SELECT * FROM categories_sub WHERE IsDelete = 0`);
     },
 
     InsertPost:(value)=>{
@@ -30,6 +30,13 @@ module.exports = {
 
     LoadPostOfWriter:(IdStatus, IdAccount, Limit, Offset)=>{
         return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost' FROM posts p, postdetails pd, accounts ac, information inf WHERE pd.IdAccount = inf.IdAccount AND ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = ${IdAccount} ORDER BY p.DatePost LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    LoadPostOfWriterBySearch:(IdAccount, Limit, Offset, Value)=>{
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Name AS 'NameOfWriter', inf.Avatar AS 'AvatarPost'
+        FROM posts p, postdetails pd, (SELECT * FROM information inf WHERE inf.IdAccount = ${IdAccount}) inf
+        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = ${IdAccount}
+        LIMIT ${Limit} OFFSET ${Offset}`);
     },
 
     LoadPostOfWriterThisWeek:(IdStatus, IdAccount, Limit, Offset)=>{
@@ -73,12 +80,18 @@ module.exports = {
         return db.load(`SELECT Count(*) AS Number FROM posts p, postdetails pd, accounts ac WHERE ac.Id = pd.IdAccount AND pd.IdPost = p.Id AND p.IdStatus = '${IdStatus}' AND ac.Id = '${IdAccount}' AND p.DatePost BETWEEN  DATE_FORMAT(CURDATE() , '${ThisDayOrMonthOrYear}') AND CURDATE()`);
     },
 
+    CountPostSearch:(IdAccount, Limit, Offset, Value)=>{
+        return db.load(`SELECT Count(*) AS Number
+        FROM posts p, postdetails pd, (SELECT * FROM information inf WHERE inf.IdAccount = ${IdAccount}) inf
+        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = ${IdAccount}`);
+    },
+
     UpdateFullContent:(Content, Avatar, Id)=>{
         return db.insert(`UPDATE posts SET Content_Full = '${Content}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
     },
 
     UpdatePostOfWriter:(value)=>{
-        return db.insert(`UPDATE posts SET Title = ?, Content_Summary = ?, Content_Full = ?, DatePost = ?, Avatar = ?, Views = ?, DatetimePost = ?, IdCategories = ?, IdStatus = ?, IsDelete = ? WHERE Id = ?`, value);
+        return db.insert(`UPDATE posts SET Title = ?, Url = ?, Content_Summary = ?, Content_Full = ?, DatePost = ?, Avatar = ?, Views = ?, DatetimePost = ?, IdCategories = ?, IdStatus = ?, IsDelete = ? WHERE Id = ?`, value);
     },
     UpdatePostDetail:(FullCont, id)=>{
         return db.insert(`UPDATE postdetails SET Content_Full = '${FullCont}' WHERE IdPost = ${id}`);
@@ -92,6 +105,7 @@ module.exports = {
         FROM status_posts st`);
     },
 
+    /*Feedback*/
     LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
         return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
         FROM feedback fb, editoraccount ec, information inf 

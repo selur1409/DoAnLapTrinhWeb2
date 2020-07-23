@@ -7,11 +7,12 @@
                 </div>
                 <div class="col-6 d-flex p-1">
                     <div class="input-group input-group-sm m-1">
-                        <input type="text" class="form-control" placeholder="Search...">
+                        <form action="/writer/ViewPost/" method="GET" id="frmSearch"></form>
+                        <input type="search" class="form-control" placeholder="Search..." name="Search" form="frmSearch" value="{{Search}}">
                         <div class="input-group-append">
-                            <div class="btn btn-primary">
+                            <button class="btn btn-primary" type="submit" formaction="frmSearch" id="submit">
                                 <i class="fas fa-search"></i>
-                            </div>
+                            </button>
                         </div>
                     </div>
                     <div class="btn-group dropdown">
@@ -20,10 +21,10 @@
                             <i class="fa fa-filter" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=1">Trong hôm nay</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=2">Trong tuần này</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=3">Trong tháng này</a>
-                            <a class="dropdown-item" href="/writer/ViewPost/{{IdStatus}}/1/?opt=4">Trong năm này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/?id={{IdStatus}}&page=1&opt=1">Trong hôm nay</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/?id={{IdStatus}}&page=1&opt=2">Trong tuần này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/?id={{IdStatus}}&page=1&opt=3">Trong tháng này</a>
+                            <a class="dropdown-item" href="/writer/ViewPost/?id={{IdStatus}}&page=1&opt=4">Trong năm này</a>
                         </div>
                     </div>
                 </div>
@@ -33,17 +34,17 @@
             <div class="row">
                 <div class="col-8">
                     <nav class="nav nav-pills flex-column flex-sm-row p-2">
-                        <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}" href="/writer/ViewPost/4/1">Chưa
+                        <a class="flex-sm-fill text-sm-center nav-link {{#if IsActive4}} active {{/if}}" href="/writer/ViewPost/?id=4&page=1">Chưa
                             được
                             duyệt <span class="badge badge-light"> {{NumberOfPost 4}}</span></a>
-                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}" href="/writer/ViewPost/1/1">Đã
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive1}} active {{/if}}" href="/writer/ViewPost/?id=1&page=1">Đã
                             được
                             duyệt chờ xuất
                             bản <span class="badge badge-light"> {{NumberOfPost 1}}</span></a></a>
-                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}" href="/writer/ViewPost/3/1">Bị
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive3}} active {{/if}}" href="/writer/ViewPost/?id=3&page=1">Bị
                             từ
                             chối <span class="badge badge-light"> {{NumberOfPost 3}}</span></a></a>
-                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}" href="/writer/ViewPost/2/1">Đã
+                        <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActive2}} active {{/if}}" href="/writer/ViewPost/?id=2&page=1">Đã
                             xuất
                             bản <span class="badge badge-light"> {{NumberOfPost 2}}</span></a></a>
                     </nav>
@@ -129,12 +130,12 @@
                 <nav aria-label="...">
                     <ul class="pagination">
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/1/?opt={{Opt}}" aria-label="Previous">
+                            <a class="page-link" {{#if SearchNotEmpty}}href="/writer/ViewPost/?page=1&Search={{Search}}"{{else}}href="/writer/ViewPost/?id={{this.IdStatus}}&page=1&opt={{Opt}}"{{/if}} aria-label="Previous">
                                 <span aria-hidden="true">FIRST</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{prev_value}}/?opt={{Opt}}" aria-label="Previous">
+                            <a class="page-link" {{#if SearchNotEmpty}}href="/writer/ViewPost/?page={{prev_value}}&Search={{Search}}"{{else}}href="/writer/ViewPost/?id={{this.IdStatus}}&page={{prev_value}}&opt={{Opt}}"{{/if}} aria-label="Previous">
                                 <span aria-hidden="true">&laquo;</span>
                             </a>
                         </li>
@@ -148,17 +149,17 @@
                         </li>
                         {{else}}
                         <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-                            <a class="page-link" href="/writer/ViewPost/{{IdStatus}}/{{value}}/?opt={{Opt}}">{{value}}</a>
+                            <a class="page-link"{{#if ../SearchNotEmpty}}href="/writer/ViewPost/?page={{value}}&Search={{../Search}}"{{else}}href="/writer/ViewPost/?id={{this.IdStatus}}&page={{value}}&opt={{Opt}}"{{/if}}>{{value}}</a>
                         </li>
                         {{/if}}
                         {{/each}}
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{next_value}}/?opt={{Opt}}" aria-label="Next">
+                            <a class="page-link" {{#if SearchNotEmpty}}href="/writer/ViewPost/?page={{next_value}}&Search={{Search}}"{{else}}href="/writer/ViewPost/?id={{this.IdStatus}}&page={{next_value}}&opt={{Opt}}"{{/if}} aria-label="Next">
                                 <span aria-hidden="true">&raquo;</span>
                             </a>
                         </li>
                         <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-                            <a class="page-link" href="/writer/ViewPost/{{this.IdStatus}}/{{last}}/?opt={{Opt}}" aria-label="Next">
+                            <a class="page-link" {{#if SearchNotEmpty}}href="/writer/ViewPost/?page={{last}}&Search={{Search}}"{{else}}href="/writer/ViewPost/?id={{this.IdStatus}}&page={{last}}&opt={{Opt}}"{{/if}} aria-label="Next">
                                 <span aria-hidden="true">LAST</span>
                             </a>
                         </li>
@@ -229,9 +230,19 @@
     }
 
 
+    function Search()
+    {
+        const formSearch = document.getElementById('frmSearch');
+        const btnSubmit = document.getElementById('submit');
+        btnSubmit.addEventListener('click', function () {
+            formSearch.submit();
+        }, true);
+    }
+
     window.onload = function () {
         ChangeRead();
-        ShowDetail()
+        ShowDetail();
+        Search();
     }
 </script>
 {{/section}}

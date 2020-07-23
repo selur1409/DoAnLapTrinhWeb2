@@ -211,7 +211,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         else {
             
             if (Check.length !== 0) {
-                res.json({ fail: 'The title of post is exists.' });
+                res.json({ fail: 'The title of article is already exists.' });
             }
             else {
                 let Temp = [];
@@ -264,15 +264,18 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
     }
 }); 
 
-router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
+router.get('/ViewPost/', restrict, Authories, async (req, res)=>{
     try{
 
-        const page = +req.params.page || 1;
+        const page = +req.query.page || 1;
+        const IdStatus = +req.query.id;
+        const Opt = +req.query.opt || 0;
+        const ValueSearch = req.query.Search || '';
         const IdAccount = res.locals.lcAuthUser.Id;
-        const IdStatus = +req.params.id || 4;
-        const Opt = +req.query.opt;
+
         const offset = (page - 1) * config.pagination.limit;
         let [Result, Total, NumberOfPost] = [];
+
         if (Opt === 1) {
             [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-%m-%d'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-%m-%d'), db.CountNumberPost(IdAccount)]);
         }
@@ -286,9 +289,15 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
             [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-01-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-01-01'), db.CountNumberPost(IdAccount)]);
         }
         else {
-            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
+            if(req.query.Search === undefined)
+            {
+                [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
+            }
+            else
+            {
+                [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterBySearch(IdAccount, config.pagination.limit, offset, ValueSearch), db.CountPostSearch(IdAccount, config.pagination.limit, offset, ValueSearch), db.CountNumberPost(IdAccount)]);
+            }
         }
-
         const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
         const page_items = [];
         let count = 0;
@@ -326,6 +335,8 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
             IsActive: true,
             Name: res.locals.lcAuthUser.Username,
             Avatar: res.locals.lcAuthUser.Avatar,
+            Search: ValueSearch,
+            SearchNotEmpty: ValueSearch.length !== 0,
             IdStatus,
             IsActive1: IdStatus === 1,
             IsActive2: IdStatus === 2,
@@ -334,7 +345,7 @@ router.get('/ViewPost/:id/:page/', restrict, Authories, async (req, res)=>{
             ListPosts: Result,
             helpers: {
                 format_datetime: function (value) {
-                    const date = moment(value).format("DD-MM-YYYY HH:MM TT");
+                    const date = moment(value).format("DD-MM-YYYY");
                     return date;
                 },
 
@@ -502,46 +513,48 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         let Avatar = null;
         const IdCategories = req.body.Categories;
         const Title = req.body.Title;
+        const Url = mark_url(Title);
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
+        const Check = await db.CheckTitleIsExists(Title, IdPost);
     
         if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
             res.json({fail:' Please complete all fields in the form'});
         }
         else{
-            const TagsImg = getTagImg(FullContent);
-            Avatar = '/../public/img/ImagePost/' + IdPost + '/' +TagsImg[0];
-            const ValueOfPost = [`${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
-            const Result = await db.UpdatePostOfWriter(ValueOfPost);
-            await db.DeleteTagPost(IdPost);
-            let tmp = [];
-            for (let i = 0; i < checkbox.length; i++) {
-                let Tag_Post = [];
-                Tag_Post.push(IdPost);
-                Tag_Post.push(checkbox[i]);
-                tmp.push(Tag_Post);
+
+            if(Check.length !== 0)
+            {
+                res.json({fail:'The title of article is already exists'});
             }
-            const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
-            const result = await db.InsertTagPost(ValueOfTagPost);
+            else
+            {
+                const TagsImg = getTagImg(FullContent);
+                Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
+                const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
+                const Result = await db.UpdatePostOfWriter(ValueOfPost);
+                await db.DeleteTagPost(IdPost);
+                let tmp = [];
+                for (let i = 0; i < checkbox.length; i++) {
+                    let Tag_Post = [];
+                    Tag_Post.push(IdPost);
+                    Tag_Post.push(checkbox[i]);
+                    tmp.push(Tag_Post);
+                }
+                const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
+                const result = await db.InsertTagPost(ValueOfTagPost);
 
-            //remove image is not exists in full content 
-            const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
-            RemoveImage(directoryPath, TagsImg);
+                //remove image is not exists in full content 
+                const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
+                RemoveImage(directoryPath, TagsImg);
 
-            if (result !== null) {
-                res.json({success:'This article has been sent successfully!'});
+                if (result !== null) {
+                    res.json({success:'This article has been sent successfully!'});
+                }
             }
         }
-    
-        // console.log(IdPost);
-        // console.log(checkbox);
-        // console.log(DatePost);
-        // console.log(DateTimePost);
-        // console.log(IdCategories);
-        // console.log(req.body.BriefCont);
-        // console.log(req.body.FullCont);
     }
     catch(e)
     {
@@ -716,142 +729,5 @@ router.get('/TrashFeedBack_Inbox/:id/:page',  restrict, Authories, async (req,re
     }
 });
 
-// router.get('/Profile', restrict, Authories, async (req, res, next)=>{
-//     try{
-//         const IdAccount = res.locals.lcAuthUser.Id;
-//         const [AccountProfile, NumberOfPost]  = await Promise.all([db.LoadProfile(IdAccount), db.CountAllPost(IdAccount)]);
-//         req.session.authAccount = AccountProfile[0];
-//         res.render('vwWriter/profile',{
-//             layout:'homewriter',
-//             Username:AccountProfile[0].Username,
-//             Name:AccountProfile[0].Name,
-//             Nickname:AccountProfile[0].Nickname,
-//             DateOfBirth: moment(AccountProfile[0].DOB).format('DD/MM/YYYY'),
-//             Email:AccountProfile[0].Email,
-//             Phone:AccountProfile[0].Phone,
-//             Sex:AccountProfile[0].Sex,
-//             Avatar:AccountProfile[0].Avatar,
-//             AvatarEmpty:AccountProfile[0].Avatar === null,
-//             NumberOfPost:NumberOfPost[0].Number,
-//             IsActiveProfile:true
-//         });
-//     }
-//     catch(e){
-//         console.log(e);
-//     }
-// });
 
-// router.post('/Profile/', restrict, Authories, async (req, res, next)=>{
-    
-//     let Name = '';
-//     let Email = '';
-//     let DOB = '';
-//     let Phone = '';
-//     let Nickname = '';
-//     let Avatar = '';
-//     const IdAccount = res.locals.lcAuthUser.IdAccount;
-
-//     try{
-//         const option = +req.query.opt;
-//        if(option === 1)
-//        {
-//             const storage = multer.diskStorage({
-//                 filename(req, file, cb) {
-//                     cb(null, IdAccount + path.extname(file.originalname));
-//                 },
-//                 destination(req, file, cb) {
-//                     cb(null, './public/img/Avatar');
-//                 }
-//             });
-
-//             const upload = multer({ storage, 
-//                 fileFilter: function (req, file, cb) {
-//                     if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
-//                         req.fileValidationError = 'Only image files are allowed!';
-//                         return cb(new Error('Only image files are allowed!'), false);
-//                     }
-//                     cb(null, true);
-//                 }
-//             });
-
-//             upload.single('Avatar')(req, res, async error => {
-//                 if(error)
-//                 {
-//                     console.log(error);
-//                 }
-//                 else
-//                 {
-//                     Name = req.body.Name;
-//                     DOB = req.body.DOB;
-//                     Email = req.body.Email;
-//                     Phone = req.body.Phone; 
-//                     Nickname = req.body.Nickname;
-//                     Avatar = req.file !== undefined ? IdAccount + path.extname(req.file.originalname) : null;   
-
-//                     if (Name === "" ||
-//                         moment(DOB, "DD/MM/YYYY").isValid === false ||
-//                         Email === "") {
-//                         console.log(Name);
-//                         console.log(DOB);
-//                         console.log(Email);
-//                         res.json({ fail: "These fields cannot not be emtpy!" });
-//                     }
-//                     else {
-//                         const dt_now = moment().format('YYYY-MM-DD');
-//                         DOB = moment(DOB, "DD/MM/YYYY").format('YYYY-MM-DD');
-
-//                         const IdAccount = res.locals.lcAuthUser.IdAccount;
-
-//                         const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${IdAccount}`];
-//                         if (DOB > dt_now) {
-//                             res.json({ fail: 'Your birthday cannot be greater than current date' });
-//                         }
-//                         else {
-//                             const result = await db.UpdateProfile(value);
-//                             if (result.affectedRows === 0) {
-//                                 res.json({ fail: 'Your birthday cannot be greater than current date' });
-//                             }
-//                             else {
-//                                 res.json({ success: "The change process is successful" });
-//                             }
-//                         }
-//                     }
-//                 }
-//             });
-//        }
-//        else if(option === 2)
-//        {
-//             upload.fields([])(req, res, async error => {
-//                 if(error)
-//                 {
-//                     console.log(error);
-//                 }
-//                 else
-//                 {
-//                     const Result = await account.single(res.locals.lcAuthUser.Username);
-//                     const verification = bcrypt.compareSync(req.body.CurrentPassword, Result[0].Password_hash);
-//                     const Id = res.locals.lcAuthUser.Id;
-//                     if(req.body.NewPassword !== req.body.ConfirmNewPassword)
-//                     {
-//                         res.json({fail: 'Confirmation password does not match the New Password'});
-//                     }
-//                     else if(verification === false)
-//                     {   
-//                         res.json({fail: 'Your current password is incorrect'});
-//                     }
-//                     else
-//                     {
-//                         const NewPassword = bcrypt.hashSync(req.body.NewPassword, config.authentication.saltRounds);
-//                         const ValuePassword = [`${NewPassword}`, `${Id}`];
-//                         await db.UpdatePassword(ValuePassword);
-//                         res.json({success: "The change process is successful"});
-//                     }
-//                 }
-//             });
-//        }
-//     }
-//     catch(e){
-//         console.log(e);
-//     }
-// });
 module.exports = router;
