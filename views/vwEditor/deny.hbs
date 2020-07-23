@@ -9,24 +9,25 @@
     <label for="exampleInputAuthor1">Summary: </label>
     <input type="text" class="form-control" id="postContent" value="{{this.denyPost.Content_Summary}}" readonly>
 
-     <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
-     <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
+    <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
+    <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
   </div>
   <div class="form-group">
     <label for="exampleFormControlTextarea1">Reason for the rejection</label>
-    <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required pattern="\S+.*"></textarea>
+    <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required
+      pattern="\S+.*"></textarea>
   </div>
-  <a type="button" href="#"class="btn btn-primary">Back</a>
+  <a type="button" href="#" class="btn btn-primary">Back</a>
   <button type="submit" class="btn btn-primary">Send</button>
 </form>
 
-<script type = "text/javascript">
-         function validateForm()  {
-             var u = document.getElementById("exampleFormControlTextarea1").value;
- 
-             if(u== "") {
-                 return false;
-             }
-             return true;
-         }
-      </script>
+<script type="text/javascript">
+  function validateForm() {
+    var u = document.getElementById("exampleFormControlTextarea1").value;
+
+    if (u == "") {
+      return false;
+    }
+    return true;
+  }
+</script>

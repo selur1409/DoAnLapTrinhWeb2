@@ -1,35 +1,38 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between">
-    <button class="btn btn-info" onclick="goBack()"><i class="fas fa-reply"></i> Back</button>
+        <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
+            Back</button>
         <h5 class="card-title text-primary mt-2">
-        <i class="fa fa-eye" aria-hidden="true"></i>
-        <b>Review Mode</b>
-    </h5> 
+            <i class="fa fa-eye" aria-hidden="true"></i>
+            <b>REVIEW MODE</b>
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="text-center">
+            <h2>{{this.reviewPost.Title}}</h2>
+        </div>
+        <div>
+            <i><b>Author: </b><b class="text-danger">{{this.author.Nickname}}</b></i>
+            <br>
+            <i><b>Date post: </b>{{this.reviewPost.DatePost}}</i>
+        </div>
+        <div class="mt-5">
+            {{{this.reviewPost.Content_Full}}}</div>
+        <div><b>Tags: </b></div>
+        <div>
+            {{#each this.listTag}}
+            <i class="bg-info text-white">{{TagName}}</i>
+            {{/each}}
+        </div>
+        <div class="text-center">
+            <a type="button" class="btn btn-success" href="/editor/accept/{{this.reviewPost.Id}}">Accept</a>
+            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Deny</a>
+        </div>
+    </div>
 </div>
-  <div class="card-body">
-    <div class="text-center"> <h2>{{this.reviewPost.Title}}</h2></div>
-    <div >
-        <i><b>Author: </b><b class="text-danger">{{this.author.Nickname}}</b></i>
-        <br>
-        <i><b>Date post: </b>{{this.reviewPost.DatePost}}</i>
-    </div>
-    <div class="mt-5">
-        {{{this.reviewPost.Content_Full}}}</div>
-    <div><b>Tags: </b></div>
-    <div>
-        {{#each this.listTag}}
-        <i class="bg-info text-white">{{TagName}}</i>
-        {{/each}}
-    </div>
-    <div class="text-center">
-    <a type="button" class="btn btn-success" href="/editor/accept/{{this.reviewPost.Id}}">Accept</a>
-    <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Deny</a>
-    </div>
-</div>
- </div>
 
 <script>
-function goBack() {
-  window.history.back();
-}
+    function goBack() {
+        window.history.back();
+    }
 </script>

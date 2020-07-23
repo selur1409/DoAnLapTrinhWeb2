@@ -107,25 +107,28 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <ul class="nav nav-treeview">
                 <li class="nav-item">
                   <a href="/editor/pending" class="nav-link {{#if IsActivePending}} active {{/if}}">
-                     {{!-- <i class="fas fa-circle"></i> --}}
+                    {{!-- <i class="fas fa-circle"></i> --}}
                     <i class="far fa-circle nav-icon"></i>
                     <p>Pending</p>
+                    <span class="badge badge-primary"></span>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Accepted</p>
+                    <span class="badge badge-success"></span>
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="/editor/denied" class="nav-link {{#if IsActiveDenied}} active {{/if}}">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Denied</p>
+                    <span class="badge badge-danger"></span>
                   </a>
                 </li>
               </ul>
-            </li>           
+            </li>
           </ul>
         </nav>
         <!-- /.sidebar-menu -->
@@ -167,8 +170,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   (function () {
     var revive = Handlebars.template,
       templates = Handlebars.templates = Handlebars.templates || {};
-    {{#templates}}
+    { {#templates } }
     templates['{{{name}}}'] = revive({{{ template }}});
-  {{/templates}}
-  } ());
+  {
+    {
+      /templates}}
+    } ());
 </script>
