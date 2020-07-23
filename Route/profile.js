@@ -56,6 +56,7 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
             NumberOfPost:NumberOfPost[0].Number,
             IsActiveProfile:true,
             IsNotUser:TypeAccount !== 1,
+            IsWriter:TypeAccount === 2,
             TypeAccount:AccountProfile[0].Type
         });
     }

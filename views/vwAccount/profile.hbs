@@ -353,12 +353,14 @@
                                                                     <input type="text" class="form-control" id="inputName" placeholder="Name" name="Name" value="{{Name}}">
                                                                 </div>
                                                             </div>
+                                                            {{#if IsWriter}}
                                                             <div class="form-group row">
                                                                 <label for="inputNickname" class="col-sm-2 col-form-label">Nickname</label>
                                                                 <div class="col-sm-10">
                                                                     <input type="text" class="form-control" id="inputNickname" placeholder="Nickname" name="Nickname" value="{{Nickname}}">
                                                                 </div>
                                                             </div>
+                                                            {{/if}}
                                                             <div class="form-group row">
                                                                 <label for="inputDOB" class="col-sm-2 col-form-label">Date of birth</label>
                                                                 <div class="col-sm-10">
