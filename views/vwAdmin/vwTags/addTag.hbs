@@ -1,0 +1,73 @@
+{{#section 'css'}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.2/css/fileinput.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.2/themes/explorer-fa/theme.min.css">
+{{/section}}
+{{#section 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.2/js/fileinput.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.2/themes/fa/theme.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.1.2/js/locales/vi.min.js"></script>
+<script>
+    $("#ImgURL").fileinput({
+        theme: 'fa',
+        showCaption: true, 
+        dropZoneEnabled: true,
+        allowedFileExtensions: ["jpg", "png", "jpeg", "svg"],
+        language: 'vi'
+    });
+</script>
+{{/section}}
+
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/tags" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Thêm mới tag</h4>
+  </div>
+  <div class="card-body">
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+
+    <form method="POST" enctype="multipart/form-data" action="/admin/tags/add">
+      <div class="form-group required">
+        <label class="control-label" for="txtTag">Tag</label>
+        <input type="text" class="form-control" id="txtTag" name="Name" autofocus placeholder="Name">
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtTagName">TagName (bắt đầu bằng dấu '#'. Nếu không điền dấu '#' ở đầu sẽ tự động thêm)</label>
+        <input type="text" class="form-control" id="txtTagName" name="TagName" placeholder="#">
+      </div>
+      <div class="form-group required">
+        <label class="control-label">Ảnh đại diện tag</label>
+        <input id="ImgURL" name="ImgURL" type="file" data-browse-on-zone-click="true" accept=".png, .jpg, .jpeg .svg">
+      </div>
+   
+      <button type="submit" class="btn btn-success">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Thêm
+      </button>
+    </form>
+  </div>
+
+</div>

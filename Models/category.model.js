@@ -102,11 +102,11 @@ module.exports = {
     singleNameSub: function (name) {
         return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and IsDelete = 0`);
     },
-    singleUrlSub: async function (url) {
+    singleUrlSub: function (url) {
         return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and IsDelete = 0`);
     },
-    singleNameSubEdit: async function (name, id) {
-        return await db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id} and IsDelete = 0`);
+    singleNameSubEdit: function (name, id) {
+        return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Name = '${name}' and Id != ${id} and IsDelete = 0`);
     },
     singleUrlSubEdit: function (url, id) {
         return db.load(`SELECT * FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}' and Id != ${id} and IsDelete = 0`);

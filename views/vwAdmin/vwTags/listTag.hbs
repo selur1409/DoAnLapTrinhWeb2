@@ -3,7 +3,11 @@
     <h4>TAGS</h4>
     <a class="btn btn-outline-success" href="/admin/tags/add" role="button">
       <i class="fa fa-plus" aria-hidden="true"></i>
-      Thêm thẻ
+      Thêm tag
+    </a>
+    <a class="btn btn-outline-warning" href="/admin/tags/activate" role="button" title="Kích hoạt">
+      <i class="fas fa-key"></i>
+      Kích hoạt
     </a>
   </div>
   {{#if this.empty}}
@@ -17,7 +21,7 @@
         <th scope="col" class="text-center">#</th>
         <th scope="col">Tag</th>
         <th scope="col">TagName</th>
-        <th scope="col">Img</th>
+        <th scope="col">Ảnh đại diện</th>
         <th scope="col">&nbsp;</th>
       </tr>
     </thead>
@@ -27,12 +31,13 @@
         <th scope="row" class="text-center">{{Stt}}</th>
         <td>{{Name}}</td>
         <td>{{TagName}}</td>
-        <td><img src="../../../public/img/{{ImgURL}}" alt="{{ImgURL}}" width="35px" height="35px"></td>
+        <td><img src="../../../public/img/tag/{{ImgURL}}" alt="{{ImgURL}}" width="35px" height="35px"></td>
         <td class="text-right">
         <form method="POST" action="/admin/tags/del">
-            <a class="btn btn-primary btn-sm" href="/admin/tags/edit/{{Url}}" role="button" title="Edit Category">
+            <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit Category">
                 <i class="fas fa-pen"></i>
-            </a>            
+            </a>
+            <input type="hidden" name="Id" value="{{Id}}">           
             <button type="submit" class="btn btn-danger btn-sm">
                 <i class="fas fa-trash-alt"></i>
             </button>
