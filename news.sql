@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 18, 2020 lúc 04:24 PM
+-- Thời gian đã tạo: Th7 22, 2020 lúc 10:05 AM
 -- Phiên bản máy phục vụ: 10.4.8-MariaDB
 -- Phiên bản PHP: 7.3.11
 
@@ -360,16 +360,15 @@ CREATE TABLE `tags` (
 --
 
 INSERT INTO `tags` (`Id`, `Name`, `TagName`, `ImgURL`, `IsDelete`) VALUES
-(1, 'Web', '#web', 'tagweb.jpg', 0),
-(2, 'App', '#app', 'tagapp.jpg', 0),
-(3, 'Python', '#python', 'tagpython.jpg', 0),
-(4, 'Ruby', '#ruby', 'tagruby.jpg', 0),
-(5, 'C/C++', '#c/c++', 'tagc.jpg', 0),
-(6, 'Lập trình game', '#laptrinhgame', 'taggame.jpg', 0),
-(7, 'Lập trình online', '#laptrinhonline', 'tagonline.jpg', 0),
-(8, 'Công nghệ', '#congnghe', 'tagtechnology.jpg', 0),
-(9, 'Khoa học', '#khoahoc', 'tagscience.jpg', 0),
-(10, 'Cấu trúc dữ liệu và giải thuật', '#ctdl&gt', 'tagctdl.jpg', 0);
+(1, 'Web', 'web', 'tagweb.jpg', 0),
+(2, 'App', 'app', 'tagapp.jpg', 0),
+(3, 'Python', 'python', 'tagpython.jpg', 0),
+(4, 'Ruby', 'ruby', 'tagruby.jpg', 0),
+(6, 'Lập trình game', 'laptrinhgame', 'taggame.jpg', 0),
+(7, 'Lập trình online', 'laptrinhonline', 'tagonline.jpg', 0),
+(8, 'Công nghệ', 'congnghe', 'tagtechnology.jpg', 0),
+(9, 'Khoa học', 'khoahoc', 'tagscience.jpg', 0),
+(10, 'Cấu trúc dữ liệu và giải thuật', 'ctdlgt', 'tagctdl.jpg', 0);
 
 -- --------------------------------------------------------
 
@@ -554,7 +553,8 @@ ALTER TABLE `status_posts`
 -- Chỉ mục cho bảng `tags`
 --
 ALTER TABLE `tags`
-  ADD PRIMARY KEY (`Id`);
+  ADD PRIMARY KEY (`Id`),
+  ADD UNIQUE KEY `TagName` (`TagName`);
 
 --
 -- Chỉ mục cho bảng `tag_posts`

@@ -51,6 +51,10 @@ passport.deserializeUser(async function (id, done){
 
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
+
+// route tag
+app.use('/tag', require('./route/tag.route'));
+
 // route account
 const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
