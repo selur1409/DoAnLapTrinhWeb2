@@ -4,6 +4,10 @@ module.exports = function (app) {
     app.use(async function (req, res, next) {
       const rows = [
         {
+          link: 'accounts',
+          title: 'Accounts'
+        },
+        {
           link: 'categories',
           title: 'Categories'
         },
@@ -14,10 +18,6 @@ module.exports = function (app) {
         {
           link: 'posts',
           title: 'Posts'
-        },
-        {
-          link: 'accounts',
-          title: 'Accounts'
         }
       ];
       res.locals.lcManage = rows;

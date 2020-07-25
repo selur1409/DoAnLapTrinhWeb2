@@ -3,10 +3,10 @@ const TBL_TAGS = 'tags';
 
 module.exports = {
     all: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where IsDelete = 0`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0`);
     },
     allActivate: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where IsDelete = 1`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 1`);
     },
     single: function (id) {
         return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 0`);

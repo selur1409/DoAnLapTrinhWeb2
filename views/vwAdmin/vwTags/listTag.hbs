@@ -34,11 +34,11 @@
         <td><img src="../../../public/img/tag/{{ImgURL}}" alt="{{ImgURL}}" width="35px" height="35px"></td>
         <td class="text-right">
         <form method="POST" action="/admin/tags/del">
-            <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit Category">
+            <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit">
                 <i class="fas fa-pen"></i>
             </a>
             <input type="hidden" name="Id" value="{{Id}}">           
-            <button type="submit" class="btn btn-danger btn-sm">
+            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
                 <i class="fas fa-trash-alt"></i>
             </button>
         </form>

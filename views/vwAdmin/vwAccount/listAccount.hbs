@@ -1,0 +1,126 @@
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>ACCOUNTS</h4>
+  </div>
+
+  <div class="row">
+      <div class="col-12">
+          <nav class="nav nav-pills flex-column flex-sm-row p-2">
+              <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActiveSubscriber}} active {{/if}}" href="/admin/accounts?select=subscriber">
+                Subscriber
+              </a>
+              <a class="flex-sm-fill text-sm-center nav-link {{#if IsActiveWriter}} active {{/if}}" href="/admin/accounts?select=writer">
+                Writer
+              </a>
+              <a class="flex-sm-fill text-sm-center nav-link  {{#if IsActiveEditor}} active {{/if}}" href="/admin/accounts?select=editor">
+                Editor
+              </a>
+          </nav>
+      </div>
+  </div>
+  
+  <div class="row bg-light">
+    <div class="col-8"></div>
+    <div class="col-4">
+      <a class="btn btn-outline-success" href="/admin/accounts/add/{{#if IsActiveWriter}}writer{{/if}}{{#if IsActiveEditor}}editor{{/if}}{{#if IsActiveSubscriber}}subscriber{{/if}}" role="button">
+      <i class="fa fa-plus" aria-hidden="true"></i>
+      Thêm
+      </a>
+    </div>
+  </div>
+
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+  
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center">#</th>
+        <th scope="col">User</th>
+        {{#if IsActiveWriter}} 
+        <th scope="col">Nickname</th>
+        {{else}}
+        <th scope="col">Name</th>
+        {{/if}}
+        <th scope="col">Sex</th>
+        <th scope="col">DOB</th>
+        <th scope="col">DateRegister</th>
+        <th scope="col">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.accounts}}
+      <tr class="{{#if IsDelete}}table-dark{{/if}}">
+        <th scope="row" class="text-center">{{Stt}}</th>
+        <td>{{Username}}</td>
+        {{#if Nickname}}
+        <td><b>{{Nickname}}</b></td>
+        {{else}}
+        <td><b>{{Name}}</b></td>
+        {{/if}}
+        <td>{{Sex}}</td>
+        <td>{{DOB}}</td>
+        <td>{{DateRegister}}</td>
+        <td class="text-right">
+        <form method="POST">
+            <input type="hidden" name="Id" value="{{Id}}">
+            <input type="hidden" name="Username" value="{{Username}}">
+            <input type="hidden" name="TypeAccount" value="{{TypeAccount}}">
+            {{#if IsDelete}}
+            <button type="submit" class="btn btn-danger btn-sm" title="Lock" formaction="/admin/accounts/open">
+                <i class="fas fa-lock"></i>
+            </button>
+            {{else}}
+
+            {{#if prenium}}
+                {{#if prenium.Notvalue}}
+                <a class="btn btn-warning btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Prenium">
+                  <i class="fab fa-vuejs"></i>
+                  Hết hạn
+                  <i class="fas fa-plus-square"></i>
+                </a>
+                {{else}}
+                <a class="btn btn-warning btn-sm" href="#" role="button" title="Prenium">
+                <i class="fab fa-vuejs"></i>
+                    Còn: {{prenium.days}} ngày {{prenium.hours}} giờ {{prenium.minutes}}
+                    {{!-- :{{prenium.miniutes}}:{{prenium.seconds}}s --}}
+                </a>
+                <a class="btn btn-danger btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Add Prenium">                  
+                  <i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
+                </a>
+                <button type="submit" class="btn btn-danger btn-sm" title="Delete Prenium" formaction="/admin/accounts/delete-prenium">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                {{/if}}
+            {{else}}
+              {{#if preniumForever}}
+              <a class="btn btn-info btn-sm" href="#" role="button" title="Pernium Forever">
+                  <i class="fab fa-vuejs"></i>
+              </a>
+              {{else}}
+                <a class="btn btn-danger btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Add Prenium">                  
+                  <i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
+                </a>
+              {{/if}}
+            {{/if}}
+            <a class="btn btn-primary btn-sm" title="Password" href="/admin/accounts/views/changepassword/{{Username}}">
+               <i class="fas fa-keyboard"></i>
+            </a>         
+            <button type="submit" class="btn btn-primary btn-sm" title="Edit" formaction="/admin/accounts/edit">
+               <i class="fas fa-pen"></i>
+            </button>
+            <button type="submit" class="btn btn-warning btn-sm" title="Open" formaction="/admin/accounts/lock">
+                <i class="fas fa-lock-open"></i>
+            </button>
+            {{/if}}
+        </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>
