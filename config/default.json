@@ -24,6 +24,7 @@
       },
       "NumberTime": 7
     },
+    "addMinutes": 62,
     "pagination": {
       "limit": 4,
       "limitPaginationLinks":5
