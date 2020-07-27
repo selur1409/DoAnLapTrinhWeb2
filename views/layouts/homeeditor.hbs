@@ -16,6 +16,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="/public/css/adminlte.min.css">
+   <link rel="stylesheet" href="/public/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   {{{_sections.css}}}
@@ -48,7 +49,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               Welcome, <b>{{lcAuthUser.Name}}</b>!
             </a>
             <div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item bg-info" href="/account/profile">
+              <a class="dropdown-item bg-info" href="/account/Profile/4">
                 <i class="fa fa-user" aria-hidden="true"></i>
                 Account Profile
               </a>
@@ -70,12 +71,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </nav>
 
     <!-- Main Sidebar Container -->
-    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <aside class="main-sidebar sidebar-dark-primary elevation-4 ">
       <!-- Brand Logo -->
-      <a href="" class="brand-link">
+      <a href="/editor" class="brand-link bg-danger">
         <img src="/public/img/Editor_Logo.png" alt="Editor Logo" class="brand-image img-circle elevation-3"
           style="opacity: .8">
-        <span class="brand-text font-weight-light">Editor </span>
+        <span class="brand-text font-weight-light">EDITOR MANAGER </span>
       </a>
 
       <!-- Sidebar -->
@@ -87,7 +88,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block">{{lcAuthUser.Name}}</a>
+            <a href="/account/Profile/4" class="d-block">{{lcAuthUser.Name}}</a>
             {{!-- Alexander Pierce --}}
           </div>
         </div>
@@ -101,29 +102,29 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <a href="#" class="nav-link active">
                 <i class="fas fa-bars"></i>
                 <p> MANAGER
-                  <i class="right fas fa-angle-left"></i>
+                 <i class="right fas fa-angle-left"></i>
                 </p>
               </a>
               <ul class="nav nav-treeview">
                 <li class="nav-item">
-                  <a href="/editor/pending" class="nav-link {{#if IsActivePending}} active {{/if}}">
+                  <a href="/editor/pending" class="nav-link {{#if IsActivePending}} bg-info {{/if}}">
                     {{!-- <i class="fas fa-circle"></i> --}}
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Pending</p>
+                    <i class="far fa-circle"></i>
+                    <p>Posts Pending</p>
                     <span class="badge badge-primary"></span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} active {{/if}}">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Accepted</p>
+                  <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} bg-success {{/if}}">
+                    <i class="far fa-check-circle"></i>
+                    <p>Posts Accepted</p>
                     <span class="badge badge-success"></span>
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="/editor/denied" class="nav-link {{#if IsActiveDenied}} active {{/if}}">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Denied</p>
+                  <a href="/editor/denied" class="nav-link  {{#if IsActiveDenied}} bg-danger {{/if}}">
+                    <i class="far fa-times-circle"></i>
+                    <p>Posts Denied</p>
                     <span class="badge badge-danger"></span>
                   </a>
                 </li>
@@ -137,6 +138,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     </aside>
 
     <div class="content-wrapper">
+      <div>
+         <a href="/editor" class="nav-link">
+            <i class="fa fa-home" aria-hidden="true"></i>
+            <b>Editor Home Page</b>
+          </a>
+
+      </div>
       {{{body}}}
     </div>
     <!-- /.content-wrapper --
@@ -160,20 +168,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- AdminLTE App -->
   <script src="/public/js/adminlte.min.js"></script>
+  <script src="/public/plugins/sweetalert2/sweetalert2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
   {{{_sections.js}}}
 
 </body>
 
 </html>
-<script>
-  (function () {
-    var revive = Handlebars.template,
-      templates = Handlebars.templates = Handlebars.templates || {};
-    { {#templates } }
-    templates['{{{name}}}'] = revive({{{ template }}});
-  {
-    {
-      /templates}}
-    } ());
-</script>

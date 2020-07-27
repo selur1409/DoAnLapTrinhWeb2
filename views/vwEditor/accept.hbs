@@ -1,49 +1,89 @@
-<div class="card">
-  <div class="card-header text-primary bg-success d-flex justify-content-between pt-2 pb-2">
+{{#section 'css'}}
+<link rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+{{/section}}
+<div class="card pl-2 pr-2">
+  <div class="card-header text-primary bg-success d-flex justify-content-between mt-2 pb-2">
     <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i></i>
       Back</button>
     <b><i class="fa fa-check-circle" aria-hidden="true"></i> ACCEPT POST</b>
   </div>
 
   <form action="/editor/acceptPost" method="POST">
-    <div class="form-group">
-      <label for="exampleInputTitle1">Tilte: </label>
-      <input type="text" class="form-control" id="postName" value="{{this.inforOfPost.Title}}" readonly>
-      <label for="exampleInputTitle1">Author: </label>
-      <input type="text" class="form-control" id="postName" value="{{this.author.Nickname}}" readonly>
-      <label for="exampleFormControlSelect1">Categories: </label>
-      <select class="form-control" id="exampleFormControlSelect1" name="subCate">
-        <option selected>{{this.categoriesSubOfPost.Name}}</option>
-        {{#each this.listCategoriesSub}}
-        <option>{{Name}}</option>
-        {{/each}}
-      </select>
-      <label for="exampleInputTitle1">Tags: </label>
-      <div class="input-group mb-3">
-        <div>
-          <div>
-            {{#each this.listTagsOfPost}}
-            <input type="checkbox" aria-label="Checkbox for following text input" checked>
-            <label> {{Name}} </label>
-            <br>
-            {{/each}}
-            {{#each this.listTags}}
-            <input type="checkbox" aria-label="Checkbox for following text input">
-            <label> {{Name}} </label>
-            <br>
-            {{/each}}
+    <class class="form-group pl-2">
+      <div class="mb-4">
+        <label for="exampleInputTitle1"><i class="fas fa-bookmark"></i> <u>Tilte: </u> </label>
+        <input type="text" class="form-control col-6" id="postTitle" name="postTitle" value="{{this.inforOfPost.Title}}"
+          readonly>
+      </div>
+      <div class="mb-4">
+        <label for="exampleInputTitle1"><u><i class="fas fa-user-edit"></i> Author: </u></label>
+        <input type="text" class="form-control col-4" id="postName" name="postName" value="{{this.author.Nickname}}"
+          readonly>
+      </div>
+      <input type="hidden" name="IdPost" value="{{this.inforOfPost.Id}}">
+      <div class="mb-4"> <label for="exampleFormControlSelect1"><i class="fas fa-bars"></i>
+          <u>Categories Sub: </u></label>
+        <select class="form-control col-3" id="exampleFormControlSelect1" name="subCate">
+          {{#each this.listCategoriesSub}}
+          <option value={{Id}} {{#if isActiveCategories}}selected{{/if}}>{{Name}}</option>
+          {{/each}}
+        </select>
+      </div>
+
+      <div>
+        <div class="mb-4">
+          <label for="exampleInputTitle1"><i class="fas fa-tags"></i> <u>Tags: </u></label>
+          <br>
+          {{#each this.templistTags}}
+          <div class="input-group ">
+            <p><input type="checkbox" aria-label="Checkbox for following text input" name="tags"
+                {{#if isActiveTags}}checked{{/if}} value={{Id}}>
+              {{Name}} </p>
           </div>
+          {{/each}}
         </div>
       </div>
+      <div class="mb-2 col-3 required ">
+        <label for="exampleInputTitle1"><i class="far fa-calendar-check"></i> <u> Schedule Post:
+          </u></label>
+        <br>
+        <input type="text" class="form-control" id="datetimepicker" name="Schedule" required>
+        <span class="glyphicon glyphicon-th"></span>
+      </div>
+      <div class="mb-4">
+        <b><i class="fas fa-dollar-sign"></i> <u>Is premium post: </u><input type="checkbox"
+            aria-label="Checkbox for following text input" name="isPremium"></b>
+      </div>
+
       <div class="d-flex justify-content-center">
         <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</button>
       </div>
-    </div>
   </form>
-  <button class="btn btn-danger" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i> Back</button>
+  <button class="btn btn-danger mt-2" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
+    Back
+  </button>
 </div>
+
+
+
+{{#section 'js'}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
+</script>
+
 <script>
   function goBack() {
     window.history.back();
   }
 </script>
+<script>
+  $(function () {
+    $.datetimepicker.setLocale('vi');
+    $('#datetimepicker').datetimepicker({
+      mask: false,
+      minDate: 0,
+      startDate: new Date()
+    });
+  });
+</script>
+{{/section}}

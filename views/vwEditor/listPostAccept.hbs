@@ -1,13 +1,26 @@
-<div class="list-group">
-  {{#if this.empty}}
-    <p class="card-text">Không có dữ liệu.</p>
+<div class="d-flex justify-content-center">
+  {{#each this.listCate}}
+  <a href="/editor/accepted/?cate={{IdCategories}}" type="button"
+    class="btn btn-outline-secondary mr-3 mt-3 mb-3 {{#if isActiveCate}} bg-success{{/if}}">{{Name}}</a>
+  {{/each}}
+</div>
+<div class="d-flex justify-content-center">
+  {{#each this.listCateSub}}
+  <a href="/editor/accepted/?cate={{idCate}}&catesub={{Id}}" type="button"
+    class="btn btn-outline-secondary btn-sm mr-3 mt-3 mb-3 {{#if isActiveCateSub}} active{{/if}}">{{Name}}</a>
+  {{/each}}
+</div>
+ {{#if this.empty}}
+    <div class="text-center">No data</div>
   {{else}}
+<div class="list-group">
   <table class="table table-hover table-active">
     <thead class="bg-success">
       <tr>
         <th scope="col" class="text-center">No.</th>
         <th scope="col" class="text-center">Title</th>
         <th scope="col" class="text-center">Categories</th>
+        <th scope="col" class="text-center">Categories Sub</th>
         <th scope="col" class="text-center">DatePost</th>
         <th scope="col" class="text-center">Status</th>
         <th scope="col" class="text-center">Schedule post</th>
@@ -20,6 +33,7 @@
         <th scope="row" class="text-center">{{@index}}</th>
         <td class="text-center">{{Title}}</td>
         <td class="text-center">{{cateName}}</td>
+        <td class="text-center">{{cateSubName}}</td>
         <td class="text-center">{{DatePost}}</td>
         <td class="text-center">{{statusName}}</td>
         <td class="text-center">{{DatetimePost}}</td>
@@ -33,8 +47,6 @@
       {{/each}}
     </tbody>
   </table>
-  {{/if}}
-
   <nav aria-label="...">
       <ul class="pagination">
         <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
@@ -63,4 +75,5 @@
         </li>
       </ul>
     </nav>
+  {{/if}}
 </div>
