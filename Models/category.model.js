@@ -16,6 +16,15 @@ module.exports = {
         FROM ${TBL_CATEGORIES} 
         WHERE IsDelete = 0 ORDER BY Name`);
     },
+    allMain_EditorManage: function (id) {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', c.Id, c.Name, c.Url, i.Name as 'Manage'
+        FROM ${TBL_CATEGORIES} c, editoraccount e, information i
+        WHERE e.IdAccount = ${id} and e.IdCategories = c.Id and i.IdAccount = e.IdAccount
+        and e.IsDelete = 0 and c.IsDelete = 0 ORDER BY Name`);
+    },
+    allCategories_NoEditorManage: function () {
+        return db.load(`SELECT c.Id, c.Name, c.Url FROM ${TBL_CATEGORIES} c WHERE c.Id NOT IN (SELECT e.IdCategories FROM editoraccount e)`);
+    },
     allMain_Limit: function (limit, offset) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
         FROM ${TBL_CATEGORIES} 

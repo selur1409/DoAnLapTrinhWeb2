@@ -154,18 +154,18 @@ $(document).ready(function(){
 {{/section}}
 
 <div class="col mb-2 mt-2 ml-3">
-    <a class="btn btn-info" href="/admin/accounts?select={{select}}" role="button" title="Back to List">
+    <a class="btn btn-info" href="/admin/accounts/managecategory/{{account.Username}}" role="button" title="Back to List">
       <i class="fas fa-reply"></i>
       Trở về
     </a>
-    <a class="btn btn-dark" href="/admin/accounts?select={{select}}" role="button" title="{{select}}">
-      {{select}}
+    <a class="btn btn-dark" href="#" role="button" title="{{select}}">
+      {{account.Name}}
     </a>
 </div>
 
 <div class="card">
   <div class="card-header">
-    <h4>Thêm tài khoản mới</h4>
+    <h4>Thêm chuyên mục quản lý</h4>
   </div>
   <div class="card-body">
     
@@ -188,55 +188,15 @@ $(document).ready(function(){
     {{/if}}
 
     <form method="POST" id="frmAddAccount" action="/admin/accounts/add">
-      <div class="form-group required">
-        <label class="control-label" for="txtName">Họ &amp; tên</label>
-        <input type="text" class="form-control" placeholder="Tên đầy đủ" id="txtName" name="Name" autofocus>
-        <small id="rsName"></small>
+        <label class="control-label" for="txtName">Chuyên mục chưa có người quản lý</label>
+      {{!-- <div class="form-group required">
+        <label class="checkbox-inline">
+            <input type="checkbox" value="Option">Option 1
+        </label>
+        <small id="rsName"></small> --}}
       </div>
-      <div class="form-group required">
-        <label class="control-label" for="txtUsername">Tên đăng nhập</label>
-        <input type="text" class="form-control" id="txtUsername" name="Username" placeholder="Tên đăng nhập">
-        <small id="rsUsername"></small>
-      </div>
-      <div class="form-group required">
-        <label class="control-label" for="txtPassword">Mật khẩu</label>
-        <input type="password" class="form-control" placeholder="Password" id="txtPassword" name="Mật khẩu">
-        <small id="rsPassword"></small>
-      </div>
-      <div class="form-group required">
-        <label class="control-label" for="txtConfirm">Nhập lại mật khẩu</label>
-        <input type="password" class="form-control" placeholder="Confirm password" id="txtConfirm" name="Nhập lại mật khẩu">
-        <small id="rsConfirm"></small>
-      </div>
-      {{#if nickname}}
-      <div class="form-group">
-        <label class="control-label" for="txtNickname">Bút danh</label>
-        <input type="text" class="form-control" placeholder="Bút danh" id="txtNickname" name="Nickname">
-      </div>
-      {{/if}}
-      <div class="form-group required">
-        <label class="control-label" for="txtDOB">Ngày tháng năm sinh</label>
-        <input type="text" class="form-control" placeholder="Ngày tháng năm sinh" id="txtDOB" name="DOB">
-        <small id="rsDOB"></small>
-      </div>
-      <div class="form-group required">
-        <label class="control-label" for="radioSex">Giới tính</label>
-        <small id="rsSex"></small>        
-        <div class="form-check">
-          <div class="form-row">
-              <div class="form-group col-sm-4">
-                 <input type="radio" id="radioMale" class="form-check-input" name="Sex" value="true">
-                <label for="myRadio1">Nam</label>
-              </div>
-              <div class="form-group col-sm-4">
-                <input type="radio" id="radioFemale" class="form-check-input" name="Sex" value="false">
-                <label for="myRadio1">Nữ</label>        
-              </div>
-            </div>
-          </div>
-        </div>
-        <input type="hidden" name="select" value="{{select}}">
-      <a type="submit" class="btn btn-danger" href="/admin/accounts?select={{select}}">
+      <input type="hidden" name="Id" value="{{account.Id}}">
+      <a type="submit" class="btn btn-danger" href="/accounts/managecategory/{{username}}">
         <i class="far fa-window-close"></i>
         Hủy bỏ
       </a>
