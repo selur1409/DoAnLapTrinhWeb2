@@ -1,0 +1,270 @@
+{{#section 'css'}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <link rel="stylesheet" href="/public/css/styleOfWriter.css">
+{{/section}}
+{{#section 'js'}}
+    <script
+     src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
+    </script>
+  <script>
+    $('#txtDOB').datetimepicker({
+      format: 'd/m/Y',
+      timepicker: false,
+      mask: true,
+    });  
+  </script>
+
+  <script>
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#imagePreview').attr("src", e.target.result);
+                $('#imagePreview').hide();
+                $('#imagePreview').fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    $("#imageUpload").change(function () {
+        readURL(this);
+    });  
+</script>
+
+<script>
+  $('#frmEditAccount').on('submit', function (e) {
+    // alert('submit called');
+    e.preventDefault();
+    // if (validate())
+    //   $('#frmRegister').off('submit').submit();
+    validate();
+  })
+
+function validate() {
+  // ... các lệnh validate khác
+  if (!validateName() || !validateDOB() ||
+   !validateEmail() || !validatePhone() || !validateSex()){
+    return alert('Thông tin nhập không chính xác hoặc không đầy đủ.'); 
+  }
+  return $('#frmEditAccount').off('submit').submit();    
+}
+
+function validateName() {
+  const $result = $("#rsName");
+  const name = $("#txtName").val();
+  $result.text("");
+  if (!name)
+  {
+      $result.text("Mục bắt buộc phải điền.");
+      $result.css("color", "red");
+      return false;
+  }
+  return true;
+}
+function validateDOB() {
+  const $result = $("#rsDOB");
+  const dob = $("#txtDOB").val();
+  $result.text("");
+  if (!dob)
+  {
+      $result.text("Mục bắt buộc phải điền.");
+      $result.css("color", "red");
+      return false;
+  }
+  return true;
+}
+function validateSex() {
+  const $result = $("#rsSex");
+  const radio = $("input:checked" ).val()
+  if (radio === undefined){
+      $result.text("Mục bắt buộc phải điền.");
+      $result.css("color", "red");
+      return false;
+  }
+  return true;
+}
+function validateRegexEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
+function validateEmail() {
+  const $result = $("#rsEmail");
+  const email = $("#txtEmail").val();
+  $result.text("");
+  
+  if (validateRegexEmail(email)) {
+    return true;
+    // return $.getJSON(`/admin/accounts/is-available?email=${email}`, function (data) {
+    //    if (data === true) {
+    //        return true;
+    //    } else {
+    //        $result.text(email + " đã tồn tại.");
+    //        $result.css("color", "red");
+    //        return false;
+    //    }
+    //}) --}}
+  }
+  if (email === "")
+  {
+      $result.text("Mục bắt buộc phải điền.");
+      $result.css("color", "red");
+      return false;
+  }
+  $result.text(email + validateRegexEmail(email) + " không đúng định dạng.");
+  $result.css("color", "red");
+  return false;
+}
+
+function validateRegexPhone(phone) {
+    const re = /((09|03|07|08|05)+([0-9]{8})\b)/g;
+    return re.test(phone);
+}
+function validatePhone() {
+  const $result = $("#rsPhone");
+  const phone = $("#txtPhone").val();
+  $result.text("");
+
+  if (validateRegexPhone(phone)) 
+  {
+    return true;
+  }
+  if (phone === "")
+  {
+    $result.text("Mục bắt buộc phải điền.");
+    $result.css("color", "red");
+    return false;
+  }
+  $result.text(phone + " không đúng định dạng.");
+  $result.css("color", "red");
+  return false;
+}
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#txtName").change(function(){
+    validateName();
+  });
+  $("#txtEmail").change(function(){
+    validateEmail();
+  });
+  $("#txtPhone").change(function(){
+    validatePhone();
+  });
+});
+</script>
+{{/section}}
+
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/accounts?select={{select}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+    <a class="btn btn-dark" href="/admin/accounts?select={{select}}" role="button" title="{{select}}">
+      {{select}}
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Chỉnh sửa thông tin tài khoản</h4>
+  </div>
+  <div class="card-body">
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    <form method="POST" id="frmEditAccount" enctype="multipart/form-data" action="/admin/accounts/edit/">
+
+        <div class="form-group">
+            <div class="box-profile">
+                <div class="avatar-upload text-center">
+                    <div class="avatar-edit">
+                        {{!-- <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg" name="avatar"> --}}
+                        <input type="file" id="imageUpload" accept="image/*" name="avatar">
+                        <label for="imageUpload"><i class="fa fa-camera fa-lg"></i></label>
+                    </div>
+                    <div class="avatar-preview">
+                        <div>
+                            <img id="imagePreview" class="profile-user-img img-fluid img-circle" {{#if account.Avatar}} src="/public/img/Avatar/{{account.Avatar}}" {{else}} {{#if account.Sex}} src="/public/img/Avatar/avatar2.png" {{else}} src="/public/img/Avatar/avatar.png" {{/if}} {{/if}} 
+                                alt="image: {{account.Avatar}}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="4xrj95txtName">Full Name</label>
+        <input type="text" class="form-control" placeholder="Full name" id="txtName" name="Name" value="{{account.Name}}">       
+        <small id="rsName"></small>
+      </div>
+      {{#if account.Nickname}}
+      <div class="form-group">
+        <label class="control-label" for="txtNickname">Nickname</label>
+        <input type="text" class="form-control" placeholder="No name" id="txtNickname" name="Nickname" value="{{account.Nickname}}">
+        <small id="rsNickname"></small>
+      </div>
+      {{/if}}
+      <div class="form-group required">
+        <label class="control-label" for="txtDOB">DOB</label>
+        <input type="text" class="form-control" placeholder="Date of birth" id="txtDOB" name="DOB" value="{{account.DOB}}">
+        <small id="rsDOB"></small>
+      </div>
+      <div class="form-group required">
+        <label class="control-label" for="txtEmail">Email</label>
+        <input type="email" class="form-control" placeholder="example@example.com" id="txtEmail" name="Email" value="{{account.Email}}">
+        <small id="rsEmail"></small>
+      </div>
+        <div class="form-group required">
+          <label class="control-label" for="txtPhone">Phone</label>
+          <input type="tel" class="form-control" placeholder="Phone number" id="txtPhone" name="Phone" value="{{account.Phone}}">
+          <small id="rsPhone"></small>
+        </div>
+      <div class="form-group required">
+        <label class="control-label" for="radioSex">Sex</label>
+        <div class="form-check">
+          <div class="form-row">
+              <div class="form-group col-sm-4">
+                 <input type="radio" id="radioMale" class="form-check-input" name="Sex" value="false" {{#unless account.Sex}} checked {{/unless}}>
+                <label for="myRadio1">Male</label>
+              </div>
+              <div class="form-group col-sm-4">
+                <input type="radio" id="radioFemale" class="form-check-input"  name="Sex" value="true" {{#if account.Sex}} checked {{/if}}>
+                <label for="myRadio1">Female</label>        
+              </div>
+            </div>
+          </div>
+        </div>
+      <a type="submit" class="btn btn-danger" href="/admin/accounts?select={{select}}">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Hủy bỏ
+      </a>
+      <input type="hidden" name="Username" value="{{account.Username}}">
+      <input type="hidden" name="Select" value="{{select}}">
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Thay đổi
+      </button>
+    </form>
+    </form>
+  </div>
+
+</div>

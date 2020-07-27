@@ -15,7 +15,9 @@ module.exports = (router) =>{
     
         const list = await tagModel.all();
         for (l of list){
-            l.href = check.change_characters(l.TagName);
+            // l.href = check.change_characters(l.TagName);
+            l.href = l.TagName;
+            l.TagName = '#'.concat(l.TagName);
         }
         return res.render('vwAdmin/vwTags/listTag', {
             layout: 'homeadmin',
@@ -80,7 +82,7 @@ module.exports = (router) =>{
             if (req.file.size/filesize > 2)
             {
                 fs.unlinkSync(req.file.path);
-                req.flash('error', `Ảnh đại diện tag phải dưới 2MB`);
+                req.flash('error', `Ảnh đại diện tag phải nhỏ hơn hoặc bằng 2MB`);
                 return res.redirect('/admin/tags/add');
             }
 
@@ -135,7 +137,10 @@ module.exports = (router) =>{
         if (isTagName.length === 0){
             return res.redirect('/admin/tags');
         }
-        isTagName[0].href = check.change_characters(isTagName[0].TagName);
+        isTagName[0].href = isTagName[0].TagName;
+        isTagName[0].TagName = '#'.concat(isTagName[0].TagName);
+
+        console.log(isTagName[0]);
 
         return res.render('vwAdmin/vwTags/editTag', {
             layout: 'homeadmin',
@@ -161,7 +166,7 @@ module.exports = (router) =>{
             const name = req.body.Name;
             const tempTagName = req.body.TagName;
             
-            if(!name || !tempTagName){
+            if(!name || !tempTagName || tempTagName === '#'){
                 if (req.file){
                     fs.unlinkSync(req.file.path);
                 }                console.log(2);
@@ -259,13 +264,13 @@ module.exports = (router) =>{
             const id = req.body.Id;
         
             const list = await tagModel.singleActivate(id);
-            console.log(list);
+            
             if (list.length === 0){
                 req.flash('error', 'Không có tags để kích hoạt')
                 return res.redirect('/admin/tags/activate');
             }
             const tag = list[0];
-            console.log(tag);
+            
             const [isName, isTagName] = await Promise.all([
                 tagModel.singleNameDuplicate(tag.Name, tag.Id),
                 tagModel.singleTagNameDuplicate(tag.TagName, tag.Id)

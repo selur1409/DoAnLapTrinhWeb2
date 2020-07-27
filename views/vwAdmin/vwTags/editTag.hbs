@@ -59,8 +59,11 @@
         <input type="text" class="form-control" id="txtTagName" name="TagName" placeholder="#" value="{{this.tag.TagName}}">
       </div>
       <div class="form-group required">
-        <label class="control-label">Ảnh đại diện tag</label>
-
+        <label>Ảnh đại diện tag</label>
+        <br>
+        <img src="/public/img/tag/{{this.tag.ImgURL}}" alt="Image" width="150px" height="150px">
+        <br>
+        <label class="control-label">Ảnh thay đổi (nên lấy kích thước bé hơn 150x150px)</label>
         <input id="ImgURL" name="ImgURL" type="file" data-browse-on-zone-click="true" accept=".png, .jpg, .jpeg .svg">
       </div>
    

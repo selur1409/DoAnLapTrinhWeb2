@@ -7,12 +7,15 @@ const {getTimeBetweenDate} = require('../../js/betweendate');
 const {getTime_Minutes} = require('../../js/betweendate');
 const {addMinutes}= require('../../config/default.json');
 const flash = require('express-flash');
-// const fs = require('fs-extra');
-// const mkdirp = require('mkdirp');
-// const multer = require('multer');
-// const path = require('path');
-// const check = require('../../js/check');
-// const {filesize} = require('../../config/default.json');
+
+const multer = require('multer');
+const fs = require('fs-extra');
+const mkdirp = require('mkdirp');
+const path = require('path');
+const check = require('../../js/check');
+const {filesize} = require('../../config/default.json');
+const categoryModel = require('../../models/category.model');
+
 module.exports = (router) =>{
     router.get('/accounts', async function(req, res){
         for (const c of res.locals.lcManage) {
@@ -52,6 +55,7 @@ module.exports = (router) =>{
             IsActiveEditor = true;
             for (i =0; i< list.length; i++){
                 list[i].preniumForever = true;
+                list[i].editor = true;
             }
         }
         else{
@@ -78,7 +82,9 @@ module.exports = (router) =>{
             IsActiveWriter,
             IsActiveEditor,
             IsActiveGuest,
-            IsActiveSubscriber
+            IsActiveSubscriber,
+            err: req.flash('error'),
+            success: req.flash('success')
         });
     });
 
@@ -102,8 +108,8 @@ module.exports = (router) =>{
         });
     });
 
-    router.post('/accounts/add/:select', async function(req, res){
-        const select = req.params.select;
+    router.post('/accounts/add', async function(req, res){
+        const select = req.body.select;
         var item = 1;
         var nick = undefined;
         if (select === 'subscriber'){
@@ -183,6 +189,162 @@ module.exports = (router) =>{
         req.flash('success', 'Created new account success!!!!');
         return res.redirect(`/admin/accounts/add/${select}`)
     })
+
+    router.get('/accounts/edit/:username', async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'accounts') {
+              c.isActive = true;
+            }
+        }
+
+        const username = req.params.username;
+        const list = await accountModel.singUsername_Expired(username);
+        if (list.length === 0){
+            return res.redirect('/admin/accounts');
+        }
+
+        const account = list[0];
+        if (account.TypeAccount !== 2)
+        {
+            delete account.Nickname;
+        }
+        
+        account.DOB =  moment(account.DOB, 'YYYY-MM-DD').format('DD/MM/YYYY');
+
+        var select = 'subscriber';
+        if (account.TypeAccount === 2){
+            select = 'writer';
+        }
+        else if (account.TypeAccount === 3){
+            select = 'editor';
+        }
+        
+        return res.render('vwAdmin/vwAccount/editAccount', {
+            layout: 'homeadmin',
+            err: req.flash('error'),
+            success: req.flash('success'),
+            account: account,
+            select: select
+        });
+    });
+
+    router.get('/accounts/is-available', async function(req, res){
+        if (req.query.username){
+            const list = await accountModel.singleId_editAccount(req.query.username);
+            if (list.length !== 0)
+            {
+                return res.json(false);
+            }
+            return res.json(true);
+        }
+    })
+    
+    const storage = multer.diskStorage({
+        filename: function(req, file, cb){
+            // var name = req.body.Name;
+            // if (!name){
+            //     name = path.basename(req.originalname);
+            // }
+            cb(null, check.mark_url(file.fieldname) + '-' + Date.now() + path.extname(file.originalname));
+        },
+        destination: function(req, file, cb){
+            var path = './public/img/Avatar';
+            // kiểm tra xem đã tạo thư mục chưa, nếu ch thì tạo
+            fs.mkdir(path,function(e){
+                if(!e || (e && e.code === 'EEXIST')){
+                    //do something with contents
+                    //console.log(e);
+                } else {
+                    //debug
+                    //console.log(e);
+                }
+            });
+
+            cb(null, path);
+        }
+    })
+    const upload = multer({storage});
+
+    router.post('/accounts/edit', upload.single('avatar'), async function(req, res){
+        const username = req.body.Username;
+
+        // xác thực thông tin đầy đủ
+
+        const select = req.body.Select;
+
+        var item = 1;
+        var nick = undefined;
+
+        if (select === 'writer'){
+            item = 2;
+            nick = req.body.Nickname || 'No name';
+        }
+        else if (select === 'editor'){
+            item = 3;
+        }
+
+        const rows = await accountModel.singleId(username);
+    
+        if (rows.length === 0){
+            req.flash('error', 'Tài khoản không tồn tại.');
+            return res.redirect(`/admin/accounts`);
+        }
+    
+        // Lấy ngày giờ hiện tại
+        const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+        // gia hạn ngày
+        var dob = '1990/01/01';
+        if (moment(req.body.DOB, "DD/MM/YYYY").isValid === true){
+            dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
+        }
+    
+        // Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
+        if (dt_now <= dob)
+        {
+            req.flash('error', 'Ngày sinh phải nhỏ hơn ngày hiện tại');
+            return res.redirect(`/admin/accounts/edit/${username}`);
+        }
+
+        var file = undefined;
+        if (req.file)
+        {
+            // lớn hơn 20 MB
+            if (req.file.size/filesize > 20)
+            {
+                fs.unlinkSync(req.file.path);
+                req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
+                return res.redirect('/admin/tags/add');
+            }
+
+            file = req.file.filename;
+        }
+    
+        const registered = await accountModel.singleId_editAccount(username);
+        const singleInfo = await accountModel.singleId_info_editAccount(registered[0].Id);
+        var itemSex = 0;
+        
+        if (req.body.Sex === "true"){
+            itemSex = 1;
+        }
+        
+        const entity_information = {
+            Id: singleInfo[0].Id,
+            Name: req.body.Name,
+            Nickname: nick,
+            Avatar: file,
+            DOB: dob,
+            Email: req.body.Email,
+            Phone: req.body.Phone,
+            IdAccount: registered[0].Id,
+            Sex: itemSex
+        }
+    
+        await accountModel.patchInfo(entity_information);
+    
+        req.flash('success', 'Chỉnh sửa thông tin thành công!!!!');
+        return res.redirect(`/admin/accounts/edit/${username}`);
+    })
+
     router.get('/accounts/prenium-plus/:username', async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
@@ -354,8 +516,8 @@ module.exports = (router) =>{
             username
         });
     });
-    router.post('/accounts/views/changepassword/:username', async function(req, res){
-        const username = req.params.username;
+    router.post('/accounts/views/changepassword', async function(req, res){
+        const username = req.body.username;
         const list = await accountModel.singleUser_Resetpassword(username);
         if (list.length === 0){
             return res.redirect('/admin/accounts?select=subscriber');
@@ -377,6 +539,7 @@ module.exports = (router) =>{
             req.flash('error', 'Mật khẩu mới không trùng khớp.');
             return res.redirect(`/admin/accounts/views/changepassword/${username}`);
         }
+
         const pw_hash = bcrypt.hashSync(req.body.Password, config.authentication.saltRounds);
     
         const entity = {
@@ -389,15 +552,10 @@ module.exports = (router) =>{
         req.flash('success', 'Thay đổi mật khẩu thành công.');
         return res.redirect(`/admin/accounts/views/changepassword/${username}`);
     });
-    router.post('/accounts/views/resetpassword/:username', async function(req, res){
-        for (const c of res.locals.lcManage) {
-            if (c.link === 'accounts') {
-              c.isActive = true;
-            }
-        }
-
-        const username = req.params.username;
+    router.post('/accounts/views/resetpassword', async function(req, res){
+        const username = req.body.Username;
         const list = await accountModel.singleUser_Resetpassword(username);
+        console.log(list);
         if (list.length === 0){
             return res.redirect('/admin/accounts?select=subscriber');
         }
@@ -411,264 +569,18 @@ module.exports = (router) =>{
             select = 'editor';
         }
                 
-        return res.render('vwAdmin/vwAccount/resetAccount', {
-            layout: 'homeadmin',
-            err: req.flash('error'),
-            success: req.flash('success'),
-            select: select,
-            username
-        });
+        const pw_hash = bcrypt.hashSync('123456', config.authentication.saltRounds);
+    
+        const entity = {
+            Id: account.Id,
+            Password_hash: pw_hash
+        }
+
+        await accountModel.patch(entity);
+                
+        req.flash('success', 'Thay đổi mật khẩu thành công.');
+        return res.redirect(`/admin/accounts/views/changepassword/${username}`);
     });
-
-
-    // const storage = multer.diskStorage({
-    //     filename: function(req, file, cb){
-    //         // var name = req.body.Name;
-    //         // if (!name){
-    //         //     name = path.basename(req.originalname);
-    //         // }
-    //         cb(null, check.mark_url(req.body.Name) + '-' + Date.now() + path.extname(file.originalname));
-    //     },
-    //     destination: function(req, file, cb){
-    //         var path = './public/img/tag';
-    //         // kiểm tra xem đã tạo thư mục chưa, nếu ch thì tạo
-    //         fs.mkdir(path,function(e){
-    //             if(!e || (e && e.code === 'EEXIST')){
-    //                 //do something with contents
-    //                 // console.log(e);
-    //             } else {
-    //                 //debug
-    //                 // console.log(e);
-    //             }
-    //         });
-
-    //         cb(null, path);
-    //     }
-    // })
-    // const upload = multer({storage});
-
-    // router.post('/tags/add', upload.single('ImgURL'), async function(req, res){
-    //     try{
-    //         const name = req.body.Name;
-    //         const tagName = check.mark_tag(req.body.TagName);
-
-    //         if(!req.file || !name || !tagName){
-    //             if (req.file){
-    //                 fs.unlinkSync(req.file.path);
-    //             }
-    //             req.flash('error', 'Mục bắt buộc không được để trống hoặc nhập sai định dạng.');
-    //             return res.redirect('/admin/tags/add');
-    //         }
-            
-    //         if (req.file.size/filesize > 2)
-    //         {
-    //             fs.unlinkSync(req.file.path);
-    //             req.flash('error', `Ảnh đại diện tag phải dưới 2MB`);
-    //             return res.redirect('/admin/tags/add');
-    //         }
-
-    //         const file = req.file.filename;
-    
-    //         const [isName, isTagName] = await Promise.all([
-    //             tagModel.singleName(name),
-    //             tagModel.singleTagName(tagName)
-    //         ]);
-    
-    //         if (isName.length !== 0 || isTagName.length !== 0){
-    //             if (req.file){
-    //                 fs.unlinkSync(req.file.path);
-    //             }
-    //             req.flash('error', 'Tag hoặc TagName đã tồn tại.');
-    //             return res.redirect('/admin/tags/add');
-    //         }
-    
-    //         const entity = {
-    //             Name: name,
-    //             TagName: tagName,
-    //             ImgURL: file,
-    //             IsDelete: 0
-    //         }
-    
-    //         await tagModel.add(entity);
-    //         req.flash('success', 'Thêm Tag thành công.');
-    //         return res.redirect('/admin/tags/add');
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //         if (req.file){
-    //             fs.unlinkSync(req.file.path);
-    //         }
-    //     }
-    // });
-
-
-    // router.get('/tags/edit', async function(req, res){
-    //     for (const c of res.locals.lcManage) {
-    //         if (c.link === 'tags') {
-    //           c.isActive = true;
-    //         }
-    //     }
-    //     const hashtag = req.query.hashtag;
-    //     if (!hashtag)
-    //     {
-    //         return res.redirect('/admin/tags');
-    //     }
-
-    //     const isTagName = await tagModel.singleTagName(hashtag);
-    //     if (isTagName.length === 0){
-    //         return res.redirect('/admin/tags');
-    //     }
-    //     isTagName[0].href = check.change_characters(isTagName[0].TagName);
-
-    //     return res.render('vwAdmin/vwTags/editTag', {
-    //         layout: 'homeadmin',
-    //         tag: isTagName[0],
-    //         err: req.flash('error'),
-    //         success: req.flash('success')
-    //     });
-    // });
-
-    // router.post('/tags/edit', upload.single('ImgURL'), async function(req, res){
-    //     try{
-    //         const hashtag = req.query.hashtag || "";
-    //         const hashtaghref = check.change_characters(hashtag);
-            
-    //         const isTagNameHash = await tagModel.singleTagName(hashtag);
-    //         if (isTagNameHash.length === 0){
-    //             if (req.file){
-    //                 fs.unlinkSync(req.file.path);
-    //             }
-    //             console.log(1);
-    //             return res.redirect(`/admin/tags`);
-    //         }
-    //         const name = req.body.Name;
-    //         const tempTagName = req.body.TagName;
-            
-    //         if(!name || !tempTagName){
-    //             if (req.file){
-    //                 fs.unlinkSync(req.file.path);
-    //             }                console.log(2);
-    //             req.flash('error', 'Mục bắt buộc không được để trống hoặc nhập sai định dạng.');
-    //             return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
-    //         }
-            
-            
-    //         const id = isTagNameHash[0].Id;
-    //         const imgURL = isTagNameHash[0].ImgURL;
-    //         const tagName = check.mark_tag(tempTagName);
-    
-    //         const [isName, isTagName] = await Promise.all([
-    //             tagModel.singleNameDuplicate(name, id),
-    //             tagModel.singleTagNameDuplicate(tagName, id)
-    //         ]);
-    
-    //         if (isName.length !== 0 || isTagName.length !== 0){
-    //             if (req.file){
-    //                 fs.unlinkSync(req.file.path);
-    //             }                console.log(3);
-    //             req.flash('error', 'Tag hoặc TagName đã tồn tại.');
-    //             return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
-    //         }
-
-    //         if (!req.file){
-    //             const entityEmpty = {
-    //                 Id: id,
-    //                 Name: name,
-    //                 TagName: tagName,
-    //                 IsDelete: 0
-    //             }
-    //             await tagModel.patch(entityEmpty);               
-    //             req.flash('success', 'Chỉnh sửa Tag thành công.');
-    //             return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
-    //         }
-
-    //         if (req.file.size/filesize > 2)
-    //         {
-    //             fs.unlinkSync(req.file.path);
-    //             req.flash('error', `Ảnh đại diện tag phải dưới 2MB`);                
-    //             return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);               
-    //         }
-
-    //         const file = req.file.filename;
-
-    //         const entity = {
-    //             Id: id,
-    //             Name: name,
-    //             TagName: tagName,
-    //             ImgURL: file,
-    //             IsDelete: 0
-    //         }
-
-    //         fs.unlinkSync(`public/img/tag/${imgURL}`);
-
-    //         await tagModel.patch(entity);
-    //         req.flash('success', 'Chỉnh sửa Tag thành công.');
-    //         return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //         if (req.file){
-    //             fs.unlinkSync(req.file.path);
-    //         }
-    //     }
-    // });
-
-    // router.get('/tags/activate', async function(req, res){
-    //     try{
-    //         for (const c of res.locals.lcManage) {
-    //             if (c.link === 'tags') {
-    //               c.isActive = true;
-    //             }
-    //         }
-        
-    //         const list = await tagModel.allActivate();
-    //         return res.render('vwAdmin/vwTags/activateTag', {
-    //             layout: 'homeadmin',
-    //             empty: list.length === 0,
-    //             tags: list,
-    //             err: req.flash('error'),
-    //             success: req.flash('success')
-    //         });
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //         return res.redirect('/admin/tags/err-load-activate');
-    //     }
-            
-    // });
-    
-    // router.post('/tags/activate', async function(req, res){
-    //     try{
-    //         const id = req.body.Id;
-        
-    //         const list = await tagModel.singleActivate(id);
-    //         console.log(list);
-    //         if (list.length === 0){
-    //             req.flash('error', 'Không có tags để kích hoạt')
-    //             return res.redirect('/admin/tags/activate');
-    //         }
-    //         const tag = list[0];
-    //         console.log(tag);
-    //         const [isName, isTagName] = await Promise.all([
-    //             tagModel.singleNameDuplicate(tag.Name, tag.Id),
-    //             tagModel.singleTagNameDuplicate(tag.TagName, tag.Id)
-    //         ]);
-           
-    //         if (isName.length !== 0 || isTagName.length !== 0)
-    //         {  
-    //             req.flash('error', 'Tag hoặc TagName bị trùng.')
-    //             return res.redirect('/admin/categories/activatelv1');
-    //         }
-            
-    //         await tagModel.activate(id);
-            
-    //         return res.redirect('/admin/tags/activate');
-    //     }
-    //     catch(error){
-    //         console.log(error);
-    //         return res.redirect('/admin/tags/error-send-activate'); 
-    //     }
-    // });
 
     // lock account (update IsDelete = 1)
     router.post('/accounts/lock', async function(req, res){
@@ -701,5 +613,48 @@ module.exports = (router) =>{
             console.log(error);
             return res.redirect('/admin/accounts/errDel');
         }
+    })
+
+    router.get('/accounts/managecategory/:username', async function(req, res){
+        const username = req.params.username;
+        const list = await accountModel.singleId_editAccount(username);
+        if (list.length === 0){
+            return res.redirect('/admin/accounts?select=editor');
+        }
+            
+        const id = list[0].Id;
+
+        const mc = await categoryModel.allMain_EditorManage(id);
+
+        return res.render('vwAdmin/vwAccount/mcAccount', {
+            layout: 'homeadmin',
+            err: req.flash('error'),
+            success: req.flash('success'),
+            empty: mc.length === 0,
+            categories: mc,
+            username
+        })
+    })
+    router.get('/accounts/managecategory/add/:username', async function(req, res){
+        const username = req.params.username;
+        const list = await accountModel.singleId_MCAccount(username);
+        if (list.length === 0){
+            return res.redirect('/admin/accounts?select=editor');
+        }
+            
+        const account = list[0];
+        account.Username = username;
+        console.log(account);
+
+        const mc = await categoryModel.allMain_EditorManage(account.Id);
+
+        return res.render('vwAdmin/vwAccount/addMCAccount', {
+            layout: 'homeadmin',
+            err: req.flash('error'),
+            success: req.flash('success'),
+            empty: mc.length === 0,
+            categories: mc,
+            account: account
+        })
     })
 }
