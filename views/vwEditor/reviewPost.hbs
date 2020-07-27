@@ -1,27 +1,38 @@
 <div class="card">
-  <div class="card-body">
-    <h5 class="card-title text-primary">
-        <i class="fa fa-eye" aria-hidden="true"></i>
-        Review Mode
-    </h5>
+    <div class="card-header d-flex justify-content-between">
+        <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
+            Back</button>
+        <h5 class="card-title text-primary mt-2">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+            <b>REVIEW MODE</b>
+        </h5>
     </div>
-    <div class="text-center"> <h2>{{this.reviewPost.Title}}</h2></div>
-    <div >
-        <i>Author: {{this.author.Nickname}}</i>
-        <br>
-        <i>Date post: {{this.reviewPost.DatePost}}</i>
+    <div class="card-body">
+        <div class="text-center">
+            <h2>{{this.reviewPost.Title}}</h2>
+        </div>
+        <div>
+            <i><b>Author: </b><b class="text-danger">{{this.author.Nickname}}</b></i>
+            <br>
+            <i><b>Date post: </b>{{this.reviewPost.DatePost}}</i>
+        </div>
+        <div class="mt-5">
+            {{{this.reviewPost.Content_Full}}}</div>
+        <div><b>Tags: </b></div>
+        <div>
+            {{#each this.listTag}}
+            <i class="bg-info text-white">#{{TagName}}</i>
+            {{/each}}
+        </div>
+        <div class="text-center">
+            <a type="button" class="btn btn-success" href="/editor/accept/{{this.reviewPost.Id}}">Accept</a>
+            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Deny</a>
+        </div>
     </div>
-    <div class="mt-5">
-        {{{this.reviewPost.Content_Full}}}</div>
-    <div>Tags:</div>
-    <div>
-        {{#each this.listTag}}
-        <i class="bg-info text-white">{{TagName}}</i>
-        {{/each}}
-    </div>
-
 </div>
-<div class="text-center">
-    <button type="button" class="btn btn-success">Accepted</button>
-<a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Denied</a>
-    </div>
+
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
