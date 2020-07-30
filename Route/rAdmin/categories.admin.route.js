@@ -28,7 +28,13 @@ module.exports = (router) => {
              
             for(c of list){
                 const editor = await editoraccountModel.singleManageCat(c.Id);
-                c.Manage = editor[0].Name;
+                if (editor.length === 0)
+                {
+                    c.Manage = 'Chưa có quản lý';
+                }
+                else{
+                    c.Manage = editor[0].Name;
+                }
             }
          
             const [nPages, page_items] = pageination.page(page, total[0].SoLuong); 
@@ -116,7 +122,7 @@ module.exports = (router) => {
             const url = check.mark_url(req.body.Url);
             const manage = req.body.Manage;
             const description = req.body.Description;
-            if (!name || !url || manage === 'Empty')
+            if (!name || !url)
             {   
                 req.flash('error', notify.mucbb)
                 return res.redirect('/admin/categories/addlv1');
@@ -148,12 +154,14 @@ module.exports = (router) => {
             
             const idCat = await categoryModel.singleUrlMain(url);
             
-            const entity_Editor = {
-                IdAccount: manage,
-                IdCategories: idCat[0].Id,
-                IsDelete: 0
-            };
-            await editoraccountModel.add(entity_Editor);
+            if (manage !== 'Empty'){
+                const entity_Editor = {
+                    IdAccount: manage,
+                    IdCategories: idCat[0].Id,
+                    IsDelete: 0
+                };
+                await editoraccountModel.add(entity_Editor);
+            }
             
             req.flash('success', `${notify.themthanhcong} ${name}`)
             return res.redirect('/admin/categories/addlv1');
@@ -177,18 +185,18 @@ module.exports = (router) => {
             const isUrlMain = await categoryModel.singleUrlMain(url);
             if (isUrlMain.length !== 0){
                 const ListManage = await accountModel.allEditor();
-        
                 const cat = isUrlMain[0];
                 const editor = await editoraccountModel.singleManageCat(cat.Id);
-        
-                cat.Manage = editor[0].Name;
-                cat.IdManage = editor[0].IdAccount;
-        
-                for (l of ListManage){
-                    if (l.IdAccount === cat.IdManage){
-                        l.SelectedManage = true;
-                    }
-                }    
+                if (editor.length !== 0){
+                    cat.Manage = editor[0].Name;
+                    cat.IdManage = editor[0].IdAccount;
+                    for (l of ListManage){
+                        if (l.IdAccount === cat.IdManage){
+                            l.SelectedManage = true;
+                        }
+                    }    
+                }
+                
         
                 return res.render('vwAdmin/vwCategories/editCategory', {
                     layout: 'homeAdmin',
@@ -209,7 +217,7 @@ module.exports = (router) => {
     })
     
     router.post('/categories/edit/:url', async function(req, res){
-        try{
+        // try{
             const urlParam = req.params.url;
             const idCat = req.body.Id;
             const name = check.mark_name(req.body.Name);
@@ -217,7 +225,7 @@ module.exports = (router) => {
             const idManage = req.body.Manage;
             const description = req.body.Description;
             
-            if (!name || idManage === 'Empty')
+            if (!name)
             {
                 res.flash('error', notify.mucbb)
                 return res.redirect(`/admin/categories/edit/${urlParam}`);
@@ -248,29 +256,43 @@ module.exports = (router) => {
                 IsDelete: 0
             };
             
-            const idEditor = await editoraccountModel.singleId(idCat);
-            if (idEditor.length === 0){
-                req.flash('error', notify.khongcoquanly)
-                return res.redirect(`/admin/categories/edit/${urlParam}`);
-            }
-        
-            const entity_editor = {
-                Id: idEditor[0].Id,
-                IdAccount: idManage,
-                IdCategories: idCat
-            };
-        
             await categoryModel.patchMain(entity);
-            await editoraccountModel.patch(entity_editor);
+            
+            const idEditor = await editoraccountModel.singleId(idCat);
+            if (idManage !== 'Empty'){
+                if (idEditor.length === 0){
+                    const entity_editor = {
+                        IdAccount: idManage,
+                        IdCategories: idCat,
+                        IsDelete: 0
+                    }
+                    await editoraccountModel.add(entity_editor); 
+                }
+                else{
+                    const entity_editor = {
+                        Id: idEditor[0].Id,
+                        IdAccount: idManage,
+                        IdCategories: idCat,
+                        IsDelete: 0
+                    };
+                    await editoraccountModel.patch(entity_editor);
+                }
+            }
+            else{
+                if (idEditor.length !== 0){
+                    
+                    const item = await editoraccountModel.del_notsafe(idEditor[0].Id); 
+                }
+            }
         
             // load thành công 
             req.flash('success', `${notify.chinhsuathanhcong} ${name}`)
             return res.redirect(`/admin/categories/edit/${urlParam}`);
-        }
-        catch(error){
-            console.log(error);
-            return res.redirect('/admin/categories/err6'); 
-        }       
+        // }
+        // catch(error){
+        //     console.log(error);
+        //     return res.redirect('/admin/categories/err6'); 
+        // }       
     })
 
     // xóa category (update IsDelete = 1)

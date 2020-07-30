@@ -5,7 +5,8 @@
       "user": "root",
       "password": "",
       "database": "news",
-      "connectionLimit": 10
+      "connectionLimit": 10,
+      "multipleStatements": true
     },
     "authentication":{
       "saltRounds": 8
@@ -24,7 +25,7 @@
       },
       "NumberTime": 7
     },
-    "addMinutes": 62,
+    "addMinutes": 10080,
     "pagination": {
       "limit": 4,
       "limitPaginationLinks":5

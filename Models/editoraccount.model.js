@@ -26,5 +26,19 @@ module.exports = {
           Id: id
         }
         return db.del(TBL_EDITORACCOUNT, condition);
+    },
+    
+    del_notsafe: function (id) {
+        return db.del_notsafe(TBL_EDITORACCOUNT, id);
+    },
+    
+    DelManage: function (id) {
+        const condition = {
+          Id: id
+        }
+        const entity = {
+            IdCategories: null
+        }
+        return db.patch(TBL_EDITORACCOUNT, entity, condition);
     }
 };
