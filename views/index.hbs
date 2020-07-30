@@ -13,29 +13,6 @@
 						<div class="blog_section">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
 								<div class="section_title">What's Treding</div>
-								<div class="section_tags ml-auto">
-									<ul>
-										<li class="active"><a href="category.html">all</a></li>
-										<li><a href="category.html">style hunter</a></li>
-										<li><a href="category.html">vogue</a></li>
-										<li><a href="category.html">health & fitness</a></li>
-										<li><a href="category.html">travel</a></li>
-									</ul>
-								</div>
-								<div class="section_panel_more">
-									<ul>
-										<li>more
-											<ul>
-												<li><a href="category.html">new look 2018</a></li>
-												<li><a href="category.html">street fashion</a></li>
-												<li><a href="category.html">business</a></li>
-												<li><a href="category.html">recipes</a></li>
-												<li><a href="category.html">sport</a></li>
-												<li><a href="category.html">celebrities</a></li>
-											</ul>
-										</li>
-									</ul>
-								</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
@@ -52,28 +29,60 @@
 									{{else}}
 										<div class="owl-item">
 											{{#load_Post1 this.Treding}}
+
 												<!-- Largest Card With Image -->
-												<div class="card card_largest_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
-														<p class="card-text">{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
+												
+												{{#if IsPremium}}
+														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{else}}
+														<div class="card card_largest_with_image grid-item">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{/if }}
+
+												
 											{{/load_Post1}}
+
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.Treding}}
-												<!-- Small Card With Image -->
-												<div class="card card_default card_small_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-														<p class="card-text"></p>{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+
+
+												{{#if IsPremium}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-												</div>
+													{{else}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												{{/if }}
+
+												
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -88,29 +97,6 @@
 						<div class="blog_section">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
 								<div class="section_title">Most Vỉew</div>
-								<div class="section_tags ml-auto">
-									<ul>
-										<li class="active"><a href="category.html">all</a></li>
-										<li><a href="category.html">style hunter</a></li>
-										<li><a href="category.html">vogue</a></li>
-										<li><a href="category.html">health & fitness</a></li>
-										<li><a href="category.html">travel</a></li>
-									</ul>
-								</div>
-								<div class="section_panel_more">
-									<ul>
-										<li>more
-											<ul>
-												<li><a href="category.html">new look 2018</a></li>
-												<li><a href="category.html">street fashion</a></li>
-												<li><a href="category.html">business</a></li>
-												<li><a href="category.html">recipes</a></li>
-												<li><a href="category.html">sport</a></li>
-												<li><a href="category.html">celebrities</a></li>
-											</ul>
-										</li>
-									</ul>
-								</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
@@ -126,28 +112,53 @@
 									{{else}}
 										<div class="owl-item">
 											{{#load_Post1 this.MostView}}
-												<!-- Largest Card With Image -->
-												<div class="card card_largest_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title"><a href="post.html">{{Title}}</a></div>
-														<p class="card-text">{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
+												<!-- Largest Card With Image -->	
+												{{#if IsPremium}}
+														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{else}}
+														<div class="card card_largest_with_image grid-item">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{/if }}
+
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.MostView}}
 												<!-- Small Card With Image -->
-												<div class="card card_default card_small_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-														<p class="card-text"></p>{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+												{{#if IsPremium}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-												</div>
+													{{else}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -162,29 +173,6 @@
 						<div class="blog_section">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
 								<div class="section_title">Post New Update</div>
-								<div class="section_tags ml-auto">
-									<ul>
-										<li class="active"><a href="category.html">all</a></li>
-										<li><a href="category.html">style hunter</a></li>
-										<li><a href="category.html">vogue</a></li>
-										<li><a href="category.html">health & fitness</a></li>
-										<li><a href="category.html">travel</a></li>
-									</ul>
-								</div>
-								<div class="section_panel_more">
-									<ul>
-										<li>more
-											<ul>
-												<li><a href="category.html">new look 2018</a></li>
-												<li><a href="category.html">street fashion</a></li>
-												<li><a href="category.html">business</a></li>
-												<li><a href="category.html">recipes</a></li>
-												<li><a href="category.html">sport</a></li>
-												<li><a href="category.html">celebrities</a></li>
-											</ul>
-										</li>
-									</ul>
-								</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
@@ -201,27 +189,51 @@
 										<div class="owl-item">
 											{{#load_Post1 this.PostNew}}
 												<!-- Largest Card With Image -->
-												<div class="card card_largest_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title"><a href="post.html">{{Title}}</a></div>
-														<p class="card-text"></p>{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
+													{{#if IsPremium}}
+															<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+																<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+																<div class="card-body">
+																	<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+																	<p class="card-text">{{Content_Summary}}</p>
+																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+																</div>
+															</div>
+													{{else}}
+															<div class="card card_largest_with_image grid-item">
+																<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+																<div class="card-body">
+																	<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																	<p class="card-text">{{Content_Summary}}</p>
+																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+																</div>
+															</div>
+													{{/if }}
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.PostNew}}
 												<!-- Small Card With Image -->
-												<div class="card card_default card_small_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-														<p class="card-text"></p>{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+												{{#if IsPremium}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-												</div>
+													{{else}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -236,29 +248,6 @@
 						<div class="blog_section">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
 								<div class="section_title">Top 10 Category</div>
-								<div class="section_tags ml-auto">
-									<ul>
-										<li class="active"><a href="category.html">all</a></li>
-										<li><a href="category.html">style hunter</a></li>
-										<li><a href="category.html">vogue</a></li>
-										<li><a href="category.html">health & fitness</a></li>
-										<li><a href="category.html">travel</a></li>
-									</ul>
-								</div>
-								<div class="section_panel_more">
-									<ul>
-										<li>more
-											<ul>
-												<li><a href="category.html">new look 2018</a></li>
-												<li><a href="category.html">street fashion</a></li>
-												<li><a href="category.html">business</a></li>
-												<li><a href="category.html">recipes</a></li>
-												<li><a href="category.html">sport</a></li>
-												<li><a href="category.html">celebrities</a></li>
-											</ul>
-										</li>
-									</ul>
-								</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
@@ -275,26 +264,50 @@
 										<div class="owl-item">
 											{{#load_Post1 this.CatPostNew}}
 												<!-- Largest Card With Image -->
-												<div class="card card_largest_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title"><a href="post.html">{{Title}}</a></div>
-														<p class="card-text">{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
+												{{#if IsPremium}}
+														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{else}}
+														<div class="card card_largest_with_image grid-item">
+															<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>							
+															</div>
+														</div>
+												{{/if }}
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.CatPostNew}}
-												<div class="card card_default card_small_with_image grid-item">
-													<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
-													<div class="card-body">
-														<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-														<p class="card-text"></p>{{Content_Summary}}</p>
-														<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+												{{#if IsPremium}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;&nbsp; <img style="height: 30px;" src="public/img/IconPremium.png"></a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-												</div>
+													{{else}}
+													<!-- Small Card With Image -->
+													<div class="card card_default card_small_with_image grid-item">
+														<img class="card-img-top" src="public/images/{{Avatar}}" alt="">
+														<div class="card-body">
+															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<p class="card-text"></p>{{Content_Summary}}</p>
+															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}

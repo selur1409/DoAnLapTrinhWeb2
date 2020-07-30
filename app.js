@@ -73,7 +73,7 @@ app.use('/account', require('./route/ForgotPW'));
 app.use('/account', exposeTemplates, require('./route/profile'));
 
 
-app.use('/admin', require('./route/admin.route'));
+app.use('/admin', exposeTemplates, require('./route/admin.route'));
 
 //Trang editor
 app.use('/editor', require('./route/editor.route'));

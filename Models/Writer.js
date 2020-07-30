@@ -8,8 +8,8 @@ module.exports = {
         return db.load(`SELECT * FROM categories WHERE IsDelete = 0`);
     },
 
-    CheckTitleIsExists:(value, IdPost = null)=>{
-        return db.load(`SELECT * FROM posts WHERE Title = '${value}' AND Id != ${IdPost}`);
+    CheckTitleIsExists:(title, Url, IdPost = null)=>{
+        return db.load(`SELECT * FROM posts WHERE (Title = '${title}' OR Url = '${Url}') AND Id != ${IdPost}`);
     },
 
     LoadSubCategories:()=>{
@@ -87,7 +87,7 @@ module.exports = {
     },
 
     UpdateFullContent:(Content, Avatar, Id)=>{
-        return db.insert(`UPDATE posts SET Content_Full = '${Content}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
+        return db.insert(`UPDATE posts SET Content_Full = '${Content}', Content_Summary = '${Content}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
     },
 
     UpdatePostOfWriter:(value)=>{
