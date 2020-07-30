@@ -15,6 +15,8 @@ const path = require('path');
 const check = require('../../js/check');
 const {filesize} = require('../../config/default.json');
 const categoryModel = require('../../models/category.model');
+const editoraccountModel = require('../../models/editoraccount.model');
+const { resolveSoa } = require('dns');
 
 module.exports = (router) =>{
     router.get('/accounts', async function(req, res){
@@ -616,6 +618,11 @@ module.exports = (router) =>{
     })
 
     router.get('/accounts/managecategory/:username', async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'accounts') {
+              c.isActive = true;
+            }
+        }
         const username = req.params.username;
         const list = await accountModel.singleId_editAccount(username);
         if (list.length === 0){
@@ -635,7 +642,23 @@ module.exports = (router) =>{
             username
         })
     })
-    router.get('/accounts/managecategory/add/:username', async function(req, res){
+    router.post('/accounts/managecategory', async function(req, res){
+        const username = req.body.Username;
+   
+        const id = req.body.Id;
+        const rows = await editoraccountModel.singleId(id);
+        if (rows.length !== 0){
+            await editoraccountModel.del_notsafe(rows[0].Id);
+        }
+        
+        return res.redirect(`/admin/accounts/managecategory/${username}`);
+    })
+    router.get('/accounts/managecategory/manage/:username', async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'accounts') {
+              c.isActive = true;
+            }
+        }
         const username = req.params.username;
         const list = await accountModel.singleId_MCAccount(username);
         if (list.length === 0){
@@ -644,9 +667,10 @@ module.exports = (router) =>{
             
         const account = list[0];
         account.Username = username;
-        console.log(account);
 
-        const mc = await categoryModel.allMain_EditorManage(account.Id);
+        const mc = await categoryModel.allMain_EditorManageCategories(account.Id);
+
+        const notmanage = await categoryModel.allMain_NotManage();
 
         return res.render('vwAdmin/vwAccount/addMCAccount', {
             layout: 'homeadmin',
@@ -654,7 +678,46 @@ module.exports = (router) =>{
             success: req.flash('success'),
             empty: mc.length === 0,
             categories: mc,
-            account: account
+            account: account,
+            notmanage: notmanage
         })
+    })
+    router.post('/accounts/managecategory/manage', async function(req, res){
+        const id = req.body.Id;
+        const array = await categoryModel.allMainId_EditorManageCategories(id);
+        console.log(array);
+        if (array.length !== 0){
+            const manage = req.body.Manage;
+            console.log(manage);
+            const sosanh = (a) => {
+                for (m of manage){
+                    if (+m === a.Id)
+                    return false;
+                }
+                return true;
+            }
+            const delCat = array.filter(sosanh);
+            for (d of delCat){
+                const rows = await editoraccountModel.singleId(d.Id);
+                if (rows.length !== 0){
+                    await editoraccountModel.del_notsafe(rows[0].Id);
+                }
+            }
+        }
+        
+        const notmanage = req.body.NotManage;
+        if (notmanage){
+            for (m of notmanage){
+                const entity = {
+                    IdAccount: id,
+                    IdCategories: +m,
+                    IsDelete: 0
+                }
+                await editoraccountModel.add(entity);
+            }
+        }
+        const username = req.body.Username;
+        req.flash('success', 'Thay đổi thành công.');
+        return res.redirect(`/admin/accounts/managecategory/manage/${username}`);
     })
 }

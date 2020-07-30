@@ -52,6 +52,19 @@ module.exports = {
         });
       });
     },
+
+    del_notsafe: function (table, id) {
+      return new Promise(function (resolve, reject) {
+        const sql = `SET SQL_SAFE_UPDATES=0; delete from ${table} where Id = ${id}; SET SQL_SAFE_UPDATES=1;`;
+        pool.query(sql, function (error, results) {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results);
+        });
+      });
+    },
+
     del_provisional: function (table, condition) {
       return new Promise(function (resolve, reject) {
         const sql = `update ${table} set isDelete = 1 where ?`;

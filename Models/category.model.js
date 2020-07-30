@@ -1,6 +1,8 @@
 const db = require('../utils/db');
 const TBL_CATEGORIES = 'categories';
 const TBL_CATEGORIES_SUB = 'categories_sub';
+const TBL_EDITORACCOUNT = 'editoraccount';
+const TBL_INFORMATION = 'information';
 
 module.exports = {
     all: function (limit, offset) {
@@ -17,13 +19,28 @@ module.exports = {
         WHERE IsDelete = 0 ORDER BY Name`);
     },
     allMain_EditorManage: function (id) {
-        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', c.Id, c.Name, c.Url, i.Name as 'Manage'
-        FROM ${TBL_CATEGORIES} c, editoraccount e, information i
-        WHERE e.IdAccount = ${id} and e.IdCategories = c.Id and i.IdAccount = e.IdAccount
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', c.Id, c.Name, c.Url, i.Name as 'Manage', a.Username
+        FROM ${TBL_CATEGORIES} c, ${TBL_EDITORACCOUNT} e, ${TBL_INFORMATION} i, accounts a
+        WHERE e.IdAccount = ${id} and e.IdCategories = c.Id and i.IdAccount = e.IdAccount and i.IdAccount = a.Id
         and e.IsDelete = 0 and c.IsDelete = 0 ORDER BY Name`);
     },
+    allMain_NotManage: function (id) {
+        return db.load(`SELECT Id, Name, Url FROM ${TBL_CATEGORIES} WHERE Id NOT IN (SELECT IdCategories FROM ${TBL_EDITORACCOUNT})`);
+    },
+    allMain_EditorManageCategories: function (id) {
+        return db.load(`SELECT c.Id, c.Name, c.Url
+        FROM ${TBL_CATEGORIES} c, ${TBL_EDITORACCOUNT} e
+        WHERE e.IdAccount = ${id} and e.IdCategories = c.Id
+        and c.IsDelete = 0`);
+    },
+    allMainId_EditorManageCategories: function (id) {
+        return db.load(`SELECT c.Id
+        FROM ${TBL_CATEGORIES} c, ${TBL_EDITORACCOUNT} e
+        WHERE e.IdAccount = ${id} and e.IdCategories = c.Id
+        and e.IsDelete = 0`);
+    },
     allCategories_NoEditorManage: function () {
-        return db.load(`SELECT c.Id, c.Name, c.Url FROM ${TBL_CATEGORIES} c WHERE c.Id NOT IN (SELECT e.IdCategories FROM editoraccount e)`);
+        return db.load(`SELECT c.Id, c.Name, c.Url FROM ${TBL_CATEGORIES} c WHERE c.Id NOT IN (SELECT e.IdCategories FROM ${TBL_EDITORACCOUNT} e)`);
     },
     allMain_Limit: function (limit, offset) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
@@ -164,5 +181,5 @@ module.exports = {
           Id: id
         }
         return db.activate(TBL_CATEGORIES_SUB, condition);
-    },
+    }
 };
