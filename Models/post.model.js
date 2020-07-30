@@ -6,28 +6,28 @@ module.exports = {
         return db.load(`select * from ${TBL_POSTS}`);
     },
     trending: function () {
-        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium 
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 10`);
     },
     postnew: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
                         from posts p, accounts a, information i, postdetails pt 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost 
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
