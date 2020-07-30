@@ -1,0 +1,71 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/accounts/managecategory/{{account.Username}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+    <a class="btn btn-dark" href="/admin/accounts?select=editor" role="button" title="editor manage">
+    editor
+    </a>
+    <a class="btn btn-info" href="#" role="button" title="{{select}}">
+      {{account.Name}}
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>Quản lý các chuyên mục</h4>
+  </div>
+  <div class="card-body">
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+
+    <form method="POST">
+        <div class="form-group required">
+          <h4>Chuyên mục đang quản lý</h4>
+          <br>
+          {{#each this.categories}}
+          <input type="checkbox" id="checkManage{{Id}}" name="Manage" value="{{Id}}" checked>
+          <label for="checkManage{{Id}}">{{Name}}</label>
+          <br>
+          {{/each}}
+        </div>
+        
+        <hr>
+        <div class="form-group required">
+          <h4>Chuyên mục chưa có người quản lý</h4>
+          <br>
+          {{#each this.notmanage}}
+          <input type="checkbox" id="check{{Id}}" name="NotManage" value="{{Id}}">
+          <label for="check{{Id}}">{{Name}}</label>
+          <br>
+          {{/each}}
+        </div>
+        
+      <input type="hidden" name="Id" value="{{account.Id}}">
+      <input type="hidden" name="Username" value="{{account.Username}}">
+
+      <button type="submit" class="btn btn-primary" formaction="/admin/accounts/managecategory/manage">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Thay đổi
+      </button>
+    </form>
+    </form>
+  </div>
+
+</div>

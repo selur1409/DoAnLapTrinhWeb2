@@ -29,10 +29,10 @@ module.exports = {
         str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g,"");
         str = str.trim();
         // nối # lên đầu chuỗi
-        if (str[0] != '#'){
-            temp = "#";
-            str = temp.concat(str);
-        }
+        // if (str[0] != '#'){
+        //     temp = "#";
+        //     str = temp.concat(str);
+        // }
         return str;
     },
     change_characters: function change_alias(alias) {

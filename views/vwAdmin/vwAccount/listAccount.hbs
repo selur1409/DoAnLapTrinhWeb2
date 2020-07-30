@@ -34,7 +34,25 @@
     <p class="card-text">Không có dữ liệu.</p>
   </div>
   {{else}}
-  
+
+  {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    
   <table class="table table-hover">
     <thead>
       <tr>
@@ -108,10 +126,15 @@
             {{/if}}
             <a class="btn btn-primary btn-sm" title="Password" href="/admin/accounts/views/changepassword/{{Username}}">
                <i class="fas fa-keyboard"></i>
-            </a>         
-            <button type="submit" class="btn btn-primary btn-sm" title="Edit" formaction="/admin/accounts/edit">
+            </a>
+            {{#if editor}}         
+            <a type="submit" class="btn btn-primary btn-sm" title="Category manager" href="/admin/accounts/managecategory/{{Username}}">
+               <i class="fas fa-tasks"></i>
+            </a>
+            {{/if}}
+            <a type="submit" class="btn btn-primary btn-sm" title="Edit" href="/admin/accounts/edit/{{Username}}">
                <i class="fas fa-pen"></i>
-            </button>
+            </a>
             <button type="submit" class="btn btn-warning btn-sm" title="Open" formaction="/admin/accounts/lock">
                 <i class="fas fa-lock-open"></i>
             </button>

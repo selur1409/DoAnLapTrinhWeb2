@@ -22,7 +22,7 @@ module.exports = {
         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
     },
     singUsername_Expired: function (username) {
-        return db.load(`select a.Id, a.Username, i.Name, i.Sex, i.DOB, i.Email, i.Phone, a.TypeAccount, a.DateRegister, a.DateExpired
+        return db.load(`select a.Id, a.Username, i.Name, i.Sex, i.DOB, i.Email, i.Phone, i.Avatar, a.TypeAccount, a.DateRegister, a.DateExpired, i.Nickname
         from ${TBL_ACCOUNTS} a, information i, typeaccount t
         where a.Id = i.IdAccount and a.TypeAccount = t.Id
         and a.Username = '${username}' and a.IsDelete = 0`);
@@ -33,6 +33,18 @@ module.exports = {
     singleId: function (username) {
         return db.load(`select * from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0`);
     },
+    // Dùng trong route admin/accounts
+    singleId_editAccount: function (username) {
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0`);
+    },
+    singleId_MCAccount: function (username) {
+        return db.load(`select a.Id, i.Name from ${TBL_ACCOUNTS} a, information i where a.Id = i.IdAccount and a.Username = '${username}' and a.IsDelete = 0`);
+    },
+    singleId_info_editAccount: function (id) {
+        return db.load(`select Id from information where IdAccount = ${id}`);
+    },
+
+    
     singleEmail: function(email){
         return db.load(`select IdAccount from information where Email = '${email}'`);
     },
@@ -49,6 +61,13 @@ module.exports = {
         }
         delete entity.Id;
         return db.patch(TBL_ACCOUNTS, entity, condition);
+    },
+    patchInfo: function (entity) {
+        const condition = {
+          Id: entity.Id
+        }
+        delete entity.Id;
+        return db.patch('information', entity, condition);
     },
     del: function (id) {
         const condition = {
