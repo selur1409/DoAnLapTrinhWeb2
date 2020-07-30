@@ -53,9 +53,24 @@ module.exports = (router) => {
     router.get('/posts/status', async function(req, res){
         const status = req.query.number;
         const url = req.query.url;
-        
+        const posts = await postModel.single_url(url);
+        const select = +req.query.select || posts[0].IdStatus;
+        const listStatus = await statusModel.all();
 
-        
+        for (l of listStatus){
+            l.number = status;
+            l.url = url;
+            if (l.Id === select)
+                l.selected = true;
+        }
+            
+
+        return res.render('vwAdmin/vwPosts/statusPost', {
+            layout: 'homeadmin',
+            status: status,
+            post: posts[0],
+            listStatus
+        })
     })
 
 }

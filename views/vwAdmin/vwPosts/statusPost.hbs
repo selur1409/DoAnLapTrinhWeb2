@@ -1,0 +1,74 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts?status={{status}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>STATUS</h4>
+  </div>
+  <div class="card-body">
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+
+    <form method="POST">
+      <div class="form-group required">
+        <label class="control-label" for="txtTitle">Title</label>
+        <input type="text" class="form-control" id="txtTitle" name="Title" autofocus placeholder="Tiêu đề" value="{{post.Title}}" readonly>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtUrl">Url</label>
+        <input type="text" class="form-control" id="txtUrl" name="Url" placeholder="Đường dẫn tĩnh" value="{{post.Url}}" readonly>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtStatus">Trạng thái</label>
+            <select name="selectStatus" id="txtStatus" class="form-control">
+            {{#each listStatus}}
+                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Name}}</option>
+            {{/each}}
+            </select>
+        </select>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtCat">Category</label>
+            <select name="selectCatSub" id="txtCat" class="form-control">
+            {{#each listCategories}}
+            <optgroup label="{{Name}}">
+                {{#each categoriesSub}}
+                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Name}}</option>
+                {{/each}}
+            </optgroup>
+            {{/each}}
+            </select>
+        </select>
+      </div>
+   
+      <button type="submit" class="btn btn-success">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Thêm
+      </button>
+    </form>
+  </div>
+
+</div>

@@ -70,6 +70,11 @@ module.exports = {
                         WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount
                         AND p.Url =  '${url}'`);
     },
+    single_url: function (url) {
+        return db.load(`SELECT p.*
+                        FROM posts p
+                        WHERE p.Url = '${url}'`);
+    },
     add: function (entity) {
         return db.add(TBL_POSTS, entity);
     },
