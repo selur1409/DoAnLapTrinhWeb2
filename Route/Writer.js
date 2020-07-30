@@ -201,7 +201,6 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id; 
-        const Check = await db.CheckTitleIsExists(Title);
 
         //get tagImg in full content
         const tagsImg = getTagImg(FullContent);
@@ -212,6 +211,8 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         }
         else {
             
+            const Check = await db.CheckTitleIsExists(Title, Url);
+
             if (Check.length !== 0) {
                 res.json({ fail: 'The title of article is already exists.' });
             }

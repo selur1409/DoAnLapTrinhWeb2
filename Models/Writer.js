@@ -8,8 +8,8 @@ module.exports = {
         return db.load(`SELECT * FROM categories WHERE IsDelete = 0`);
     },
 
-    CheckTitleIsExists:(value, IdPost = null)=>{
-        return db.load(`SELECT * FROM posts WHERE Title = '${value}' AND Id != ${IdPost}`);
+    CheckTitleIsExists:(title, Url, IdPost = null)=>{
+        return db.load(`SELECT * FROM posts WHERE Title = '${title}' OR Url = '${Url}' AND Id != ${IdPost}`);
     },
 
     LoadSubCategories:()=>{
