@@ -148,6 +148,8 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
 
         const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
         res.render('vwWriter/Post', {
             layout: 'homewriter',
             ListTag: Tags,
