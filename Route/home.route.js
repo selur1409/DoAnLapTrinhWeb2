@@ -2,9 +2,8 @@ const express = require('express');
 const postModel = require('../models/post.model');
 const tagModel = require('../Models/tag.model');
 const commentModel = require('../Models/comment.model');
-const { restrict } = require('../middlewares/auth.mdw');
-
 const moment = require('moment');
+const { restrict } = require('../middlewares/auth.mdw');
 
 const router = express.Router();
 
@@ -16,6 +15,9 @@ router.get('/',async function (req, res) {
     const listPostNew = await postModel.postnew();
     const listCatPostNew = await postModel.categorypostnew();
     const listTag = await tagModel.all();
+
+
+    //console.log(listTreding);
 
     for(let i = 0; i < listTreding.length; i++)
     {
@@ -84,9 +86,21 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
     //console.log(oriURL);
 
 
-    //console.log(req.session);
+    console.log(req.session);
+    const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
 
-    if(req.session.authAccount.IsPremium != 1)
+    const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+
+
+    const test = moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD').format('YYYY-MM-DD HH:mm:ss');
+
+    // console.log(test);
+
+    // console.log(dt_now);
+    // console.log(dateEx);
+
+
+    if(dateEx < dt_now)
         return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
 
 

@@ -17,7 +17,7 @@ module.exports = {
          a.TypeAccount = 3 and a.IsDelete = 0`);
     },
     single: function (username) {
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, a.IsPremium, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
+        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, a.DateExpired, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
         FROM ${TBL_ACCOUNTS} a, information i 
         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
     },
