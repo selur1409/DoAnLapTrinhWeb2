@@ -3,7 +3,7 @@ const TBL_EDITORACCOUNT = 'editoraccount';
 
 module.exports = {
     all: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_EDITORACCOUNT} t where IsDelete = 0`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_EDITORACCOUNT} t where t.IsDelete = 0`);
     },
     singleId: function (idCat) {
         return db.load(`SELECT Id FROM ${TBL_EDITORACCOUNT} WHERE IdCategories = ${idCat} and IsDelete = 0`);        

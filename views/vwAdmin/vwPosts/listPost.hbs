@@ -1,0 +1,113 @@
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>POSTS</h4>
+    <a class="btn btn-outline-success" href="/admin/posts/add" role="button">
+        <i class="fa fa-plus" aria-hidden="true"></i>
+        Thêm
+    </a>
+  </div>
+  <div class="row">
+      <div class="col-12">
+          <nav class="nav nav-pills flex-column flex-sm-row p-2">
+              {{#each status}}
+              <a class="flex-sm-fill text-sm-center nav-link  {{#if isActive}} active {{/if}}" href="/admin/posts?status={{Id}}">
+                {{Name}} <span class="badge badge-danger float-right">{{number_of_status}}</span>
+              </a>
+              {{/each}}
+          </nav>
+      </div>
+  </div>
+  
+
+
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+
+  {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center" style="width:3%;">#</th>
+        <th scope="col" style="width:15%;">Title</th>
+        <th scope="col" style="width:30%;">Content Summary</th>
+        <th scope="col" style="width:17%;">Datetime Post</th>
+        {{!-- <th scope="col" style="width:12%;">Time</th> --}}
+        <th scope="col" style="width:5%;">Views</th>
+        <th scope="col" style="width:15%;">Status</th>
+        <th scope="col" style="width:15%;">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.posts}}
+      <tr>
+        <th scope="row" class="text-center">{{Stt}}</th>
+        <td>{{Title}}</td>
+        <td>{{Content_Summary}}</td>
+        <td>{{DatetimePost}}</td>
+        {{!-- <td>
+            {{#if beforePost}}
+                {{#if NotValue}}
+                0 giây
+                {{else}}
+                {{#if beforePost.days}} {{beforePost.days}} ngày {{/if}}
+                {{#if beforePost.hours}} {{beforePost.hours}} giờ {{/if}}
+                {{#if beforePost.minutes}} {{beforePost.minutes}} phút {{/if}}
+                {{#if beforePost.seconds}} {{beforePost.seconds}} giây {{/if}}
+                {{/if}}
+                trước
+            {{else}}
+            {{#if afterPost}}
+                {{#if afterPost.days}} {{afterPost.days}} ngày {{/if}}
+                {{#if afterPost.hours}} {{afterPost.hours}} giờ {{/if}}
+                {{#if afterPost.minutes}} {{afterPost.minutes}} phút {{/if}}
+                {{#if afterPost.seconds}} {{afterPost.seconds}} giây {{/if}}
+                sau
+            {{/if}}
+            {{/if}}
+        </td> --}}
+        <td>{{Views}}</td>
+        <td><b>{{NameStatus}}</b></td>
+        <td class="text-right">
+        <form method="POST" action="/admin/tags/del">
+            <a class="btn btn-warning btn-sm" href="/admin/posts/status?number={{sttSelect}}?url={{Url}}" role="button" title="Status">
+                <i class="fas fa-bell"></i>
+            </a>
+            <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit">
+                <i class="fas fa-comment-alt"></i>
+            </a>
+            <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit">
+                <i class="fas fa-pen"></i>
+            </a>
+            <input type="hidden" name="Id" value="{{Id}}">           
+            <button type="submit" class="btn btn-danger btn-sm" title="Delete">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>
