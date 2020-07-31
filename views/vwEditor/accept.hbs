@@ -21,6 +21,11 @@
         <input type="text" class="form-control col-4" id="postName" name="postName" value="{{this.author.Nickname}}"
           readonly>
       </div>
+      <div class="mb-4">
+        <label for="exampleInputTitle1"><u><i class="fas fa-cut"></i> Content Summary: </u></label>
+        <input type="text" class="form-control col-4" id="postName" name="postName"
+          value="{{this.inforOfPost.Content_Summary}}" readonly>
+      </div>
       <input type="hidden" name="IdPost" value="{{this.inforOfPost.Id}}">
       <div class="mb-4"> <label for="exampleFormControlSelect1"><i class="fas fa-bars"></i>
           <u>Categories Sub: </u></label>
@@ -48,8 +53,11 @@
         <label for="exampleInputTitle1"><i class="far fa-calendar-check"></i> <u> Schedule Post:
           </u></label>
         <br>
-        <input type="text" class="form-control" id="datetimepicker" name="Schedule" required>
-        <span class="glyphicon glyphicon-th"></span>
+        <div class="input-group">
+          <input data-provide="datepicker" type="text" class="form-control" id="datetimepicker" name="Schedule" required
+            autocomplete="off">
+          <span class="glyphicon glyphicon-calendar"></span>
+        </div>
       </div>
       <div class="mb-4">
         <b><i class="fas fa-dollar-sign"></i> <u>Is premium post: </u><input type="checkbox"
@@ -57,12 +65,12 @@
       </div>
 
       <div class="d-flex justify-content-center">
+        <a type="button" class="btn btn-danger mr-4" onclick="goBack()">
+          Cancel
+        </a>
         <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</button>
       </div>
   </form>
-  <button class="btn btn-danger mt-2" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
-    Back
-  </button>
 </div>
 
 
@@ -82,7 +90,8 @@
     $('#datetimepicker').datetimepicker({
       mask: false,
       minDate: 0,
-      startDate: new Date()
+      startDate: new Date(),
+      todayHighlight: true
     });
   });
 </script>
