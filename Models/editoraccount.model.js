@@ -3,7 +3,7 @@ const TBL_EDITORACCOUNT = 'editoraccount';
 
 module.exports = {
     all: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_EDITORACCOUNT} t where IsDelete = 0`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_EDITORACCOUNT} t where t.IsDelete = 0`);
     },
     singleId: function (idCat) {
         return db.load(`SELECT Id FROM ${TBL_EDITORACCOUNT} WHERE IdCategories = ${idCat} and IsDelete = 0`);        
@@ -26,5 +26,19 @@ module.exports = {
           Id: id
         }
         return db.del(TBL_EDITORACCOUNT, condition);
+    },
+    
+    del_notsafe: function (id) {
+        return db.del_notsafe(TBL_EDITORACCOUNT, id);
+    },
+    
+    DelManage: function (id) {
+        const condition = {
+          Id: id
+        }
+        const entity = {
+            IdCategories: null
+        }
+        return db.patch(TBL_EDITORACCOUNT, entity, condition);
     }
 };

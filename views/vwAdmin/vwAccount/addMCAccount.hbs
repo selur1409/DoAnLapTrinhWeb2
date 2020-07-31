@@ -1,171 +1,19 @@
-{{#section 'css'}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
-{{/section}}
-{{#section 'js'}}
-    <script
-     src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
-    </script>
-  <script>
-    $('#txtDOB').datetimepicker({
-      format: 'd/m/Y',
-      timepicker: false,
-      mask: true,
-    });  
-  </script>
-
-<script>
-  $('#frmAddAccount').on('submit', function (e) {
-    // alert('submit called');
-    e.preventDefault();
-    // if (validate())
-    //   $('#frmRegister').off('submit').submit();
-    validate();
-  })
-
-function validate() {
-  // ... các lệnh validate khác
-  if (!validateName() || !validateUsername() || !validatePassword() || !validateConfirmPassword() || !validateDOB() || !validateSex()){
-    return alert('Thông tin nhập không chính xác hoặc không đầy đủ.'); 
-  }
-  return $('#frmAddAccount').off('submit').submit();    
-}
-
-function validateName() {
-  const $result = $("#rsName");
-  const name = $("#txtName").val();
-  $result.text("");
-  if (!name)
-  {
-      $result.text("Mục bắt buộc phải điền.");
-      $result.css("color", "red");
-      return false;
-  }
-  return true;
-}
-function validateDOB() {
-  const $result = $("#rsDOB");
-  const dob = $("#txtDOB").val();
-  $result.text("");
-  if (!dob)
-  {
-      $result.text("Mục bắt buộc phải điền.");
-      $result.css("color", "red");
-      return false;
-  }
-  return true;
-}
-function validateSex() {
-  const $result = $("#rsSex");
-  const radio = $("input:checked" ).val()
-  if (radio === undefined){
-      $result.text("Mục bắt buộc phải điền.");
-      $result.css("color", "red");
-      return false;
-  }
-  return true;
-}
-
-function validateRegexUsername(username) {
-    const re = /^(([a-z]){1}([a-z0-9_\.]){3,31})$/;
-    return re.test(username);
-}
-
-function validateUsername() {
-  const $result = $("#rsUsername");
-  const username = $("#txtUsername").val();
-  $result.text("");
-  
-  if (validateRegexUsername(username)) {
-    return $.getJSON(`/admin/accounts/is-available?username=${username}`, function (data) {
-        if (data === true) {
-           return true;
-        } else {
-            $result.text(username + " đã tồn tại.");
-            $result.css("color", "red");
-            return false;
-        }
-    })
-  }
-  if (username === "")
-  {
-      $result.text("Mục bắt buộc phải điền.");
-      $result.css("color", "red");
-      return false;
-  }
-  $result.text("Chứa ít nhất 4 kí tự, trong đó 1 kí tự ở đầu câu, và chỉ có kí tự thường không dấu hoặc số.");
-  $result.css("color", "red");
-  return false;
-}
-
-function validateRegexPassword(pw) {
-    const re = /^(?=.{5,})(?=.*[a-z]+)(?=.*\d+)(?=.*[A-Z]+)(?=.*[^\w])[ -~]+$/;
-    return re.test(pw);
-}
-function validatePassword() {
-  const $result = $("#rsPassword");
-  const pw = $("#txtPassword").val();
-  $result.text("");
-
-  if (validateRegexPassword(pw)) 
-  {
-    return true;
-  }
-  if (pw === "")
-  {
-    $result.text("Mục bắt buộc phải điền.");
-    $result.css("color", "red");
-    return false;
-  }
-  $result.text("Có ít nhất 5 kí tự, gồm chữ thường, hoa, số và kí tự đặc biệt");
-  $result.css("color", "red");
-  return false;
-}
-function validateConfirmPassword() {
-  const $result = $("#rsConfirm");
-  const confirm = $("#txtConfirm").val();
-  const pw = $("#txtPassword").val();
-  if (confirm === pw){
-    return true;
-  }
-  $result.text("Mật khẩu không trùng khớp.");
-  $result.css("color", "red");
-  return false;
-}
-</script>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-$(document).ready(function(){
-  $("#txtName").change(function(){
-    validateName();
-  });
-  $("#txtUsername").change(function(){
-    validateUsername();
-  });
-  $("#txtPassword").change(function(){
-    validatePassword();
-  });
-  $("#txtConfirm").change(function(){
-    validateConfirmPassword();
-  });
-});
-</script>
-
-{{/section}}
-
 <div class="col mb-2 mt-2 ml-3">
     <a class="btn btn-info" href="/admin/accounts/managecategory/{{account.Username}}" role="button" title="Back to List">
       <i class="fas fa-reply"></i>
       Trở về
     </a>
-    <a class="btn btn-dark" href="#" role="button" title="{{select}}">
+    <a class="btn btn-dark" href="/admin/accounts?select=editor" role="button" title="editor manage">
+    editor
+    </a>
+    <a class="btn btn-info" href="#" role="button" title="{{select}}">
       {{account.Name}}
     </a>
 </div>
 
 <div class="card">
   <div class="card-header">
-    <h4>Thêm chuyên mục quản lý</h4>
+    <h4>Quản lý các chuyên mục</h4>
   </div>
   <div class="card-body">
     
@@ -187,22 +35,34 @@ $(document).ready(function(){
     </div>
     {{/if}}
 
-    <form method="POST" id="frmAddAccount" action="/admin/accounts/add">
-        <label class="control-label" for="txtName">Chuyên mục chưa có người quản lý</label>
-      {{!-- <div class="form-group required">
-        <label class="checkbox-inline">
-            <input type="checkbox" value="Option">Option 1
-        </label>
-        <small id="rsName"></small> --}}
-      </div>
+    <form method="POST">
+        <div class="form-group required">
+          <h4>Chuyên mục đang quản lý</h4>
+          <br>
+          {{#each this.categories}}
+          <input type="checkbox" id="checkManage{{Id}}" name="Manage" value="{{Id}}" checked>
+          <label for="checkManage{{Id}}">{{Name}}</label>
+          <br>
+          {{/each}}
+        </div>
+        
+        <hr>
+        <div class="form-group required">
+          <h4>Chuyên mục chưa có người quản lý</h4>
+          <br>
+          {{#each this.notmanage}}
+          <input type="checkbox" id="check{{Id}}" name="NotManage" value="{{Id}}">
+          <label for="check{{Id}}">{{Name}}</label>
+          <br>
+          {{/each}}
+        </div>
+        
       <input type="hidden" name="Id" value="{{account.Id}}">
-      <a type="submit" class="btn btn-danger" href="/accounts/managecategory/{{username}}">
-        <i class="far fa-window-close"></i>
-        Hủy bỏ
-      </a>
-      <button type="submit" class="btn btn-primary" id="validate">
+      <input type="hidden" name="Username" value="{{account.Username}}">
+
+      <button type="submit" class="btn btn-primary" formaction="/admin/accounts/managecategory/manage">
         <i class="fa fa-check" aria-hidden="true"></i>
-        Đăng kí
+        Thay đổi
       </button>
     </form>
     </form>

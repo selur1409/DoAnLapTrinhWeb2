@@ -1863,3 +1863,43 @@ section
 {
 	border-bottom: solid 1px rgba(255,255,255,1);
 }
+
+
+.post_tags
+{
+	margin-top: 20px;
+}
+.post_tag
+{
+	display: inline-block;
+	width: auto;
+	height: 24px;	border: solid 1px #d7d7d7;
+	border-radius: 3px;
+	background: transparent;
+	margin-bottom: 5px;
+	-webkit-transition: all 200ms ease;
+	-moz-transition: all 200ms ease;
+	-ms-transition: all 200ms ease;
+	-o-transition: all 200ms ease;
+	transition: all 200ms ease;
+}
+.post_tag:not(:last-child)
+{
+	margin-right: 6px;
+}
+.post_tag a
+{
+	display: block;
+	line-height: 22px;
+	font-family: 'Ubuntu', sans-serif;
+	font-size: 12px;
+	padding-left: 10px;
+	padding-right: 10px;
+	color: rgba(0,0,0,0.5);
+	font-weight: 500;
+}
+.post_tag:hover
+{
+	background: #ededed;
+	border-color: #ededed;
+}

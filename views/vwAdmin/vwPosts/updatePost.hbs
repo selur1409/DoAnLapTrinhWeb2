@@ -1,0 +1,353 @@
+<form method="POST" id="formPost">
+  <div id="alert"></div>
+  {{#if NotFound}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading"><i class="fa fa-exclamation-circle"></i>This article has been published or approved!</h4>
+    </div>
+  {{/if}}
+  <div class="card">
+    <div class="card-header">
+        <h4>Modify Content</h4>
+        <input type="hidden" id="IdPost" name="IdPost" value="{{Id}}">
+    </div>
+    <div class="card-body">
+        <div class="form-group">
+            <label for="IdTitle">Title</label>
+            <textarea name="Title" id="IdTitle" class="form-control" cols="30" rows="1" form="formPost">{{{Title}}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="IdBriefCont">Summary Content</label>
+            <textarea name="BriefCont" id="IdBriefCont" class="form-control" cols="30" rows="5"  form="formPost">{{{BriefCont}}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="IdFullCont">Content</label>
+            <textarea name="FullCont" id="IdFullCont" class="form-control" cols="30" rows="10"  form="formPost">{{{FullCont}}}</textarea>
+        </div>
+        <div class="form-group">
+          <label for="">Categories</label>
+          <select class="custom-select custom-select-lg mb-3" name="Categories">
+            <option value="" selected="selected">Select an option...</option>
+            {{#each this.ListCat }}
+            <optgroup label="{{Name}}">
+                {{#load_sub_cat ../ListSubCat Id}}
+                    <option value="{{this.Id}}">{{Name}}</option>
+                {{/load_sub_cat}}
+            </optgroup>
+            {{/each}}
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="">Tags</label>
+          <div class="row">
+            {{#each this.ListTag}}
+              {{!-- <div class="col">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="checkbox{{@index}}"  value="{{Id}}">
+                    <label class="custom-control-label" for="checkbox{{@index}}">{{this.Name}}</label>
+                  </div>
+              </div> --}}
+                <div class="p-1">
+                    <button type="button" class="btn btnTag btn-outline-primary" id="checkbox{{@index}}"  value="{{Id}}">{{Name}}</button>
+              </div>
+              {{!-- {{{count_index @index}}} --}}
+            {{/each}}
+          </div>
+        </div>
+    </div>
+    <div class="card-footer">
+      <button type="submit" class="btn btn-lg btn-success btn-block" id="submit">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Submit
+      </button>
+    </div>
+    <div class="row justify-content-center p-3">
+      <a class="btn btn-outline-primary" href="{{Url}}" role="button">Go Back</a>
+    </div>
+  </div>
+</form>
+
+
+{{#section 'js'}}
+<script src="https://cdn.tiny.cloud/1/ilpxmudgw3esovltoi6856rdmxd85dk15dunkemmkwt2pbt8/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+  selector: '#IdFullCont',
+  plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+  imagetools_cors_hosts: ['picsum.photos'],
+  menubar: 'file edit view insert format tools table help',
+  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+  toolbar_sticky: true,
+  autosave_ask_before_unload: true,
+  autosave_interval: "30s",
+  autosave_prefix: "{path}{query}-{id}-",
+  autosave_restore_when_empty: false,
+  autosave_retention: "2m",
+  image_advtab: true,
+  content_css: '//www.tiny.cloud/css/codepen.min.css',
+  content_css_cors: true,
+  importcss_append: true,
+  relative_urls: false,
+  remove_script_host: false,
+  convert_urls: true,
+  images_upload_url : 'http://localhost:3000/admin/update',
+  images_upload_handler: function(blobInfo, success, failure){ 
+    const id = document.getElementById("IdPost").value;
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function(){
+      let json;
+      if(xhr.status !== 200)
+      {
+        failure('HTTP Error: ' + xhr.status);
+      }
+      //json = xhr.responseText;
+      json = JSON.parse(xhr.responseText);
+      if(!json || typeof json.location !== 'string')
+      {
+        failure('Invalid json: ' + xhr.responseText);
+        return;
+      }
+      success(json.location);
+    };
+    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
+    const form = new FormData();
+    const fileName = blobInfo.filename();
+    form.append('file', blobInfo.blob(), fileName);
+    xhr.send(form);
+  },
+
+  file_picker_callback: function (cb, value, meta) {
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+
+    /*
+      Note: In modern browsers input[type="file"] is functional without
+      even adding it to the DOM, but that might not be the case in some older
+      or quirky browsers like IE, so you might want to add it to the DOM
+      just in case, and visually hide it. And do not forget do remove it
+      once you do not need it anymore.
+    */
+
+    input.onchange = function () {
+      var file = this.files[0];
+
+      var reader = new FileReader();
+      reader.onload = function () {
+        /*
+          Note: Now we need to register the blob in TinyMCEs image blob
+          registry. In the next release this part hopefully won't be
+          necessary, as we are looking to handle it internally.
+        */
+        var id = 'blobid' + (new Date()).getTime();
+        var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+        var base64 = reader.result.split(',')[1];
+        var blobInfo = blobCache.create(id, file, base64);
+        blobCache.add(blobInfo);
+
+        /* call the callback and populate the Title field with the file name */
+        cb(blobInfo.blobUri(), { title: file.name });
+      };
+      reader.readAsDataURL(file);
+    };
+
+    input.click();
+  },
+
+  templates: [
+      { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+      { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+      { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+    ],
+    template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+    template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+    height: 600,
+    image_caption: true,
+    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+    noneditable_noneditable_class: "mceNonEditable",
+    toolbar_mode: 'sliding',
+    contextmenu: "link image imagetools table",
+});
+
+tinymce.init({
+  selector: '#IdBriefCont',
+  plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+  imagetools_cors_hosts: ['picsum.photos'],
+  menubar: 'file edit view insert format tools table help',
+  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+  toolbar_sticky: true,
+  autosave_ask_before_unload: true,
+  autosave_interval: "30s",
+  autosave_prefix: "{path}{query}-{id}-",
+  autosave_restore_when_empty: false,
+  autosave_retention: "2m",
+  image_advtab: true,
+  content_css: '//www.tiny.cloud/css/codepen.min.css',
+  content_css_cors: true,
+  importcss_append: true,
+  relative_urls: false,
+  remove_script_host: false,
+  convert_urls: true,
+  images_upload_url : 'http://localhost:3000/admin/update',
+  images_upload_handler: function(blobInfo, success, failure){ 
+    const id = document.getElementById("IdPost").value;
+    const xhr = new XMLHttpRequest();
+    xhr.onload = function(){
+      let json;
+      if(xhr.status !== 200)
+      {
+        failure('HTTP Error: ' + xhr.status);
+      }
+      //json = xhr.responseText;
+      json = JSON.parse(xhr.responseText);
+      if(!json || typeof json.location !== 'string')
+      {
+        failure('Invalid json: ' + xhr.responseText);
+        return;
+      }
+      success(json.location);
+    };
+    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
+    const form = new FormData();
+    const fileName = blobInfo.filename();
+    form.append('file', blobInfo.blob(), fileName);
+    xhr.send(form);
+  },
+
+  file_picker_callback: function (cb, value, meta) {
+    var input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+
+    /*
+      Note: In modern browsers input[type="file"] is functional without
+      even adding it to the DOM, but that might not be the case in some older
+      or quirky browsers like IE, so you might want to add it to the DOM
+      just in case, and visually hide it. And do not forget do remove it
+      once you do not need it anymore.
+    */
+
+    input.onchange = function () {
+      var file = this.files[0];
+
+      var reader = new FileReader();
+      reader.onload = function () {
+        /*
+          Note: Now we need to register the blob in TinyMCEs image blob
+          registry. In the next release this part hopefully won't be
+          necessary, as we are looking to handle it internally.
+        */
+        var id = 'blobid' + (new Date()).getTime();
+        var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
+        var base64 = reader.result.split(',')[1];
+        var blobInfo = blobCache.create(id, file, base64);
+        blobCache.add(blobInfo);
+
+        /* call the callback and populate the Title field with the file name */
+        cb(blobInfo.blobUri(), { title: file.name });
+      };
+      reader.readAsDataURL(file);
+    };
+
+    input.click();
+  },
+
+  templates: [
+      { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
+      { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
+      { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
+    ],
+    template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+    template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+    height: 600,
+    image_caption: true,
+    quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+    noneditable_noneditable_class: "mceNonEditable",
+    toolbar_mode: 'sliding',
+    contextmenu: "link image imagetools table",
+});
+  
+
+tinymce.init({
+    selector: '#IdTitle',
+    /*plugins: [
+    "advlist autolink lists link image charmap print preview anchor",
+    "searchreplace visualblocks code fullscreen",
+    "insertdatetime media table paste imagetools wordcount"
+    ],*/
+    imagetools_cors_hosts: ['picsum.photos'],
+    toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+});
+
+ function active(){
+    const btnTag = document.getElementsByClassName('btnTag');
+    let arrchkbox = [];
+    for(let i = 0; i < btnTag.length; i++)
+    {
+        btnTag[i].addEventListener('click', function(){
+            if(arrchkbox.includes(document.getElementById("checkbox" + i).value))
+            {
+              this.className = this.className.replace('active', '');
+              arrchkbox.splice(arrchkbox.indexOf(document.getElementById("checkbox" + i).value), 1);
+            }
+            else
+            {
+              this.className += ' active';
+              arrchkbox.push(document.getElementById("checkbox" + i).value);
+            }
+        });
+    }
+    return arrchkbox;
+  }
+   function attendConference() {
+        const form = document.getElementById("formPost");
+        const btnSubmit = document.getElementById("submit");
+        const arrChecked = active();
+        const id = document.getElementById("IdPost").value;
+        btnSubmit.addEventListener("click", function () {
+            tinymce.triggerSave();
+            event.preventDefault();
+            const xhttp = new XMLHttpRequest();
+            const FD = new FormData(form);
+            FD.append("arrCheck", JSON.stringify(arrChecked));
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log('Success!');
+                    console.log(arrChecked);
+                    const data = xhttp.responseText;
+                    const dataParsed = JSON.parse(data);
+                    if(dataParsed.hasOwnProperty('success'))
+                    {
+                      document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
+                      $("#Success").modal("show"); 
+                    }
+                    else
+                    {
+                      document.getElementById("alert").innerHTML = Handlebars.templates.Warning({warning:dataParsed.fail});
+                      $("#myModal").modal("show");
+                    }
+                    
+                }
+            }
+            xhttp.open("POST", "/admin/update/?id=" + id, true);
+            xhttp.send(FD);
+        }, true)
+    }
+
+    $('.btnTag').mousedown(function () {
+        $(this).removeClass('jiggle').addClass('shrink')
+      });
+      $('.btnTag').mouseup(function () {
+        $(this).removeClass('shrink').addClass('jiggle')
+      });
+
+
+    window.onload = function(){
+        active();
+        attendConference(); 
+    };
+        
+</script>
+{{/section}}
+{{#section 'css'}}
+  <link rel="stylesheet" href="/public/css/styleOfWriter.css">
+{{/section}}

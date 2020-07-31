@@ -31,7 +31,7 @@ function validate() {
 }
 
 function validateRegexPassword(pw) {
-    const re = /^(?=.{5,})(?=.*[a-z]+)(?=.*\d+)(?=.*[A-Z]+)(?=.*[^\w])[ -~]+$/;
+    const re = /^(?=.{5,})(?=.*[a-z]+)(?=.*\d+)(?=.*[A-Z]+)[ -~]+$/;
     return re.test(pw);
 }
 function validatePasswordOld() {
@@ -49,7 +49,7 @@ function validatePasswordOld() {
     $result.css("color", "red");
     return false;
   }
-  $result.text("Có ít nhất 5 kí tự, gồm chữ thường, hoa, số và kí tự đặc biệt");
+  $result.text("Có ít nhất 5 kí tự, gồm chữ thường, hoa và số");
   $result.css("color", "red");
   return false;
 }

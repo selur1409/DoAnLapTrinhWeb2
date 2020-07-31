@@ -148,6 +148,8 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
     try{
 
         const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
         res.render('vwWriter/Post', {
             layout: 'homewriter',
             ListTag: Tags,
@@ -199,7 +201,6 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id; 
-        const Check = await db.CheckTitleIsExists(Title);
 
         //get tagImg in full content
         const tagsImg = getTagImg(FullContent);
@@ -210,6 +211,8 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         }
         else {
             
+            const Check = await db.CheckTitleIsExists(Title, Url);
+
             if (Check.length !== 0) {
                 res.json({ fail: 'The title of article is already exists.' });
             }
@@ -517,7 +520,6 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
-        const Check = await db.CheckTitleIsExists(Title, IdPost);
     
         if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
@@ -525,13 +527,15 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         }
         else{
 
+            const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
             if(Check.length !== 0)
             {
                 res.json({fail:'The title of article is already exists'});
             }
             else
             {
-                const TagsImg = getTagImg(FullContent);
+                let content = FullContent + BriefContent;
+                let TagsImg = getTagImg(content);
                 Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
                 const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
                 const Result = await db.UpdatePostOfWriter(ValueOfPost);
