@@ -8,8 +8,14 @@ module.exports = {
         return db.load(`SELECT * FROM categories WHERE IsDelete = 0`);
     },
 
-    CheckTitleIsExists:(title, Url, IdPost = null)=>{
-        return db.load(`SELECT * FROM posts WHERE (Title = '${title}' OR Url = '${Url}') AND Id != ${IdPost}`);
+    LoadTagOfPost:(IdPost)=>{
+        return db.load(`SELECT * FROM tag_posts tp WHERE tp.IdPost = ${IdPost}`)
+    },
+
+    CheckTitleIsExists:(title, Url, IdPost)=>{
+        return db.load(`SELECT * 
+        FROM posts 
+        WHERE (((Title = '${title}' OR Url = '${Url}') AND ${IdPost} IN (SELECT p.Id FROM posts p)) OR (Title != '${title}' OR Url != '${Url}'))`);
     },
 
     LoadSubCategories:()=>{
@@ -86,8 +92,8 @@ module.exports = {
         WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = ${IdAccount}`);
     },
 
-    UpdateFullContent:(Content, Avatar, Id)=>{
-        return db.insert(`UPDATE posts SET Content_Full = '${Content}', Content_Summary = '${Content}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
+    UpdateFullContent:(FullContent, Avatar, Id)=>{
+        return db.insert(`UPDATE posts SET Content_Full = '${FullContent}', Avatar = '${Avatar}' WHERE Id = ${Id}`);
     },
 
     UpdatePostOfWriter:(value)=>{
