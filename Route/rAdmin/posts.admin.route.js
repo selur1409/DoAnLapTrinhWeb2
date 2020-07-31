@@ -3,6 +3,7 @@ const moment = require('moment');
 const statusModel = require('../../models/statuspost.model');
 const {getTimeBetweenDate} = require('../../js/betweendate');
 const db = require('../../models/Writer');
+const {restrict, referer} = require('../../middlewares/auth.mdw');
 const {mark_url} = require('../../public/js/ConvertTitleToUrl');
 const multer = require('multer');
 let upload = multer();
@@ -76,7 +77,8 @@ module.exports = (router) => {
         });
     }
 
-    router.post('/Upload_IMG', async (req, res) => {
+    //Using to save img from editor tinymce to folder at server 
+    router.post('/Upload_IMG', restrict, async (req, res) => {
         const folderName =  './public/img/ImagePost/temp';
         try {
             if (!fs.existsSync(folderName)) {
@@ -96,7 +98,8 @@ module.exports = (router) => {
         UploadIMG('temp', req, res);
     });
 
-    router.get('/posts/add', async (req, res) => {
+    //render editor tinymce to post
+    router.get('/posts/add', restrict, async (req, res) => {
         try {
 
             const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
@@ -107,7 +110,6 @@ module.exports = (router) => {
                 ListTag: Tags,
                 ListCat: Categories,
                 ListSubCat: Categories_sub,
-                IsActivePost: true,
                 Name: res.locals.lcAuthUser.Username,
                 Avatar: res.locals.lcAuthUser.Avatar,
                 helpers: {
@@ -135,7 +137,7 @@ module.exports = (router) => {
         }
     });
 
-    router.post('/posts/add', upload.fields([]), async (req, res, next) => {
+    router.post('/posts/add', restrict, upload.fields([]), async (req, res, next) => {
         try {
 
             let checkbox = JSON.parse(req.body.arrCheck);
@@ -169,6 +171,7 @@ module.exports = (router) => {
 
                 }
                 else {
+
                     let Temp = [];
                     const ValueOfPost = ['Title', 'Content_Summary', 'Content_Full', 'DatePost', 'Avatar', 'Views', 'DatetimePost', 'Url', 'IdCategories', 'IdStatus', 'IsDelete', `${Title}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${Url}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`]
                     const Result = await db.InsertPost(ValueOfPost);
@@ -189,10 +192,10 @@ module.exports = (router) => {
                     RemoveImage(directoryPath, tagsImg);
 
                     //Update src for img tag in Full Content 
-                    const NewTagImg = './public/img/ImagePost/' + Result.insertId;
+                    const NewTagImg = '/public/img/ImagePost/' + Result.insertId;
                     const regex = RegExp(`(<img.*?src=")([^">]*)(\/[^">]*?")(.*?>)`, 'g');
                     let NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
-                    let NewAvatar = tagsImg.length > 0 ? '../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                    let NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
 
                     await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
@@ -218,9 +221,10 @@ module.exports = (router) => {
         }
     }); 
 
-    router.post('/UpdateIMG', async (req, res)=>{
+    //Using to save img from update-post page into folder at server
+    router.post('/UpdateIMG', restrict, async (req, res)=>{
         const idPost = +req.query.id;
-        const folderName = path.join(__dirname, '../public/img/ImagePost/' + idPost);
+        const folderName = path.join(__dirname, '../../public/img/ImagePost/' + idPost);
         try {
             if (!fs.existsSync(folderName)) {
                 fs.mkdirSync(folderName, {recursive: true}, function (err) {
@@ -239,16 +243,15 @@ module.exports = (router) => {
         UploadIMG(idPost, req, res);
     });
     
-    router.get('/update/:id', async (req, res)=>{
-        const IdPost = req.params.id;
+    //render page update post
+    router.get('/update/', restrict, async (req, res)=>{
+        const IdPost = +req.query.id;
         const Post = await db.LoadSinglePost(IdPost);
-        // const Status = await db.LoadStatusById(Post[0].IdStatus);
-        // const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
+
         if(Post[0].IdStatus === 1 || Post[0].IdStatus === 2)
         {
-            res.render('vwWriter/Update',{
-                IsActiveUpdate:true,
-                layout: 'homewriter',
+            res.render('vwAdmin/vwPosts/updatePost',{
+                layout: 'homeadmin',
                 Name:res.locals.lcAuthUser.Username,
                 Avatar:res.locals.lcAuthUser.Avatar,
                 Url:req.headers.referer,
@@ -257,10 +260,12 @@ module.exports = (router) => {
         }
         else
         {
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
             const [Tags, Categories, Categories_sub]  = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
-            res.render('vwWriter/Update',{
-                IsActiveUpdate:true,
-                layout: 'homewriter',
+            res.render('vwAdmin/vwPosts/updatePost',{
+                isActive:true,
+                layout: 'homeadmin',
                 Id:IdPost,
                 ListTag:Tags,
                 ListCat:Categories,
@@ -303,7 +308,7 @@ module.exports = (router) => {
         }   
     });
     
-    router.post('/update/', upload.fields([]), async (req,res, next)=>{
+    router.post('/update/', restrict, upload.fields([]), async (req,res, next)=>{
         try{
             let checkbox = JSON.parse(req.body.arrCheck);
             const IdPost = +req.query.id;
@@ -319,7 +324,6 @@ module.exports = (router) => {
             const FullContent = req.body.FullCont;
             const BriefContent = req.body.BriefCont;
             const IdAccount = res.locals.lcAuthUser.Id;
-            const Check = await db.CheckTitleIsExists(Title, IdPost);
         
             if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
             {
@@ -327,13 +331,16 @@ module.exports = (router) => {
             }
             else{
     
+                const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+                
                 if(Check.length !== 0)
                 {
                     res.json({fail:'The title of article is already exists'});
                 }
                 else
                 {
-                    const TagsImg = getTagImg(FullContent);
+                    let content = FullContent + BriefContent;
+                    let TagsImg = getTagImg(content);
                     Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
                     const Result = await db.UpdatePostOfWriter(ValueOfPost);
@@ -349,7 +356,7 @@ module.exports = (router) => {
                     const result = await db.InsertTagPost(ValueOfTagPost);
     
                     //remove image is not exists in full content 
-                    const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
+                    const directoryPath = path.join(__dirname, '../../public/img/ImagePost/' + IdPost);
                     RemoveImage(directoryPath, TagsImg);
     
                     if (result !== null) {

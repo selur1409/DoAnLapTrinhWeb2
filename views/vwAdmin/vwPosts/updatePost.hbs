@@ -84,11 +84,12 @@ tinymce.init({
   autosave_retention: "2m",
   image_advtab: true,
   content_css: '//www.tiny.cloud/css/codepen.min.css',
+  content_css_cors: true,
   importcss_append: true,
   relative_urls: false,
   remove_script_host: false,
   convert_urls: true,
-  images_upload_url : 'http://localhost:3000/writer/Update',
+  images_upload_url : 'http://localhost:3000/admin/update',
   images_upload_handler: function(blobInfo, success, failure){ 
     const id = document.getElementById("IdPost").value;
     const xhr = new XMLHttpRequest();
@@ -107,7 +108,7 @@ tinymce.init({
       }
       success(json.location);
     };
-    xhr.open("POST", "/writer/UpdateIMG/?id=" + id, true);
+    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
     const form = new FormData();
     const fileName = blobInfo.filename();
     form.append('file', blobInfo.blob(), fileName);
@@ -159,7 +160,7 @@ tinymce.init({
     ],
     template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
     template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-    height: 300,
+    height: 600,
     image_caption: true,
     quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
     noneditable_noneditable_class: "mceNonEditable",
@@ -168,8 +169,8 @@ tinymce.init({
 });
 
 tinymce.init({
-    selector: '#IdBriefCont',
-    plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+  selector: '#IdBriefCont',
+  plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
   imagetools_cors_hosts: ['picsum.photos'],
   menubar: 'file edit view insert format tools table help',
   toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
@@ -181,11 +182,12 @@ tinymce.init({
   autosave_retention: "2m",
   image_advtab: true,
   content_css: '//www.tiny.cloud/css/codepen.min.css',
+  content_css_cors: true,
   importcss_append: true,
   relative_urls: false,
   remove_script_host: false,
   convert_urls: true,
-  images_upload_url : 'http://localhost:3000/writer/Update',
+  images_upload_url : 'http://localhost:3000/admin/update',
   images_upload_handler: function(blobInfo, success, failure){ 
     const id = document.getElementById("IdPost").value;
     const xhr = new XMLHttpRequest();
@@ -204,7 +206,7 @@ tinymce.init({
       }
       success(json.location);
     };
-    xhr.open("POST", "/writer/UpdateIMG/?id=" + id, true);
+    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
     const form = new FormData();
     const fileName = blobInfo.filename();
     form.append('file', blobInfo.blob(), fileName);
@@ -256,13 +258,14 @@ tinymce.init({
     ],
     template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
     template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-    height: 300,
+    height: 600,
     image_caption: true,
     quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
     noneditable_noneditable_class: "mceNonEditable",
     toolbar_mode: 'sliding',
     contextmenu: "link image imagetools table",
 });
+  
 
 tinymce.init({
     selector: '#IdTitle',
@@ -325,7 +328,7 @@ tinymce.init({
                     
                 }
             }
-            xhttp.open("POST", "/writer/Update/?id=" + id, true);
+            xhttp.open("POST", "/admin/update/?id=" + id, true);
             xhttp.send(FD);
         }, true)
     }
