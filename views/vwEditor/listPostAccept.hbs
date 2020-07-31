@@ -1,20 +1,21 @@
 <div class="d-flex justify-content-center">
   {{#each this.listCate}}
   <a href="/editor/accepted/?cate={{IdCategories}}" type="button"
-    class="btn btn-outline-secondary mr-3 mt-3 mb-3 {{#if isActiveCate}} bg-success{{/if}}">{{Name}}</a>
+    class="btn btn-outline-secondary mr-3 mb-3 {{#if isActiveCate}} bg-success{{/if}}">{{Name}}</a>
   {{/each}}
 </div>
 <div class="d-flex justify-content-center">
   {{#each this.listCateSub}}
   <a href="/editor/accepted/?cate={{idCate}}&catesub={{Id}}" type="button"
-    class="btn btn-outline-secondary btn-sm mr-3 mt-3 mb-3 {{#if isActiveCateSub}} active{{/if}}">{{Name}}</a>
+    class="btn btn-outline-secondary btn-sm mr-3 mb-3 {{#if isActiveCateSub}} active{{/if}}">{{Name}}</a>
   {{/each}}
 </div>
+
  {{#if this.empty}}
     <div class="text-center">No data</div>
   {{else}}
 <div class="list-group">
-  <table class="table table-hover table-active">
+  <table class="table">
     <thead class="bg-success">
       <tr>
         <th scope="col" class="text-center">No.</th>
@@ -37,12 +38,14 @@
         <td class="text-center">{{DatePost}}</td>
         <td class="text-center">{{statusName}}</td>
         <td class="text-center">{{DatetimePost}}</td>
-        {{!-- <td class="text-right">
-          <a class="btn btn-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
-          Review
-            <i class="fa fa-eye" aria-hidden="true"></i>
+        <td class="text-right">
+          {{!-- <a class="btn btn-outline-danger btn-sm" href="/editor/deleteaccept/{{Id}}" role="button" title="Delete from the list of accepted posts">
+          <i class="far fa-trash-alt"></i>
           </a>
-        </td> --}}
+          <a class="btn btn-outline-warning btn-sm" href="/editor/accept/{{Id}}" role="button" title="Edit">
+          <i class="fas fa-pen"></i>
+          </a> --}}
+        </td>
       </tr>
       {{/each}}
     </tbody>
