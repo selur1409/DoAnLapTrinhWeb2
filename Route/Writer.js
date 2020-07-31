@@ -213,7 +213,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
             
             const Check = await db.CheckTitleIsExists(Title, Url);
 
-            if (Check.length !== 0) {
+            if (Check.length === 0) {
                 res.json({ fail: 'The title of article is already exists.' });
             }
             else {
@@ -441,8 +441,9 @@ router.post('/UpdateIMG', restrict, Authories, async (req, res)=>{
 });
 
 router.get('/Update/:id', restrict, Authories, async (req, res)=>{
-    const IdPost = req.params.id;
+    const IdPost = +req.params.id;
     const Post = await db.LoadSinglePost(IdPost);
+    const TagOfPost = await db.LoadTagOfPost(IdPost);
     // const Status = await db.LoadStatusById(Post[0].IdStatus);
     // const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
     if(Post[0].IdStatus === 1 || Post[0].IdStatus === 2)
@@ -469,6 +470,7 @@ router.get('/Update/:id', restrict, Authories, async (req, res)=>{
             FullCont:Post[0].Content_Full,
             BriefCont:Post[0].Content_Summary,
             Title:Post[0].Title,
+            Tag:TagOfPost,
             Name:res.locals.lcAuthUser.Username,
             Avatar:res.locals.lcAuthUser.Avatar,
             Url:req.headers.referer,
@@ -498,6 +500,26 @@ router.get('/Update/:id', restrict, Authories, async (req, res)=>{
                         ret = ret + options.fn("The article has been approval. You cannot change it");
                     }
                     return ret;
+            },
+            IsSelected:function(value, options)
+            {
+                let ret="";
+                if(Post[0].IdCategories === value)
+                {
+                    ret = ret + options.fn();
+                }
+                return ret;
+            },
+            TagSelected:function(context, Id, options){
+                let ret="";
+                for(let i = 0; i < context.length; i++)
+                {
+                    if(context[i].IdTag === Id)
+                    {
+                        ret = ret + options.fn();
+                    }
+                }
+                return ret;
             }
             }
         });
@@ -520,7 +542,7 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;
-    
+        
         if(checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '')
         {
             res.json({fail:' Please complete all fields in the form'});
@@ -528,7 +550,7 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         else{
 
             const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
-            if(Check.length !== 0)
+            if(Check.length === 0)
             {
                 res.json({fail:'The title of article is already exists'});
             }

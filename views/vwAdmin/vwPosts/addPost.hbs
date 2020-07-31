@@ -19,7 +19,7 @@
         </div>
         <div class="form-group">
           <label for="">Categories</label>
-          <select class="custom-select custom-select-lg mb-3" name="Categories">
+          <select class="custom-select custom-select-lg mb-3" name="Categories" id='IdCategories'>
             <option value="" selected="selected">Select an option...</option>
             {{#each this.ListCat }}
             <optgroup label="{{Name}}">
@@ -66,11 +66,6 @@
         title: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
       })
   });
-
-tinymce.init({
-  selector: '#IdTitle',
-  toolbar: "undo redo | styleselect | forecolor backcolor | bold italic | fontselect fontsizeselect | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent",
-});
 
 tinymce.init({
   selector: '#IdFullCont',
@@ -170,104 +165,6 @@ tinymce.init({
   contextmenu: "link image imagetools table",
 
 });
-
-tinymce.init({
-  selector: '#IdBriefCont',
-  plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
-  imagetools_cors_hosts: ['picsum.photos'],
-  menubar: 'file edit view insert format tools table help',
-  toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
-  toolbar_sticky: true,
-  autosave_ask_before_unload: true,
-  autosave_interval: "30s",
-  autosave_prefix: "{path}{query}-{id}-",
-  autosave_restore_when_empty: false,
-  autosave_retention: "2m",
-  image_advtab: true,
-  content_css: '//www.tiny.cloud/css/codepen.min.css',
-  content_css_cors: true,
-  importcss_append: true,
-  file_picker_callback: function (cb, value, meta) {
-    var input = document.createElement('input');
-    input.setAttribute('type', 'file');
-    input.setAttribute('accept', 'image/*');
-
-    /*
-      Note: In modern browsers input[type="file"] is functional without
-      even adding it to the DOM, but that might not be the case in some older
-      or quirky browsers like IE, so you might want to add it to the DOM
-      just in case, and visually hide it. And do not forget do remove it
-      once you do not need it anymore.
-    */
-
-    input.onchange = function () {
-      var file = this.files[0];
-
-      var reader = new FileReader();
-      reader.onload = function () {
-        /*
-          Note: Now we need to register the blob in TinyMCEs image blob
-          registry. In the next release this part hopefully won't be
-          necessary, as we are looking to handle it internally.
-        */
-        var id = 'blobid' + (new Date()).getTime();
-        var blobCache =  tinymce.activeEditor.editorUpload.blobCache;
-        var base64 = reader.result.split(',')[1];
-        var blobInfo = blobCache.create(id, file, base64);
-        blobCache.add(blobInfo);
-
-        /* call the callback and populate the Title field with the file name */
-        cb(blobInfo.blobUri(), { title: file.name });
-      };
-      reader.readAsDataURL(file);
-    };
-
-    input.click();
-  },
-
-  relative_urls: false,
-  remove_script_host: false,
-  convert_urls: true,
-  image_title: true,
-  images_upload_url : 'http://localhost:3000/admin/posts/add',
-  images_upload_handler: function(blobInfo, success, failure){ 
-    const xhr = new XMLHttpRequest();
-    xhr.onload = function(){
-      let json;
-      if(xhr.status !== 200)
-      {
-        failure('HTTP Error: ' + xhr.status);
-      }
-      //json = xhr.responseText;
-      json = JSON.parse(xhr.responseText);
-      if(!json || typeof json.location !== 'string')
-      {
-        failure('Invalid json: ' + xhr.responseText);
-        return;
-      }
-      success(json.location);
-    };
-    xhr.open("POST", "/admin/Upload_IMG", true);
-    const form = new FormData();
-    const fileName = blobInfo.filename();
-    form.append('file', blobInfo.blob(), fileName);
-    xhr.send(form);
-  },
-
-  templates: [
-        { title: 'New Table', description: 'creates a new table', content: '<div class="mceTmpl"><table width="98%%"  border="0" cellspacing="0" cellpadding="0"><tr><th scope="col"> </th><th scope="col"> </th></tr><tr><td> </td><td> </td></tr></table></div>' },
-    { title: 'Starting my story', description: 'A cure for writers block', content: 'Once upon a time...' },
-    { title: 'New list with dates', description: 'New List with dates', content: '<div class="mceTmpl"><span class="cdate">cdate</span><br /><span class="mdate">mdate</span><h2>My List</h2><ul><li></li><li></li></ul></div>' }
-  ],
-  template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
-  template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
-  height: 300,
-  image_caption: true,
-  quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
-  noneditable_noneditable_class: "mceNonEditable",
-  toolbar_mode: 'sliding',
-  contextmenu: "link image imagetools table",
-});
   function active(){
     const btnTag = document.getElementsByClassName('btnTag');
     let arrchkbox = [];
@@ -308,7 +205,11 @@ tinymce.init({
                     {
                       document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
                       $("#Success").modal("show");
-                      document.getElementsByTagName('textarea').value = '';
+                      $("textarea").val("");
+                      $("#IdCategories").val($("#target option:first").val());
+                      $('.btnTag').removeClass('active');
+                      tinymce.get('IdFullCont').setContent('');
+                      
                     }
                     if(dataParsed.hasOwnProperty('fail'))
                     {
