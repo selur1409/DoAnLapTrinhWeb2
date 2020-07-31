@@ -6,15 +6,19 @@ module.exports = {
         return db.load(`select * from ${TBL_POSTS}`);
     },
     dislayList: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, s.Name as 'NameStatus'
-        from ${TBL_POSTS} p, status_posts s
-        where p.IsDelete = 0 and s.Id = p.IdStatus`);
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
+                        s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IsDelete = 0 and s.Id = p.IdStatus
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
     dislayList_Status: function (idStatus) {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, s.Name as 'NameStatus'
-        from ${TBL_POSTS} p, status_posts s
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
+        s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
         where p.IdStatus = ${idStatus}
-        and s.Id = p.IdStatus and p.IsDelete = 0`);
+        and s.Id = p.IdStatus and p.IsDelete = 0
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
     countStatus: function(idStatus){
         if (idStatus !== 0)
@@ -70,10 +74,23 @@ module.exports = {
                         WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount
                         AND p.Url =  '${url}'`);
     },
-    single_url: function (url) {
-        return db.load(`SELECT p.*
-                        FROM posts p
-                        WHERE p.Url = '${url}'`);
+    dislayList: function () {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
+                        s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IsDelete = 0 and s.Id = p.IdStatus
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
+    },
+    single_url_posts: function (url) {
+        return db.load(`SELECT p.*, s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory'
+                        FROM posts p, status_posts s, postdetails pd, information i, categories_sub cs 
+                        WHERE p.Url = '${url}' and p.IsDelete = 0 and s.Id = p.IdStatus
+                        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
+    },
+    singleIdTag_idPost: function (idPost) {
+        return db.load(`SELECT IdTag
+                        FROM tag_posts
+                        WHERE IdPost = ${idPost} `);
     },
     add: function (entity) {
         return db.add(TBL_POSTS, entity);
