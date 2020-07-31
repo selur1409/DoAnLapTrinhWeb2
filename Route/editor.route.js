@@ -26,7 +26,7 @@ router.get('/pending', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
-  const listCateSub = await editorModel.LoadSubCategories(idCate);
+  const listCateSub = await editorModel.LoadCateSub(idCate);
   const idCateSub = +req.query.catesub || listCateSub[0].Id;
   const IdPostPending = 4;
   const page = +req.query.page || 1;
@@ -53,6 +53,11 @@ router.get('/pending', restrict, Authories, async function (req, res) {
   for (d of list) {
     d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
   }
+  for(p of page_items)
+  {
+    p.cate=idCate;
+    p.catesub=idCateSub;
+  }
   res.render('vwEditor/listPostPending', {
     page_items,
     IsActivePending: true,
@@ -73,7 +78,7 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
-  const listCateSub = await editorModel.LoadSubCategories(idCate);
+  const listCateSub = await editorModel.LoadCateSub(idCate);
   const idCateSub = +req.query.catesub || listCateSub[0].Id;
   const IdPostAccepted = 1;
   const page = +req.query.page || 1;
@@ -99,6 +104,12 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
 
   for (d of list) {
     d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
+    d.DatetimePost = moment(d.DatetimePost).format('Do MMMM YYYY, HH:mm:ss');
+  }
+  for(p of page_items)
+  {
+    p.cate=idCate;
+    p.catesub=idCateSub;
   }
   res.render('vwEditor/listPostAccept', {
     page_items,
@@ -120,7 +131,7 @@ router.get('/denied', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
-  const listCateSub = await editorModel.LoadSubCategories(idCate);
+  const listCateSub = await editorModel.LoadCateSub(idCate);
   const idCateSub = +req.query.catesub || listCateSub[0].Id;
   const IdPostDenied = 3;
   const page = +req.query.page || 1;
@@ -147,6 +158,12 @@ router.get('/denied', restrict, Authories, async function (req, res) {
   for (d of list) {
     d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
   }
+  
+  for(p of page_items)
+  {
+    p.cate=idCate;
+    p.catesub=idCateSub;
+  }
   res.render('vwEditor/listPostDeny', {
     page_items,
     IsActiveDenied: true,
@@ -166,7 +183,7 @@ router.get('/denied', restrict, Authories, async function (req, res) {
 
 router.get('/deny/:Id', restrict, Authories, async function (req, res) {
   const list = await editorModel.LoadInforPost(req.params.Id);
-  const categories = await editorModel.LoadCategoriesById(list[0].IdCategories);
+  const categories = await editorModel.LoadCateById(list[0].IdCategories);
 
   res.render('vwEditor/deny', {
     categories: categories[0],
@@ -176,10 +193,24 @@ router.get('/deny/:Id', restrict, Authories, async function (req, res) {
   });
 });
 
+router.get('/editdeny/:Id', restrict, Authories, async function (req, res) {
+  const idPost=req.params.Id;
+  const list = await editorModel.LoadInforPost(idPost);
+  const categories = await editorModel.LoadCateById(list[0].IdCategories);
+  const note = await editorModel.LoadFeedBackOfPosts(idPost);
+  res.render('vwEditor/editDenied', {
+    note:note[0],
+    categories: categories[0],
+    denyPost: list[0],
+    empty: list.length === 0,
+    layout: 'homeeditor'
+  });
+});
+
 router.get('/accept/:Id', restrict, Authories, async function (req, res) {
   const IdPost = req.params.Id;
-  const categories = await editorModel.LoadCategoriesOfPost(IdPost);
-  var listCategoriesSub = await editorModel.LoadSubCategories(categories[0].IdCategoriesMain);
+  const categories = await editorModel.LoadCateSubOfPost(IdPost);
+  var listCategoriesSub = await editorModel.LoadCateSub(categories[0].IdCategoriesMain);
   const inforOfPost = await editorModel.LoadSinglePost(IdPost);
   const author = await editorModel.LoadInforPost(IdPost);
   for (c of listCategoriesSub) {
@@ -228,7 +259,7 @@ router.post('/denyPost', restrict, Authories, async function (req, res) {
     Id: IdPost,
     IdStatus: IdPostDenied
   }
-  const updateStatusPost = await editorModel.UpdateStatusPost(entity);
+  await editorModel.UpdateStatusPost(entity);
   
   res.redirect('/editor/pending');
 });
@@ -252,20 +283,88 @@ router.post('/acceptPost', restrict, Authories, async function (req, res) {
     const value=['IdTag','IdPost',`${t}`,`${IdPost}`];
     await editorModel.InsertTagsPost(value);
   }
-  
-  const updateStatusPost = await editorModel.UpdateStatusPost(entity);
+  const fb_entity={
+    Id: IdPost,
+    IsDelete:1
+  }
+  await editorModel.UpdateStatusPost(entity);
+  const node = await editorModel.LoadFeedBackOfPosts(IdPost);
+  if(node!=null)
+  {
+    for(n of node)
+    {
+      await editorModel.UpdateFeedBackOfPosts(fb_entity);
+    }
+  }
   res.redirect('/editor/pending');
 });
 
+// router.get('/pending/showall', restrict, Authories, async function (req, res) {
+//   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
+//   const listCateSub = await editorModel.LoadCateSub(listCate[0].IdCategories);
+//   const IdPostPending = 4;
+//   var list =[];
+//   for(cate of listCate)
+//   {
+//     var templist= await editorModel.LoadPostIsPending(IdPostPending,cate.IdCategories);
+//     list.push(templist);
+//   }
+//   res.render('vwEditor/listPostPending', {
+//     IsActivePending: true,
+//     listPost: list,
+//     listCate,
+//     listCateSub,
+//     empty: list.length === 0,
+//     layout: 'homeeditor'
+// });
+// });
+
+router.get('/deleteaccept/:Id', restrict, Authories, async function (req, res) {
+  const idPost=req.params.Id;
+  const IdStatus=4;
+  const entity = {
+    Id: idPost,
+    DatetimePost: null,
+    IdStatus
+  }
+  await editorModel.UpdateStatusPost(entity);
+  res.redirect('/editor/accepted');
+
+});
+
+router.get('/deletedeny/:Id', restrict, Authories, async function (req, res) {
+  const idPost=req.params.Id;
+  const IdStatus=4;
+  const entity = {
+    Id: idPost,
+    IdStatus
+  }
+
+  await editorModel.UpdateStatusPost(entity);
+  const fb=await editorModel.LoadFeedBackOfPosts(idPost);
+  for( i of fb)
+  {
+    await editorModel.DeleteFeedBackOfPosts(idPost);
+  }
+  res.redirect('/editor/denied');
+
+});
+
+
 router.get('/reviewPost/:Id', restrict, Authories, async function (req, res) {
-  const list = await editorModel.LoadSinglePost(req.params.Id);
+  const idPost=req.params.Id;
+  const list = await editorModel.LoadSinglePost(idPost);
   for (d of list) {
     d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
   }
-  const listTag = await editorModel.LoadTagOfPost(req.params.Id);
-  const authorPost = await editorModel.LoadInforPost(req.params.Id);
+  const listTag = await editorModel.LoadTagOfPost(idPost);
+  const authorPost = await editorModel.LoadInforPost(idPost);
+  const cateSub=await editorModel.LoadCateSubOfPost(list[0].Id);
+  const cate= await editorModel.LoadCateFromIdCateSub(cateSub[0].IdCategories);
   res.render('vwEditor/reviewPost', {
     author: authorPost[0],
+    cateSub:cateSub[0],
+    cate:cate[0],
     IsActivePending: true,
     listTag: listTag,
     reviewPost: list[0],

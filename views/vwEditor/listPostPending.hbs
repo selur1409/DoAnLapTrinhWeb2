@@ -1,20 +1,21 @@
 <div class="d-flex justify-content-center">
   {{#each this.listCate}}
   <a href="/editor/pending/?cate={{IdCategories}}" type="button"
-    class="btn btn-outline-secondary mr-3 mt-3 mb-3 {{#if isActiveCate}} bg-success{{/if}}">{{Name}}</a>
+    class="btn btn-outline-secondary mr-3 mb-3 {{#if isActiveCate}} bg-success{{/if}}">{{Name}}</a>
   {{/each}}
 </div>
 <div class="d-flex justify-content-center">
   {{#each this.listCateSub}}
   <a href="/editor/pending/?cate={{idCate}}&catesub={{Id}}" type="button"
-    class="btn btn-outline-secondary btn-sm mr-3 mt-3 mb-3 {{#if isActiveCateSub}} active{{/if}}">{{Name}}</a>
+    class="btn btn-outline-secondary btn-sm mr-3 mb-3 {{#if isActiveCateSub}} active{{/if}}">{{Name}}</a>
   {{/each}}
 </div>
+
  {{#if this.empty}}
     <div class="text-center">No data</div>
   {{else}}
 <div class="list-group">
-  <table class="table table-hover table-active">
+  <table class="table">
     <thead class="bg-primary">
       <tr>
         <th scope="col" class="text-center">No.</th>
@@ -36,7 +37,7 @@
         <td class="text-center">{{DatePost}}</td>
         <td class="text-center">{{statusName}}</td>
         <td class="text-right">
-          <a class="btn btn-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
+          <a class="btn btn-outline-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
             Review
             <i class="fa fa-eye" aria-hidden="true"></i>
           </a>
@@ -48,7 +49,7 @@
   <nav aria-label="...">
     <ul class="pagination">
       <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-        <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{prev_value}}" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
         </a>
       </li>
@@ -62,12 +63,12 @@
       </li>
       {{else}}
       <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-        <a class="page-link" href="?page={{value}}">{{value}}</a>
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{value}}">{{value}}</a>
       </li>
       {{/if}}
       {{/each}}
       <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-        <a class="page-link" href="?page={{next_value}}" aria-label="Next">
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{next_value}}" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
         </a>
       </li>
