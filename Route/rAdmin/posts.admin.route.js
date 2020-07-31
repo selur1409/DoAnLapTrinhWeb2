@@ -154,7 +154,7 @@ module.exports = (router) => {
             const Avatar = null;
             const IdCategories = req.body.Categories;
             const Title = req.body.Title;
-            const Url = mark_url(Title);
+            const Url = mark_url(Title) + "-" + Date.now();
             const FullContent = req.body.FullCont;
             const BriefContent = req.body.BriefCont;
             const IdAccount = res.locals.lcAuthUser.Id;
@@ -559,7 +559,8 @@ module.exports = (router) => {
         const id = req.body.Id;
         const entity = {
             Id: id,
-            IdStatus: 1
+            IdStatus: 1,
+            IdCategories: req.body.selectCatSub
         }
 
         const listTagManage = await postModel.singleIdTag_idPost(id);
@@ -576,5 +577,9 @@ module.exports = (router) => {
     })
     router.post('/posts/status/repost', function (req, res){
         res.json(req.body);
+    })
+
+    router.get('/posts/comment/:url', function(req, res){
+        return res.send('ok');
     })
 }
