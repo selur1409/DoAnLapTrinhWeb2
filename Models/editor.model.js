@@ -85,7 +85,7 @@ module.exports = {
     },
     LoadPostAccept_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY p.Id)) as 'Stt', p.Id, p.Url, p.Title,
-        p.Content_Summary, p.DatePost,p.DatetimePost, p.Avatar,p.IdCategories,p.IdStatus, 
+        p.Content_Summary, p.DatePost,p.DatetimePost, p.Avatar,p.IdCategories,p.IdStatus, cate.Id as 'cateId',
         cate.Name as'cateName',catesub.Name as 'cateSubName',
         st.Name as'statusName' 
         FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
@@ -95,7 +95,7 @@ module.exports = {
     },
     LoadPostDeny_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY p.Id)) as 'Stt', p.Id, p.Url,
-        p.Title,p.Content_Summary, p.DatePost,fb.Note, p.Avatar,p.IdCategories,p.IdStatus, 
+        p.Title,p.Content_Summary, p.DatePost,fb.Note, p.Avatar,p.IdCategories,p.IdStatus, cate.Id as 'cateId',
         cate.Name as'cateName',catesub.Name as 'cateSubName',
         st.Name as'statusName'
         FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st, ${TBL_FEED_BACK} fb
@@ -113,7 +113,7 @@ module.exports = {
         const condition = {
             IdPost: id
         }
-        return db.del(TBL_TAG_POSTS, condition);
+        return db.del_notsafe_with_condition(TBL_TAG_POSTS, condition);
     },
     InsertTagsPost: (value) => {
         return db.insert(`INSERT INTO ${TBL_TAG_POSTS}(??, ??) VALUES (?, ?)`, value);
@@ -137,6 +137,13 @@ module.exports = {
         const condition = {
             Id: id
         }
-        return db.del(TBL_FEED_BACK, condition);
+        return db.del_notsafe_with_condition(TBL_FEED_BACK, condition);
+    },
+    UpdateIsPremium:(entity)=>{
+        const condition = {
+            IdPost: entity.Id
+        }
+        delete entity.Id;
+        return db.patch(TBL_POST_DETAILS, entity, condition);
     }
 }
