@@ -95,12 +95,15 @@
             <a class="btn btn-warning btn-sm" href="/admin/posts/status?number={{sttSelect}}&url={{Url}}" role="button" title="Status">
                 <i class="fas fa-bell"></i>
             </a>
+            <a class="btn btn-info btn-sm" href="/admin/posts/update?id={{Id}}" role="button" title="Edit">
+                <i class="fas fa-pen"></i>
+            </a>
             {{/if}}
             <a class="btn btn-primary btn-sm" href="/admin/tags/edit?hashtag={{href}}" role="button" title="Edit">
                 <i class="fas fa-comment-alt"></i>
             </a>
-            <a class="btn btn-primary btn-sm" href="/admin/update/?id={{Id}}" role="button" title="Edit">
-                <i class="fas fa-pen"></i>
+            <a class="btn btn-dark btn-sm" href="/admin/posts/details?number={{sttSelect}}&url={{Url}}" role="button" title="Details">
+                <i class="fas fa-info"></i>
             </a>
             <input type="hidden" name="Id" value="{{Id}}">           
             <button type="submit" class="btn btn-danger btn-sm" title="Delete">

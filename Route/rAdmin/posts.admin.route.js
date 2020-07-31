@@ -4,7 +4,7 @@ const statusModel = require('../../models/statuspost.model');
 const {getTimeBetweenDate} = require('../../js/betweendate');
 const db = require('../../models/Writer');
 const {restrict, referer} = require('../../middlewares/auth.mdw');
-const {mark_url} = require('../../public/js/ConvertTitleToUrl');
+const {mark_url} = require('../../js/check');
 const multer = require('multer');
 let upload = multer();
 const fs = require('fs');
@@ -13,6 +13,7 @@ const categoriesModel = require('../../models/category.model');
 const categoryModel = require('../../models/category.model');
 const tagModel = require('../../models/tag.model');
 const flash = require('express-flash');
+const editorModel = require('../../models/editor.model');
 
 module.exports = (router) => {
 
@@ -247,7 +248,7 @@ module.exports = (router) => {
     });
     
     //render page update post
-    router.get('/update/', restrict, async (req, res)=>{
+    router.get('/posts/update', restrict, async (req, res)=>{
         const IdPost = +req.query.id;
         const Post = await db.LoadSinglePost(IdPost);
         const TagOfPost = await db.LoadTagOfPost(IdPost);
@@ -333,7 +334,7 @@ module.exports = (router) => {
         }   
     });
     
-    router.post('/update/', restrict, upload.fields([]), async (req,res, next)=>{
+    router.post('/posts/update', restrict, upload.fields([]), async (req,res, next)=>{
         try{
             let checkbox = JSON.parse(req.body.arrCheck);
             const IdPost = +req.query.id;
@@ -345,7 +346,7 @@ module.exports = (router) => {
             let Avatar = null;
             const IdCategories = req.body.Categories;
             const Title = req.body.Title;
-            const Url = mark_url(Title);
+            const Url = mark_url(Title) + "-" + Date.now();
             const FullContent = req.body.FullCont;
             const BriefContent = req.body.BriefCont;
             const IdAccount = res.locals.lcAuthUser.Id;
@@ -538,6 +539,7 @@ module.exports = (router) => {
     })
     router.post('/posts/status/accept', async function (req, res){
         const listTag = req.body.TagSeleted || [];
+
         if (listTag.length === 0){
             req.flash('error', 'Phải lựa chọn ít nhất 1 thẻ Tag.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
@@ -562,24 +564,96 @@ module.exports = (router) => {
             IdStatus: 1,
             IdCategories: req.body.selectCatSub
         }
-
-        const listTagManage = await postModel.singleIdTag_idPost(id);
-        if (listTagManage.length !== 0){
-            for (i = 0; i < listTagManage.length; i++){
-                //del tag
+        await editorModel.DeleteTagsOfPost(id);
+        for (l of listTag){
+            const entity = {
+                IdTag: +l,
+                IdPost: id
             }
+            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
+            await editorModel.InsertTagsPost(value);
         }
-        
-        return res.json(listTagManage);
 
         await postModel.patch(entity);
         return res.redirect('/admin/posts?status=1');
     })
-    router.post('/posts/status/repost', function (req, res){
-        res.json(req.body);
+    router.post('/posts/status/repost', async function (req, res){
+        const listTag = req.body.TagSeleted || [];
+
+        if (listTag.length === 0){
+            req.flash('error', 'Phải lựa chọn ít nhất 1 thẻ Tag.');
+            return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
+        }
+        
+        const id = req.body.Id;
+        const entity = {
+            Id: id,
+            IdStatus: 4,
+            IdCategories: req.body.selectCatSub
+        }
+        await editorModel.DeleteTagsOfPost(id);
+        for (l of listTag){
+            const entity = {
+                IdTag: +l,
+                IdPost: id
+            }
+            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
+            await editorModel.InsertTagsPost(value);
+        }
+
+        await postModel.patch(entity);
+        return res.redirect('/admin/posts?status=4');
     })
 
     router.get('/posts/comment/:url', function(req, res){
         return res.send('ok');
+    })
+
+    
+    router.get('/posts/details', async function(req, res){
+        const status = +req.query.number || 0;
+        const url = req.query.url;
+
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            return res.redirect('/admin/posts');
+        }
+        const select = posts[0].IdStatus;
+
+        const listStatus = await statusModel.all();
+
+        for (l of listStatus){
+            l.number = status;
+            l.url = url;
+            if (l.Id === select)
+                l.selected = true;
+        }
+        
+        const catMain = await categoryModel.allMain_Posts();
+        const catSub = await categoriesModel.allSub_Posts();
+
+        for(cm of catMain)
+        {
+            cm.categoriesSub = [];
+            for(cs of catSub){
+                if (posts[0].IdCategories === cs.Id)
+                {
+                    posts[0].NameCategories = cs.Name;
+                }
+            }
+        }
+
+        const details = await postModel.details_idPost(posts[0].Id);
+
+        posts[0].DatePost = moment(posts[0].DatePost, 'YYYY/MM/DD HH:mm:ss').format('DD/MM/YYYY ');
+        posts[0].DatetimePost = moment(posts[0].DatetimePost, 'YYYY/MM/DD HH:mm:ss').format('HH:mm DD/MM/YYYY');
+        
+        return res.render('vwAdmin/vwPosts/detailPost', {
+            layout: 'homeadmin',
+            status: status,
+            post: posts[0],
+            listStatus: listStatus,
+            listTags: details
+        })
     })
 }

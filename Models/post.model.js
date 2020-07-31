@@ -82,7 +82,7 @@ module.exports = {
         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
     single_url_posts: function (url) {
-        return db.load(`SELECT p.*, s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory'
+        return db.load(`SELECT p.*, s.Name as 'NameStatus', i.IdAccount, i.Nickname as 'NameWriter', cs.Name as 'NameCategory'
                         FROM posts p, status_posts s, postdetails pd, information i, categories_sub cs 
                         WHERE p.Url = '${url}' and p.IsDelete = 0 and s.Id = p.IdStatus
                         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
@@ -91,6 +91,11 @@ module.exports = {
         return db.load(`SELECT IdTag
                         FROM tag_posts
                         WHERE IdPost = ${idPost} `);
+    },
+    details_idPost: function (idPost) {
+        return db.load(`SELECT t.Id, t.TagName
+                        FROM tag_posts tp, tags t
+                        WHERE tp.IdPost = ${idPost} and tp.IdTag = t.Id`);
     },
     add: function (entity) {
         return db.add(TBL_POSTS, entity);

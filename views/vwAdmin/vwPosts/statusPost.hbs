@@ -1,5 +1,5 @@
 {{#section 'css'}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
 {{/section}}
 {{#section 'js'}}
     <script
@@ -60,6 +60,19 @@
         <input type="text" class="form-control" id="txtUrl" name="Url" placeholder="Đường dẫn tĩnh" value="{{post.Url}}" readonly>
       </div>
 
+      <div class="form-group">
+        <label for="IdFullCont">Summary</label>
+        <div class="card-body">
+        {{post.Content_Summary}}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="IdFullCont">Content</label>
+        <div class="card-body">
+        {{{post.Content_Full}}}
+        </div>
+      </div>
+
       <div class="form-group required">
         <label class="control-label" for="txtWriter">Writer</label>
         <input type="text" class="form-control" id="txtWriter" name="Writer" placeholder="Người viết bài" value="{{post.NameWriter}}" readonly>
@@ -90,7 +103,7 @@
       </div>
 
       <div class="form-group required">
-        <h4>Tags</h4>
+        <label class="control-label" for="txtTags">Tags</label>
         <br>
         <div class="d-flex justify-content-between flex-lg-wrap">
         {{#each this.listTags}}
@@ -104,13 +117,14 @@
         </div>
       </div>
 
+
+      <input type="hidden" name="Id" value="{{post.Id}}">
+      <input type="hidden" name="number" value="{{status}}">
+      {{#if isApproved}}
       <div class="form-group required">
         <label class="control-label" for="txtTimePost"><i class="far fa-calendar-check"></i>Schedule Post:</label>
         <input type="text" class="form-control" placeholder="Thời gian xuất bản" id="txtTimePost" name="TimePost">
       </div>
-      <input type="hidden" name="Id" value="{{post.Id}}">
-      <input type="hidden" name="number" value="{{status}}">
-      {{#if isApproved}}
       <button type="submit" class="btn btn-danger" formaction="/admin/posts/status/deny">
         <i class="fas fa-ban"></i>
         Deny

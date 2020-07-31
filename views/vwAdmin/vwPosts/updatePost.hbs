@@ -89,7 +89,7 @@ tinymce.init({
   relative_urls: false,
   remove_script_host: false,
   convert_urls: true,
-  images_upload_url : 'http://localhost:3000/admin/update',
+  images_upload_url : 'http://localhost:3000/admin/posts/update',
   images_upload_handler: function(blobInfo, success, failure){ 
     const id = document.getElementById("IdPost").value;
     const xhr = new XMLHttpRequest();
@@ -108,7 +108,7 @@ tinymce.init({
       }
       success(json.location);
     };
-    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
+    xhr.open("POST", "/admin/UpdateIMG?id=" + id, true);
     const form = new FormData();
     const fileName = blobInfo.filename();
     form.append('file', blobInfo.blob(), fileName);
@@ -222,7 +222,7 @@ tinymce.init({
                     
                 }
             }
-            xhttp.open("POST", "/admin/update/?id=" + id, true);
+            xhttp.open("POST", "/admin/posts/update?id=" + id, true);
             xhttp.send(FD);
         }, true)
     }
