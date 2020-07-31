@@ -143,6 +143,7 @@ module.exports = (router) => {
             let checkbox = JSON.parse(req.body.arrCheck);
             const IsDelete = 0;
             const IdStatus = 4;
+            const IdPost =  -1;
             const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
             const DateTimePost = null;
             const View = 0;
@@ -163,12 +164,10 @@ module.exports = (router) => {
                 res.json({ fail: 'Please complete all fields in the form' });
             }
             else {
-                const Check = await db.CheckTitleIsExists(Title, Url);
 
-                if (Check.length !== 0) {
-                    console.log(Check);
+                const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+                if (Check.length === 0) {
                     res.json({ fail: 'The title of article is already exists.' });
-
                 }
                 else {
 
@@ -247,6 +246,7 @@ module.exports = (router) => {
     router.get('/update/', restrict, async (req, res)=>{
         const IdPost = +req.query.id;
         const Post = await db.LoadSinglePost(IdPost);
+        const TagOfPost = await db.LoadTagOfPost(IdPost);
 
         if(Post[0].IdStatus === 1 || Post[0].IdStatus === 2)
         {
@@ -275,6 +275,7 @@ module.exports = (router) => {
                 Title:Post[0].Title,
                 Name:res.locals.lcAuthUser.Username,
                 Avatar:res.locals.lcAuthUser.Avatar,
+                Tag:TagOfPost,
                 Url:req.headers.referer,
                 helpers: {
                     count_index: function(value){
@@ -287,10 +288,10 @@ module.exports = (router) => {
                     let ret="";
                     for(let i = 0; i < context.length; i++)
                     {
-                    if(context[i].IdCategoriesMain === Id)
-                    {
-                        ret = ret + options.fn(context[i]);
-                    }
+                        if(context[i].IdCategoriesMain === Id)
+                        {
+                            ret = ret + options.fn(context[i]);
+                        }
                     }
                     return ret;
                 },
@@ -302,6 +303,26 @@ module.exports = (router) => {
                             ret = ret + options.fn("The article has been approval. You cannot change it");
                         }
                         return ret;
+                },
+                IsSelected:function(value, options)
+                {
+                    let ret="";
+                    if(Post[0].IdCategories === value)
+                    {
+                        ret = ret + options.fn();
+                    }
+                    return ret;
+                },
+                TagSelected:function(context, Id, options){
+                    let ret="";
+                    for(let i = 0; i < context.length; i++)
+                    {
+                        if(context[i].IdTag === Id)
+                        {
+                            ret = ret + options.fn();
+                        }
+                    }
+                    return ret;
                 }
                 }
             });
@@ -332,8 +353,7 @@ module.exports = (router) => {
             else{
     
                 const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
-                
-                if(Check.length !== 0)
+                if(Check.length === 0)
                 {
                     res.json({fail:'The title of article is already exists'});
                 }
