@@ -609,7 +609,8 @@ module.exports = (router) => {
         return res.redirect('/admin/posts?status=4');
     })
 
-    router.get('/posts/comment', async function(req, res){
+    router.get('/posts/comment', restrict, async function(req, res){
+        console.log(res.locals.lcAuthUser);
         const url = req.query.url || "empty";
         const posts = await postModel.single_url_posts(url);
         if (posts.length === 0){
@@ -638,7 +639,7 @@ module.exports = (router) => {
         })
     })
 
-    router.post('/posts/comment/load', async function (req, res){
+    router.post('/posts/comment/load', restrict, async function (req, res){
         const url = req.body.url || "empty";
         const posts = await postModel.single_url_posts(url);
         if (posts.length === 0){
@@ -671,7 +672,7 @@ module.exports = (router) => {
         return res.json(data);
     })
 
-    router.post('/posts/comment/add', async function(req, res){
+    router.post('/posts/comment/add', restrict, async function(req, res){
         const IdPost = req.body.IdPost;
         const Content = req.body.Content;
         const Img = req.body.Img;
@@ -688,9 +689,8 @@ module.exports = (router) => {
             IdPost,
             Content,
             DatetimeComment,
-            IsCheck: 0,
             IsDelete: 0,
-            IdAccount: 1
+            IdAccount: res.locals.lcAuthUser.Id
         }
         await commentModel.add(entity);
 
