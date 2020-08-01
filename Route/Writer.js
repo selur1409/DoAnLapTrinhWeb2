@@ -186,18 +186,17 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
 
 router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
-        // const tmp = await db.LoadTheLastPost();
-        // const Id = tmp[0].Id + 1;
         let checkbox = JSON.parse(req.body.arrCheck);
         const IsDelete = 0;
         const IdStatus = 4;
+        const IdPost = -1;
         const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
         const DateTimePost = null;
         const View = 0;
         const Avatar = null;
         const IdCategories = req.body.Categories;
         const Title = req.body.Title;
-        const Url = mark_url(Title);
+        const Url = mark_url(Title) + '-' + Date.now();
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id; 
@@ -211,7 +210,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         }
         else {
             
-            const Check = await db.CheckTitleIsExists(Title, Url);
+            const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
 
             if (Check.length === 0) {
                 res.json({ fail: 'The title of article is already exists.' });
@@ -526,7 +525,7 @@ router.get('/Update/:id', restrict, Authories, async (req, res)=>{
     }   
 });
 
-router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, next)=>{
+router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
         let checkbox = JSON.parse(req.body.arrCheck);
         const IdPost = +req.query.id;
@@ -538,7 +537,7 @@ router.post('/Update/', restrict, Authories, upload.fields([]), async (req,res, 
         let Avatar = null;
         const IdCategories = req.body.Categories;
         const Title = req.body.Title;
-        const Url = mark_url(Title);
+        const Url =  mark_url(Title) + '-' + Date.now();
         const FullContent = req.body.FullCont;
         const BriefContent = req.body.BriefCont;
         const IdAccount = res.locals.lcAuthUser.Id;

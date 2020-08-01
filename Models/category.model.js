@@ -181,5 +181,15 @@ module.exports = {
           Id: id
         }
         return db.activate(TBL_CATEGORIES_SUB, condition);
+    },
+    allMain_Posts: function () {
+        return db.load(`SELECT Id, Name, Url
+        FROM ${TBL_CATEGORIES} 
+        WHERE IsDelete = 0`);
+    },
+    allSub_Posts: function () {
+        return db.load(`SELECT Id, Name, Url, IdCategoriesMain
+        FROM ${TBL_CATEGORIES_SUB}
+        WHERE IsDelete = 0`);
     }
 };

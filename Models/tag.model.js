@@ -5,6 +5,9 @@ module.exports = {
     all: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0`);
     },
+    all_Posts: function () {
+        return db.load(`select t.Id, t.Name, t.TagName from ${TBL_TAGS} t where t.IsDelete = 0`);
+    },
     allActivate: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 1`);
     },

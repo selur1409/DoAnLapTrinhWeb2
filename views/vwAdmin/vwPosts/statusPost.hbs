@@ -1,0 +1,145 @@
+{{#section 'css'}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+{{/section}}
+{{#section 'js'}}
+    <script
+     src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
+    </script>
+  <script>
+    $.datetimepicker.setLocale('vi');
+    $('#txtTimePost').datetimepicker({
+      timepicker: true,
+      mask: true,
+      minDate: 0,
+      minTime:'00:00',
+      startDate: new Date(),
+      todayHighlight: true
+    });  
+  </script>
+{{/section}}
+
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts?status={{status}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h4>STATUS</h4>
+  </div>
+  <div class="card-body">
+    
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+
+    <form method="POST">
+      <div class="form-group required">
+        <label class="control-label" for="txtTitle">Title</label>
+        <input type="text" class="form-control" id="txtTitle" name="Title" placeholder="Tiêu đề" value="{{post.Title}}" readonly>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtUrl">Url</label>
+        <input type="text" class="form-control" id="txtUrl" name="Url" placeholder="Đường dẫn tĩnh" value="{{post.Url}}" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="IdFullCont">Summary</label>
+        <div class="card-body">
+        {{post.Content_Summary}}
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="IdFullCont">Content</label>
+        <div class="card-body">
+        {{{post.Content_Full}}}
+        </div>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtWriter">Writer</label>
+        <input type="text" class="form-control" id="txtWriter" name="Writer" placeholder="Người viết bài" value="{{post.NameWriter}}" readonly>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtStatus">Trạng thái</label>
+            <select name="selectStatus" id="txtStatus" class="form-control" disabled="disabled">
+            {{#each listStatus}}
+                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Name}}</option>
+            {{/each}}
+            </select>
+        </select>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtCat">Category</label>
+            <select name="selectCatSub" id="txtCat" class="form-control" autofocus>
+            {{#each listCategories}}
+            <optgroup label="{{Name}}">
+                {{#each categoriesSub}}
+                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Id}}- {{Name}}</option>
+                {{/each}}
+            </optgroup>
+            {{/each}}
+            </select>
+        </select>
+      </div>
+
+      <div class="form-group required">
+        <label class="control-label" for="txtTags">Tags</label>
+        <br>
+        <div class="d-flex justify-content-between flex-lg-wrap">
+        {{#each this.listTags}}
+          <div class="custom-control custom-switch mb-3 mr-6">
+            <input type="checkbox" name="TagSeleted" value="{{Id}}" {{#if checked}} checked {{/if}} class="custom-control-input" id="switch{{TagName}}">
+            <label class="custom-control-label btn btn-sm" for="switch{{TagName}}">{{Name}}</label>
+            <br>
+            <label for="switch{{TagName}}"><small>#{{TagName}}</small></label>
+          </div>
+        {{/each}}
+        </div>
+      </div>
+
+
+      <input type="hidden" name="Id" value="{{post.Id}}">
+      <input type="hidden" name="number" value="{{status}}">
+      {{#if isApproved}}
+      <div class="form-group required">
+        <label class="control-label" for="txtTimePost"><i class="far fa-calendar-check"></i>Schedule Post:</label>
+        <input type="text" class="form-control" placeholder="Thời gian xuất bản" id="txtTimePost" name="TimePost">
+      </div>
+      <button type="submit" class="btn btn-danger" formaction="/admin/posts/status/deny">
+        <i class="fas fa-ban"></i>
+        Deny
+      </button>
+      <button type="submit" class="btn btn-success" formaction="/admin/posts/status/accept">
+        <i class="fa fa-check" aria-hidden="true"></i>
+        Accept
+      </button>
+      {{/if}}
+      {{#if isDenied}}
+      <button type="submit" class="btn btn-warning" formaction="/admin/posts/status/repost">
+        <i class="far fa-flag"></i>
+        Repost
+      </button>
+      {{/if}}
+    </form>
+  </div>
+</div>

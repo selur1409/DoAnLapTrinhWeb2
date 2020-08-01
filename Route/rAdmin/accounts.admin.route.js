@@ -41,6 +41,9 @@ module.exports = (router) =>{
                 {
                     const dt_exp = new Date(moment(list[i].DateExpired, 'YYYY/MM/DD HH:mm:ss'));
                     const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+                    // if (dt_exp <= dt_now){
+                    //     // so sánh
+                    // }
                     list[i].prenium = getTimeBetweenDate(dt_now, dt_exp);
                 }
             }
@@ -685,10 +688,9 @@ module.exports = (router) =>{
     router.post('/accounts/managecategory/manage', async function(req, res){
         const id = req.body.Id;
         const array = await categoryModel.allMainId_EditorManageCategories(id);
-        console.log(array);
+
         if (array.length !== 0){
             const manage = req.body.Manage;
-            console.log(manage);
             const sosanh = (a) => {
                 for (m of manage){
                     if (+m === a.Id)
