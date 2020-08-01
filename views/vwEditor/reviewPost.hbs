@@ -12,13 +12,14 @@
             <h2>{{this.reviewPost.Title}}</h2>
         </div>
         <div class="mt-3">
-            <i class="fas fa-user-edit"></i> <b>Author: </b><b class="text-danger">{{this.author.Nickname}}</b></i>   
+            <i class="fas fa-user-edit"></i> <b>Author: </b><b class="text-danger">{{this.author.Nickname}}</b></i>
         </div>
         <div class="mt-3">
-             <i class="far fa-calendar-alt"></i> <b>Date post: </b><i>{{this.reviewPost.DatePost}}</i>
+            <i class="far fa-calendar-alt"></i> <b>Date post: </b><i>{{this.reviewPost.DatePost}}</i>
         </div>
-         <div class="mt-3">
-           <i class="fas fa-bars"></i> <b>Categories: </b> <b class="text-success">{{this.cate.Name}} <small> <i class="fas fa-angle-double-right"></i> {{this.cateSub.Name}}</small></b>
+        <div class="mt-3">
+            <i class="fas fa-bars"></i> <b>Categories: </b> <b class="text-success">{{this.cate.Name}} <small> <i
+                        class="fas fa-angle-double-right"></i> {{this.cateSub.Name}}</small></b>
         </div>
         <div class="mt-3">
             <i class="fas fa-cut"></i> <b>Content Summary: </b>
@@ -29,15 +30,16 @@
         </div>
         <div class="border border-success mt-3 ">
             {{{this.reviewPost.Content_Full}}}</div>
-        <div><i class="fas fa-tags"></i><b>Tags: </b></div>
-        <div>
+        <div class="mt-3"><i class="fas fa-tags"></i><b>Tags: </b>
             {{#each this.listTag}}
             <i class="bg-secondary text-white">#{{TagName}}</i>
             {{/each}}
         </div>
-        <div class="text-center">
-            <a type="button" class="btn btn-success" href="/editor/accept/{{this.reviewPost.Id}}">Accept</a>
-            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}">Deny</a>
+        <div class="text-center mt-5">
+            <a type="button" class="btn btn-success mr-3" href="/editor/accept/{{this.reviewPost.Id}}"><i
+                    class="far fa-check-circle"></i> Accept</a>
+            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}"> <i
+                    class="fas fa-ban"></i> Deny</a>
         </div>
     </div>
 </div>

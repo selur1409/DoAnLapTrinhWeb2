@@ -8,16 +8,17 @@
   <form action="/editor/denyPost" method="POST" onsubmit="return validateForm">
   <div class="form-group">
     <label for="exampleInputTitle1">Tilte</label>
-    <input type="text" class="form-control" id="postName" value="{{this.denyPost.Title}}" readonly>
+    <input type="text" class="form-control" value="{{this.denyPost.Title}}" readonly>
     <label for="exampleInputAuthor1">Author: </label>
-    <input type="text" class="form-control" id="postAuthor" value="{{this.denyPost.Nickname}}" readonly>
+    <input type="text" class="form-control"  value="{{this.denyPost.Nickname}}" readonly>
     <label for="exampleInputAuthor1">Categories: </label>
-    <input type="text" class="form-control" id="postContent" value="{{this.categories.CateName}}" readonly>
+    <input type="text" class="form-control"  value="{{this.categories.CateName}}" readonly>
     <label for="exampleInputAuthor1">Summary: </label>
-    <input type="text" class="form-control" id="postContent" value="{{this.denyPost.Content_Summary}}" readonly>
+    <input type="text" class="form-control" value="{{this.denyPost.Content_Summary}}" readonly>
 
     <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
     <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
+    <input type="hidden" id="idCateSub" name="idCateSub" value="{{this.cateSub.Id}}"
   </div>
   <div class="form-group">
     <label for="exampleFormControlTextarea1">Reason for the rejection</label>
