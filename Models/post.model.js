@@ -87,6 +87,11 @@ module.exports = {
                         WHERE p.Url = '${url}' and p.IsDelete = 0 and s.Id = p.IdStatus
                         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
+    single_url_posts_comment: function (url) {
+        return db.load(`SELECT p.Id, p.Title, p.Url, p.IdStatus
+                        FROM posts p
+                        WHERE p.Url = '${url}' and p.IsDelete = 0`);
+    },
     singleIdTag_idPost: function (idPost) {
         return db.load(`SELECT IdTag
                         FROM tag_posts

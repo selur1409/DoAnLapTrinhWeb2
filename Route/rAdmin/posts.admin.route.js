@@ -14,9 +14,11 @@ const categoryModel = require('../../models/category.model');
 const tagModel = require('../../models/tag.model');
 const flash = require('express-flash');
 const editorModel = require('../../models/editor.model');
+const commentModel = require('../../models/comment.model');
+const { resolveSoa } = require('dns');
+const {pagination} = require('../../config/default.json');
 
 module.exports = (router) => {
-
     function getTagImg(value) {
         let result;
         let res = [];
@@ -448,7 +450,9 @@ module.exports = (router) => {
             layout: 'homeadmin',
             posts: list,
             empty: list.length === 0,
-            status: listStatus
+            status: listStatus,
+            err: req.flash('error'),
+            success: req.flash('success')
         });
     });
     
@@ -605,17 +609,102 @@ module.exports = (router) => {
         return res.redirect('/admin/posts?status=4');
     })
 
-    router.get('/posts/comment/:url', function(req, res){
-        return res.send('ok');
+    router.get('/posts/comment', async function(req, res){
+        const url = req.query.url || "empty";
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
+            return res.redirect('/admin/posts');
+        }
+
+        const offset = (+req.body.number || 0) * pagination.limit;
+        
+        const post = posts[0];
+        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, pagination.limit);
+
+        for (l of listComment){
+            l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+        }
+        const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+
+        return res.render('vwAdmin/vwPosts/commentPost', {
+            layout: 'homeadmin',
+            post: post,
+            listComment: listComment,
+            empty: empty[0].Count,
+            more: listComment.length > pagination.limit,
+            err: req.flash('error'),
+            success: req.flash('success')
+        })
+    })
+
+    router.post('/posts/comment/load', async function (req, res){
+        const url = req.body.url || "empty";
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
+            return res.redirect('/admin/posts');
+        }
+
+        const offset = (+req.body.number || 1) * pagination.limit;
+
+        const post = posts[0];
+        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, pagination.limit);
+
+        for (l of listComment){
+            l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+        }
+        
+        const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+        var more = true;
+        if (offset >= empty[0].Count){
+            more = false;
+        }
+        
+        const number = +req.body.number + 1;
+
+        const data = {
+            listComment: listComment,
+            number: number,
+            more: more
+        }
+        return res.json(data);
+    })
+
+    router.post('/posts/comment/add', async function(req, res){
+        const IdPost = req.body.IdPost;
+        const Content = req.body.Content;
+        const Img = req.body.Img;
+        const Url = req.body.Url;
+        if (!Content){
+            req.flash('error', 'Nội dung bình luận không thể để trống ');
+            return res.redirect(`/admin/posts/comment?url=${Url}`);
+        }
+
+        const DatetimeComment = moment().format('YYYY-MM-DD HH:mm:ss');
+        console.log(DatetimeComment);
+
+        const entity = {
+            IdPost,
+            Content,
+            DatetimeComment,
+            IsCheck: 0,
+            IsDelete: 0,
+            IdAccount: 1
+        }
+        await commentModel.add(entity);
+
+        return res.redirect(`/admin/posts/comment?url=${Url}`);
     })
 
     
     router.get('/posts/details', async function(req, res){
         const status = +req.query.number || 0;
-        const url = req.query.url;
+        const url = req.query.url || "empty";
 
-        const posts = await postModel.single_url_posts(url);
+        const posts = await postModel.single_url_posts_comment(url);
         if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
             return res.redirect('/admin/posts');
         }
         const select = posts[0].IdStatus;
@@ -656,4 +745,7 @@ module.exports = (router) => {
             listTags: details
         })
     })
+
+
+    
 }
