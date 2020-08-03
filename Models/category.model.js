@@ -18,6 +18,11 @@ module.exports = {
         FROM ${TBL_CATEGORIES} 
         WHERE IsDelete = 0 ORDER BY Name`);
     },
+    allSubCategory: function () {
+        return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', Id, Name, Url, Description 
+        FROM ${TBL_CATEGORIES_SUB} 
+        WHERE IsDelete = 0 ORDER BY Name`);
+    },
     allMain_EditorManage: function (id) {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY Name)) as 'Stt', c.Id, c.Name, c.Url, i.Name as 'Manage', a.Username
         FROM ${TBL_CATEGORIES} c, ${TBL_EDITORACCOUNT} e, ${TBL_INFORMATION} i, accounts a
