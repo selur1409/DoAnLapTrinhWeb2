@@ -1,10 +1,10 @@
-
+const querystring = require('querystring');
 
 const restrict = function (req, res, next) {
     if (!req.session.isAuthenticated) {
-        return res.redirect(`/account/login?retUrl=${req.originalUrl}`);
+        const url = querystring.escape(req.originalUrl);
+        return res.redirect(`/account/login?retUrl=${url}`);
     }
-
     next();
 }
 
@@ -15,7 +15,15 @@ const referer = function (req, res, next){
     next();
 }
 
+const isAdmin = function(req, res, next){
+    if (!res.locals.lcIsAdmin){
+        return res.redirect('/');
+    }
+    next();
+}
+
 module.exports = {
     restrict,
-    referer
+    referer,
+    isAdmin
 };

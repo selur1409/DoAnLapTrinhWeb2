@@ -97,7 +97,7 @@ module.exports = {
                         FROM tag_posts
                         WHERE IdPost = ${idPost} `);
     },
-    details_idPost: function (idPost) {
+    detailsTags_idPost: function (idPost) {
         return db.load(`SELECT t.Id, t.TagName
                         FROM tag_posts tp, tags t
                         WHERE tp.IdPost = ${idPost} and tp.IdTag = t.Id`);

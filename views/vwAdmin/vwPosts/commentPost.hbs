@@ -49,15 +49,14 @@
                         </p>
                         
                         <br>
-                        <a class="btn btn-info btn-circle text-uppercase" href="#" id="reply">
-                            <i class="fas fa-pen"></i> Reply
-                        </a>
-                        <a class="btn btn-warning btn-circle text-uppercase" data-toggle="collapse" href="">
-                            <i class="fas fa-check"></i> comments
-                        </a>
-                        <a class="btn btn-danger btn-circle text-uppercase" data-toggle="collapse" href="">
-                            <i class="fas fa-trash-alt"></i> comments
-                        </a>
+                        <form method="POST">
+                        <input type="hidden" name="Id" value="${d.Id}">
+                        <input type="hidden" name="Url" value="${d.Url}">
+                        <button type="submit" class="btn btn-danger btn-circle text-uppercase" data-toggle="collapse"
+                            formaction="/admin/posts/comment/notdislayed">
+                            <i class="fas fa-trash-alt"></i> Not dislayed
+                        </button>
+                        </form>
                     </div>
                 </div>
             </li>
@@ -66,6 +65,12 @@
     }
 </script>
 {{/section}}
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
 
 <div class="card">
   <div class="card-header d-flex justify-content-between">
@@ -134,17 +139,14 @@
                                         <img class="media-comment" src="/public/img/comment/{{Img}}" alt="Images">
                                         {{/if}}
                                         <br>
-                                        <a class="btn btn-info btn-circle text-uppercase" href="#" id="reply">
-                                            <i class="fas fa-pen"></i> Reply
-                                        </a>
-                                        <a class="btn btn-warning btn-circle text-uppercase" data-toggle="collapse"
-                                            href="">
-                                            <i class="fas fa-check"></i> comments
-                                        </a>
-                                        <a class="btn btn-danger btn-circle text-uppercase" data-toggle="collapse"
-                                            href="">
-                                            <i class="fas fa-trash-alt"></i> comments
-                                        </a>
+                                        <form method="POST">
+                                        <input type="hidden" name="Id" value="{{Id}}">
+                                        <input type="hidden" name="Url" value="{{Url}}">
+                                        <button type="submit" class="btn btn-danger btn-circle text-uppercase" data-toggle="collapse"
+                                            formaction="/admin/posts/comment/notdislayed">
+                                            <i class="fas fa-trash-alt"></i> Not dislayed
+                                        </button>
+                                        </form>
                                     </div>
                                 </div>
                             </li>
