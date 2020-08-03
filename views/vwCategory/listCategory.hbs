@@ -11,35 +11,27 @@
 
 						<div class="category">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
-								<div class="section_title">List post for tag #{{this.tagName}}</div>
+								<div class="section_title">List Category</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
-                                        {{#if this.emptyPost}}
+                                        {{#if this.emptyCat}}
                                             <div class="side_post">
-                                                <a href="post.html">
+                                                <a href="/index.html">
                                                     <div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-                                                        <div class="side_post_title">Non Post</div>
+                                                        <div class="side_post_title">Non Category</div>
                                                     </div>
                                                 </a>
                                             </div>
                                         {{else}}
                                             <div class="owl-item">
-                                                {{#each this.listPost}}
-                                                    <!-- Small Card With Image -->
-                                                    <div class="card card_default card_small_with_image grid-item">
-                                                        <img class="card-img-top" src="../../public/images/{{Avatar}}" alt="">
-                                                        <div class="card-body">
-                                                            <div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-                                                            <p class="card-text"></p>{{Content_Summary}}</p>
-                                                            <small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
-															{{#load_list_tags ../listPostTags Id}}
-																<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a href="/tag/{{TagName}}">{{Name}}</a></li>
-															{{/load_list_tags}}
-														</div>
-                                                    </div>
-                                                {{/each}}
+                                                <div class="post_tags">
+                                                    <ul>
+                                                        {{#each this.listCat}}
+                                                            <li class="post_tag"><a href="/category/{{Url}}">{{Name}}</a></li>
+                                                        {{/each}}
+                                                    </ul>
+                                                </div>
                                             </div>
                                         {{/if}}
 								</div>
@@ -268,7 +260,7 @@
 
 						<div class="sidebar_section">
 							<div class="advertising">
-								<div class="advertising_background" style="background-image:url(../../public/images/post_17.jpg)"></div>
+								<div class="advertising_background" style="background-image:url(images/post_17.jpg)"></div>
 								<div class="advertising_content d-flex flex-column align-items-start justify-content-end">
 									<div class="advertising_perc">-15%</div>
 									<div class="advertising_link"><a href="#">How Did van Gogh’s Turbulent Mind</a></div>
@@ -489,7 +481,7 @@
 
 						<div class="sidebar_section">
 							<div class="advertising_2">
-								<div class="advertising_background" style="background-image:url(../../public/images/post_18.jpg)"></div>
+								<div class="advertising_background" style="background-image:url(images/post_18.jpg)"></div>
 								<div class="advertising_2_content d-flex flex-column align-items-center justify-content-center">
 									<div class="advertising_2_link"><a href="#">Turbulent <span>Mind</span></a></div>
 								</div>
