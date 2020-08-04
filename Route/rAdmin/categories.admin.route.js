@@ -6,10 +6,12 @@ const check = require('../../js/check');
 const config = require('../../config/default.json');
 const pageination = require('../../js/pagination');
 const notify = require('../../config/notify.json');
+const {restrict} = require('../../middlewares/auth.mdw');
+const {isAdmin} = require('../../middlewares/auth.mdw');
 
 module.exports = (router) => {
     //Xem tất cả theo từng chuyên mục
-    router.get('/categories', async function(req, res){
+    router.get('/categories', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -57,7 +59,7 @@ module.exports = (router) => {
         }
     })
     // xem tất cả chuyên mục cấp 1 và cấp 2
-    router.get('/categories/list-of-all', async function(req, res){
+    router.get('/categories/list-of-all', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -93,7 +95,7 @@ module.exports = (router) => {
         }
     })
     // thêm chuyên mục cấp 1
-    router.get('/categories/addlv1', async function(req, res){
+    router.get('/categories/addlv1', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -116,7 +118,7 @@ module.exports = (router) => {
         }
     })
     
-    router.post('/categories/addlv1', async function(req, res){
+    router.post('/categories/addlv1', restrict, isAdmin, async function(req, res){
         try{
             const name = check.mark_name(req.body.Name);
             const url = check.mark_url(req.body.Url);
@@ -173,7 +175,7 @@ module.exports = (router) => {
     })
     
     // sửa chuyên mục cấp 1
-    router.get('/categories/edit/:url', async function(req, res){
+    router.get('/categories/edit/:url', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -216,8 +218,8 @@ module.exports = (router) => {
         
     })
     
-    router.post('/categories/edit/:url', async function(req, res){
-        // try{
+    router.post('/categories/edit/:url', restrict, isAdmin, async function(req, res){
+        try{
             const urlParam = req.params.url;
             const idCat = req.body.Id;
             const name = check.mark_name(req.body.Name);
@@ -288,15 +290,15 @@ module.exports = (router) => {
             // load thành công 
             req.flash('success', `${notify.chinhsuathanhcong} ${name}`)
             return res.redirect(`/admin/categories/edit/${urlParam}`);
-        // }
-        // catch(error){
-        //     console.log(error);
-        //     return res.redirect('/admin/categories/err6'); 
-        // }       
+        }
+        catch(error){
+            console.log(error);
+            return res.redirect('/admin/categories/err6'); 
+        }       
     })
 
     // xóa category (update IsDelete = 1)
-    router.post('/categories/dellv1', async function(req, res){
+    router.post('/categories/dellv1', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
             const rows = await categoryModel.allSub_Id(id);
@@ -316,7 +318,7 @@ module.exports = (router) => {
     })
 
     // kích hoạt category (IsDelete = 0) lv1
-    router.get('/categories/activatelv1', async function (req, res){
+    router.get('/categories/activatelv1', restrict, isAdmin, async function (req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -335,7 +337,12 @@ module.exports = (router) => {
             
             for(c of list){
                 const editor = await editoraccountModel.singleManageCat(c.Id);
-                c.Manage = editor[0].Name;
+                if (editor.length !== 0){
+                    c.Manage = editor[0].Name;
+                }
+                else{
+                    c.Manage = "Chưa có quản lý";
+                }
             }
             const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
                
@@ -358,7 +365,7 @@ module.exports = (router) => {
         }
     })
     
-    router.post('/categories/activatelv1', async function (req, res){
+    router.post('/categories/activatelv1', restrict, isAdmin, async function (req, res){
         try{
             const id = req.body.Id;
         
@@ -402,7 +409,7 @@ module.exports = (router) => {
     ///////////////////////////////////////////////////////
     
     // xem chuyên mục cấp 2 của chuyên mục cấp 1
-    router.get('/categories/views/:url', async function(req, res){
+    router.get('/categories/views/:url', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -416,8 +423,11 @@ module.exports = (router) => {
                 res.redirect('/admin/categories');
             }
             const cat = rows[0];
+            var mg = "Chưa có quản lý";
             const manage = await editoraccountModel.singleManageCat(cat.Id);
-        
+            if (manage.length !== 0){
+                mg = manage[0].Name;
+            }
             const page = +req.query.page || 1;
             if (page < 0) page = 1;
             const offset = (page - 1) * config.pagination.limit;
@@ -439,7 +449,7 @@ module.exports = (router) => {
                 layout: 'homeAdmin',
                 Name: cat.Name,
                 UrlMain: cat.Url,
-                Manage: manage[0],
+                Manage: mg,
                 categories: list,
                 empty: list.length === 0,
                 page_items,
@@ -455,8 +465,8 @@ module.exports = (router) => {
         }
     })
     //thêm chuyên mục cấp 2
-    router.get('/categories/addlv2/:url', async function(req, res){
-        try{
+    router.get('/categories/addlv2/:url', restrict, isAdmin, async function(req, res){
+        // try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
                   c.isActive = true;
@@ -478,15 +488,15 @@ module.exports = (router) => {
             }
 
             const manageCat = await editoraccountModel.singleManageCat(isUrlMain[0].Id);
-            if (manageCat.length === 0){
-                return res.redirect('/admin/categories');
-            }
-        
             const manage = await accountModel.allEditor();
-            for (m of manage){
-                if (m.IdAccount === manageCat[0].IdAccount){
-                    m.SelectedManage = true;
-                }
+            var mg = "Chưa có quản lý";
+            if (manageCat.length !== 0){
+                mg = manageCat[0].Name;
+                for (m of manage){
+                    if (m.IdAccount === manageCat[0].IdAccount){
+                        m.SelectedManage = true;
+                    }
+                }   
             }
         
             return res.render('vwAdmin/vwCategories/addCategoryLv2', {
@@ -495,18 +505,18 @@ module.exports = (router) => {
                 ListManage: manage,
                 url: url,
                 Category: isUrlMain[0],
-                ManageCat: manageCat[0],
+                ManageCat: mg,
                 err: req.flash('error'),
                 success: req.flash('success')
             })
-        }
-        catch(error){
-            console.log(error);
-            return res.redirect('/admin/categories/err11'); 
-        }
+        // }
+        // catch(error){
+        //     console.log(error);
+        //     return res.redirect('/admin/categories/err11'); 
+        // }
     })
     
-    router.post('/categories/addlv2/:url', async function(req, res){
+    router.post('/categories/addlv2/:url', restrict, isAdmin, async function(req, res){
         try{
             const urlParams = req.params.url;
         
@@ -555,7 +565,7 @@ module.exports = (router) => {
         }
     })
     // sửa chuyên mục cấp 2
-    router.get('/categories/editlv2/:url', async function (req, res){
+    router.get('/categories/editlv2/:url', restrict, isAdmin, async function (req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
@@ -579,12 +589,15 @@ module.exports = (router) => {
             }
         
             const manageCat = await editoraccountModel.singleManageCat(isUrlMain[0].Id);
-        
             const manage = await accountModel.allEditor();
-            for (m of manage){
-                if (m.IdAccount === manageCat[0].IdAccount){
-                    m.SelectedManage = true;
-                }
+            var mg = "Chưa có quản lý";
+            if (manageCat.length !== 0){
+                mg = manageCat[0].Name;
+                for (m of manage){
+                    if (m.IdAccount === manageCat[0].IdAccount){
+                        m.SelectedManage = true;
+                    }
+                }   
             }
             
             return res.render('vwAdmin/vwCategories/editCategoryLv2',{
@@ -594,7 +607,7 @@ module.exports = (router) => {
                 catMain: catMain,
                 ListManage: manage,
                 Category: isUrlSub[0],
-                ManageCat: manageCat[0],
+                ManageCat: mg,
                 err: req.flash('error'),
                 success: req.flash('success')
             })
@@ -605,7 +618,7 @@ module.exports = (router) => {
         }
     })
 
-    router.post('/categories/editlv2/:url', async function (req, res){
+    router.post('/categories/editlv2/:url', restrict, isAdmin, async function (req, res){
         try{
             const urlParam = req.params.url;
             const catSub = await categoryModel.singleUrlSub(urlParam);
@@ -667,7 +680,7 @@ module.exports = (router) => {
         }
     })
     // xóa chuyên mục cấp 2 (isDelete = 1)
-    router.post('/categories/dellv2/:Url', async function(req, res){
+    router.post('/categories/dellv2/:Url', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
             const url = req.params.Url;
@@ -682,7 +695,7 @@ module.exports = (router) => {
         }
     });
     // kích hoạt lại chuyên mục đã xóa
-    router.get('/categories/activatelv2/:Url', async function (req, res){
+    router.get('/categories/activatelv2/:Url', restrict, isAdmin, async function (req, res){
         try{
             for (const c of res.locals.lcManage) {
             if (c.link === 'categories') {
@@ -698,7 +711,10 @@ module.exports = (router) => {
             const cat = rows[0];
         
             const manage = await editoraccountModel.singleManageCat(cat.Id);
-        
+            var mg = "Chưa có quản lý";
+            if (manage.length !== 0){
+                mg = manage[0].Name;
+            }
         
             const page = +req.query.page || 1;
             if (page < 0) page = 1;
@@ -721,7 +737,7 @@ module.exports = (router) => {
                 layout: 'homeAdmin',
                 Name: cat.Name,
                 UrlMain: cat.Url,
-                Manage: manage[0],
+                Manage: mg,
                 categories: list,
                 empty: list.length === 0,
                 page_items,
@@ -739,7 +755,7 @@ module.exports = (router) => {
         }
     })
     
-    router.post('/categories/activatelv2/:Url', async function (req, res){
+    router.post('/categories/activatelv2/:Url', restrict, isAdmin, async function (req, res){
         try{
             const url = req.params.Url;
             const rows = await categoryModel.singleUrlMain(url);

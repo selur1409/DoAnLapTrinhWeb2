@@ -1,0 +1,56 @@
+{{#section 'css'}}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+{{/section}}
+{{#section 'js'}}
+    <script
+     src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
+    </script>
+  <script>
+    $.datetimepicker.setLocale('vi');
+    $('#txtTimePost').datetimepicker({
+      timepicker: true,
+      mask: true,
+      minDate: 0,
+      minTime:'00:00',
+      startDate: new Date(),
+      todayHighlight: true
+    });  
+  </script>
+{{/section}}
+
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts?status={{status}}" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+
+<div class="card">
+
+  <div class="card-body">
+    <h1 id="main_title" class="post-tile entry-title" itemprop="headline">{{post.Title}}</h1>
+
+    <h6 class="card-subtitle mb-2 font-weight-bold"><a href="#">{{post.NameCategories}}</a></h6>
+    <p>Lượt xem: {{post.Views}}</p>   
+    <hr>
+    <h6 class="card-subtitle mb-2 text-muted">Tác giả: {{#if post.NameWriter}} {{post.NameWriter}} {{else}} Noname {{/if}}</h6>    
+    <h6 class="card-subtitle mb-2 text-muted">Ngày viết: {{post.DatePost}}</h6>    
+    <h6 class="card-subtitle mb-2 text-muted">Ngày đăng: {{post.DatetimePost}}</h6>    
+    <hr>
+    <div class="card-text">
+        {{{post.Content_Full}}}
+    </div>
+    <hr>
+    <label>Trạng thái: </label> 
+    {{#each listStatus}}
+    <a href="" class="btn btn-sm {{#if selected}} btn-success {{else}} btn-dark {{/if}}">{{Name}}</a>
+    {{/each}}
+    <hr>
+    <h5>TAGS: 
+        {{#each this.listTags}}
+           <u><a href="#" class="text-lightblue mr-2">#{{TagName}}</a></u>
+        {{/each}} 
+    </h5>
+    <span>Url: </span><a href="#">{{post.Url}}</a>
+  </div>
+</div>

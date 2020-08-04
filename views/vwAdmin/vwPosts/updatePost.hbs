@@ -1,3 +1,9 @@
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
 <form method="POST" id="formPost">
   <div id="alert"></div>
   {{#if NotFound}}
@@ -8,7 +14,7 @@
   <div class="card">
     <div class="card-header">
         <h4>Modify Content</h4>
-        <input type="hidden" id="IdPost" name="IdPost" value="{{Id}}">
+        <input type="hidden" id="IdPost" name="IdPost" value="{{Id}}" autofocus>
     </div>
     <div class="card-body">
         <div class="form-group">
@@ -89,7 +95,7 @@ tinymce.init({
   relative_urls: false,
   remove_script_host: false,
   convert_urls: true,
-  images_upload_url : 'http://localhost:3000/admin/update',
+  images_upload_url : 'http://localhost:3000/admin/posts/update',
   images_upload_handler: function(blobInfo, success, failure){ 
     const id = document.getElementById("IdPost").value;
     const xhr = new XMLHttpRequest();
@@ -108,7 +114,7 @@ tinymce.init({
       }
       success(json.location);
     };
-    xhr.open("POST", "/admin/UpdateIMG/?id=" + id, true);
+    xhr.open("POST", "/admin/UpdateIMG?id=" + id, true);
     const form = new FormData();
     const fileName = blobInfo.filename();
     form.append('file', blobInfo.blob(), fileName);
@@ -222,7 +228,7 @@ tinymce.init({
                     
                 }
             }
-            xhttp.open("POST", "/admin/update/?id=" + id, true);
+            xhttp.open("POST", "/admin/posts/update?id=" + id, true);
             xhttp.send(FD);
         }, true)
     }

@@ -17,9 +17,10 @@ const {filesize} = require('../../config/default.json');
 const categoryModel = require('../../models/category.model');
 const editoraccountModel = require('../../models/editoraccount.model');
 const { resolveSoa } = require('dns');
-
+const {restrict} = require('../../middlewares/auth.mdw');
+const {isAdmin} = require('../../middlewares/auth.mdw');
 module.exports = (router) =>{
-    router.get('/accounts', async function(req, res){
+    router.get('/accounts', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -41,7 +42,10 @@ module.exports = (router) =>{
                 {
                     const dt_exp = new Date(moment(list[i].DateExpired, 'YYYY/MM/DD HH:mm:ss'));
                     const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-                    list[i].prenium = getTimeBetweenDate(dt_now, dt_exp);
+                    // if (dt_exp <= dt_now){
+                    //     // so sánh
+                    // }
+                    list[i].premium = getTimeBetweenDate(dt_now, dt_exp);
                 }
             }
         }
@@ -49,14 +53,14 @@ module.exports = (router) =>{
             list = await accountModel.loadFull_select(2);
             IsActiveWriter = true;
             for (i =0; i< list.length; i++){
-                list[i].preniumForever = true;
+                list[i].premiumForever = true;
             }
         }
         else if (select === 'editor'){
             list = await accountModel.loadFull_select(3);
             IsActiveEditor = true;
             for (i =0; i< list.length; i++){
-                list[i].preniumForever = true;
+                list[i].premiumForever = true;
                 list[i].editor = true;
             }
         }
@@ -90,7 +94,7 @@ module.exports = (router) =>{
         });
     });
 
-    router.get('/accounts/add/:select', async function(req, res){
+    router.get('/accounts/add/:select', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -110,7 +114,7 @@ module.exports = (router) =>{
         });
     });
 
-    router.post('/accounts/add', async function(req, res){
+    router.post('/accounts/add', restrict, isAdmin, async function(req, res){
         const select = req.body.select;
         var item = 1;
         var nick = undefined;
@@ -150,14 +154,15 @@ module.exports = (router) =>{
         //moment(req.body.DOB, "DD/MM/YYYY").isValid === false
     
         // Lấy ngày giờ hiện tại
-        const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+        const dt_now = moment().format('YYYY-MM-DD');
         // gia hạn ngày
         var dob = '1999/01/01';
-        if (moment(req.body.DOB, "DD/MM/YYYY").isValid === true){
+        if (!isNaN(Date.parse(req.body.DOB))){
             dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
         }
+        console.log(dob);
     
-        // Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
+        //Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
         if (dt_now <= dob)
         {
             req.flash('error', 'Date of birth is smaller than the current day.');
@@ -192,7 +197,7 @@ module.exports = (router) =>{
         return res.redirect(`/admin/accounts/add/${select}`)
     })
 
-    router.get('/accounts/edit/:username', async function(req, res){
+    router.get('/accounts/edit/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -230,7 +235,7 @@ module.exports = (router) =>{
         });
     });
 
-    router.get('/accounts/is-available', async function(req, res){
+    router.get('/accounts/is-available', restrict, isAdmin, async function(req, res){
         if (req.query.username){
             const list = await accountModel.singleId_editAccount(req.query.username);
             if (list.length !== 0)
@@ -347,7 +352,7 @@ module.exports = (router) =>{
         return res.redirect(`/admin/accounts/edit/${username}`);
     })
 
-    router.get('/accounts/prenium-plus/:username', async function(req, res){
+    router.get('/accounts/premium-plus/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -372,7 +377,7 @@ module.exports = (router) =>{
         if (account.DateExpired){
             const dt_exp = new Date(moment(account.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
             const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-            account.prenium = getTimeBetweenDate(dt_now, dt_exp);
+            account.premium = getTimeBetweenDate(dt_now, dt_exp);
         }
 
         const minutes = addMinutes;
@@ -380,7 +385,7 @@ module.exports = (router) =>{
         const time = getTime_Minutes(minutes);
         time.value = +minutes || 1;
         
-        return res.render('vwAdmin/vwAccount/preniumAccount', {
+        return res.render('vwAdmin/vwAccount/premiumAccount', {
             layout: 'homeadmin',
             err: req.flash('error'),
             success: req.flash('success'),
@@ -391,7 +396,7 @@ module.exports = (router) =>{
     })
     
     
-    router.post('/accounts/prenium-plus', async function(req, res){
+    router.post('/accounts/premium-plus', restrict, isAdmin, async function(req, res){
         // const id = +req.body.Id || 0;
         const username = req.body.Username;
         // const typeAccount = +req.body.TypeAccount || 1;
@@ -414,14 +419,14 @@ module.exports = (router) =>{
         {
             const dt_exp = new Date(moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
             const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-            user.prenium = getTimeBetweenDate(dt_now, dt_exp);
+            user.premium = getTimeBetweenDate(dt_now, dt_exp);
         }
 
         var date_expired = moment().add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
 
-        if (user.prenium)
+        if (user.premium)
         {
-            if (!user.prenium.Notvalue)
+            if (!user.premium.Notvalue)
             {
                 date_expired = moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss').add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
             }
@@ -437,7 +442,7 @@ module.exports = (router) =>{
         return res.redirect('/admin/accounts?select=subsciber')
     });
 
-    router.post('/accounts/delete-prenium', async function(req, res){
+    router.post('/accounts/delete-premium', restrict, isAdmin, async function(req, res){
         const username = req.body.Username;
         
         const list = await accountModel.singUsername_Expired(username);
@@ -458,7 +463,7 @@ module.exports = (router) =>{
         return res.redirect('/admin/accounts?select=subscriber')
     });
 
-    router.get('/accounts/views/changepassword/:username', async function(req, res){
+    router.get('/accounts/views/changepassword/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -488,7 +493,7 @@ module.exports = (router) =>{
             username
         });
     });
-    router.get('/accounts/views/resetpassword/:username', async function(req, res){
+    router.get('/accounts/views/resetpassword/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -518,7 +523,7 @@ module.exports = (router) =>{
             username
         });
     });
-    router.post('/accounts/views/changepassword', async function(req, res){
+    router.post('/accounts/views/changepassword', restrict, isAdmin, async function(req, res){
         const username = req.body.username;
         const list = await accountModel.singleUser_Resetpassword(username);
         if (list.length === 0){
@@ -554,7 +559,7 @@ module.exports = (router) =>{
         req.flash('success', 'Thay đổi mật khẩu thành công.');
         return res.redirect(`/admin/accounts/views/changepassword/${username}`);
     });
-    router.post('/accounts/views/resetpassword', async function(req, res){
+    router.post('/accounts/views/resetpassword', restrict, isAdmin, async function(req, res){
         const username = req.body.Username;
         const list = await accountModel.singleUser_Resetpassword(username);
         console.log(list);
@@ -585,7 +590,7 @@ module.exports = (router) =>{
     });
 
     // lock account (update IsDelete = 1)
-    router.post('/accounts/lock', async function(req, res){
+    router.post('/accounts/lock', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
             await accountModel.Provision(id);
@@ -601,7 +606,7 @@ module.exports = (router) =>{
         }
     })
     // open account (update IsDelete = 0)
-    router.post('/accounts/open', async function(req, res){
+    router.post('/accounts/open', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
             await accountModel.activate(id);
@@ -617,7 +622,7 @@ module.exports = (router) =>{
         }
     })
 
-    router.get('/accounts/managecategory/:username', async function(req, res){
+    router.get('/accounts/managecategory/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -642,7 +647,7 @@ module.exports = (router) =>{
             username
         })
     })
-    router.post('/accounts/managecategory', async function(req, res){
+    router.post('/accounts/managecategory', restrict, isAdmin, async function(req, res){
         const username = req.body.Username;
    
         const id = req.body.Id;
@@ -653,7 +658,7 @@ module.exports = (router) =>{
         
         return res.redirect(`/admin/accounts/managecategory/${username}`);
     })
-    router.get('/accounts/managecategory/manage/:username', async function(req, res){
+    router.get('/accounts/managecategory/manage/:username', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'accounts') {
               c.isActive = true;
@@ -682,13 +687,12 @@ module.exports = (router) =>{
             notmanage: notmanage
         })
     })
-    router.post('/accounts/managecategory/manage', async function(req, res){
+    router.post('/accounts/managecategory/manage', restrict, isAdmin, async function(req, res){
         const id = req.body.Id;
         const array = await categoryModel.allMainId_EditorManageCategories(id);
-        console.log(array);
+
         if (array.length !== 0){
             const manage = req.body.Manage;
-            console.log(manage);
             const sosanh = (a) => {
                 for (m of manage){
                     if (+m === a.Id)

@@ -11,7 +11,7 @@ module.exports = {
         str = str.replace(/đ/g,"d");
         str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g,"");
         str = str.replace(/ /g,"-");
-        str = str.trim(); 
+        str = str.trim();
         return str;
     },
 }

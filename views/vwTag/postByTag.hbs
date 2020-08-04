@@ -33,7 +33,11 @@
                                                             <div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
                                                             <p class="card-text"></p>{{Content_Summary}}</p>
                                                             <small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-                                                        </div>
+															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+															{{#load_list_tags ../listPostTags Id}}
+																<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a href="/tag/{{TagName}}">{{Name}}</a></li>
+															{{/load_list_tags}}
+														</div>
                                                     </div>
                                                 {{/each}}
                                             </div>

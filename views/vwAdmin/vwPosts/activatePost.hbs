@@ -1,0 +1,93 @@
+{{#section 'css'}}
+<style>
+  .table-fixed tbody {
+    width: 100%;
+    height: 300px;
+}
+
+.table-fixed tbody td,
+.table-fixed tbody th,
+.table-fixed thead > tr > th {
+    float: left;
+    position: relative;
+
+    &::after {
+        content: '';
+        clear: both;
+        display: block;
+    }
+}
+</style>
+{{/section}}
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <h4>POSTS</h4>
+  </div>
+
+  {{#if this.empty}}
+  <div class="card-body">
+    <p class="card-text">Không có dữ liệu.</p>
+  </div>
+  {{else}}
+
+  {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    
+  <table class="table table-hover table-fixed table-dark">
+    <thead>
+      <tr>
+        <th scope="col" class="text-center col-1">#</th>
+        <th scope="col" class="col-2">Title</th>
+        <th scope="col" class="col-1">Writer</th>
+        <th scope="col" class="col-2">Categories</th>
+        <th scope="col" class="col-2">Datetime Post</th>
+        <th scope="col" class="text-center col-1">Views</th>
+        <th scope="col" class="col-1">Status</th>
+        <th scope="col" class="col-2">&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each this.posts}}
+      <tr>
+        <th scope="row" class="text-center col-1">{{Stt}}</th>
+        <td class="col-2">{{Title}} {{#if IsPremium}}<i class="fas fa-crown text-warning"></i>{{/if}}</td>
+        <td class="col-1">{{NameWriter}}</td>
+        <td class="col-2">{{NameCategory}}</td>
+        <td class="col-2">{{DatetimePost}}</td>
+        <td class="text-center col-1">{{Views}}</td>
+        <td class="col-1"><b>{{NameStatus}}</b></td>
+        <td class="text-right col-2">
+        <form method="POST">
+            <input type="hidden" name="Id" value="{{Id}}">
+            <button type="submit" class="btn btn-warning btn-sm" title="Activate" formaction="/admin/posts/activate">
+                <i class="fas fa-key"></i>
+            </button>
+        </form>
+        </td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+  {{/if}}
+</div>

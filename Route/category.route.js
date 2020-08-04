@@ -1,58 +1,61 @@
 const express = require('express');
 const postModel = require('../models/post.model');
+const categoryModel = require('../Models/category.model');
+const moment = require('moment');
 const tagModel = require('../Models/tag.model');
-const commentModel = require('../Models/comment.model');
 
 const router = express.Router();
 
-// Trang index
+// Trang categoy
 router.get('/',async function (req, res) {
+    const listCat = await categoryModel.allSubCategory();
 
-    const url = req.params.Url;
-    const rows = await postModel.single(url);
-
-    const post = rows[0];
-    const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
-    const listTag = await tagModel.tagByIdPost(post.Id);
-    const listComment = await commentModel.commentByIdPost(post.Id);
-
+    //console.log(listCat);
     //console.log(post);
-    //console.log(listComment);
 
-    const countComment = listComment.length;
-    res.render('vwPost/detailPost', {
-        layout: 'detailpost',
-        post,
-        listTag,
-        postRandom,
-        listComment,
-        countComment,
-        emptyPostRandom: postRandom.length === 0
+    res.render('vwCategory/listCategory', {
+        layout: 'listCategoryTag',
+        listCat,
+        emptyCat: listCat.length === 0
     })
 
 }) 
 
-router.get('/detail/:Url',async function(req, res){
+router.get('/:Url',async function(req, res){
     const url = req.params.Url;
-    const rows = await postModel.single(url);
+    const listPost = await postModel.postByCategory(url);
+    const listPostTags = await postModel.postTags();
 
-    const post = rows[0];
-    const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
-    const listTag = await tagModel.tagByIdPost(post.Id);
-    const listComment = await commentModel.commentByIdPost(post.Id);
+    for(let i = 0; i < listPost.length; i++)
+    {
+        listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
+    }
 
-    //console.log(post);
-    //console.log(listComment);
+    //console.log(listPostTags);
 
-    const countComment = listComment.length;
-    res.render('vwPost/detailPost', {
-        layout: 'detailpost',
-        post,
-        listTag,
-        postRandom,
-        listComment,
-        countComment,
-        emptyPostRandom: postRandom.length === 0
+    res.render('vwCategory/postByCategory', {
+        layout: 'listCategoryTag',
+        listPost,
+        listPostTags,
+        emptyPost: listPost.length === 0,
+        helpers:{
+            load_list_tags: function(context, Id, options)
+            {
+                let ret = "";
+                let count = 0;
+                for(let i = 0; i < context.length; i++)
+                {
+                    //console.log(context[i].Id);
+                    //console.log(context[i]);
+                    if(context[i].IdPost === Id && count < 3)
+                    {
+                        ret = ret + options.fn(context[i]);
+                        count++;
+                    }
+                }
+                return ret;
+            }
+        }
     })
 });
 
