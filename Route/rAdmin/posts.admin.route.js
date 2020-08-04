@@ -172,7 +172,7 @@ module.exports = (router) => {
             }
             else {
 
-                const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+                const Check = await db.CheckTitleIsExistsInPost(Title, Url, IdPost);
                 if (Check.length === 0) {
                     res.json({ fail: 'The title of article is already exists.' });
                 }
@@ -375,7 +375,7 @@ module.exports = (router) => {
                     let TagsImg = getTagImg(content);
                     Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
-                    const Result = await db.UpdatePostOfWriter(ValueOfPost);
+                    const Result = await db.CheckTitleIsExistsInUpdate(ValueOfPost);
                     await db.DeleteTagPost(IdPost);
                     let tmp = [];
                     for (let i = 0; i < checkbox.length; i++) {
