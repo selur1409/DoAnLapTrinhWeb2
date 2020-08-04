@@ -453,9 +453,40 @@ module.exports = (router) => {
                 const amount = await commentModel.countCommentByIdPost_admin_NotCheck(list[i].Id);
                 list[i].IsComment = true;
                 list[i].AmountComment = amount[0].Count;
+                
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
+            }
+            else if (list[i].IdStatus === 1){
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
             }
         }
-        
+
         return res.render('vwAdmin/vwPosts/listPost', {
             layout: 'homeadmin',
             posts: list,
@@ -495,8 +526,16 @@ module.exports = (router) => {
         
         var isDenied = false;
         if (select === 3)
+        {    
             isDenied = true;
-
+            const loadFb = await postModel.LoadFeedBackOfPosts(posts[0].Id);
+            if (loadFb.length === 0){
+                req.flash('error', 'Bài viết bị từ chối nhưng không có phản hồi.');
+                return res.redirect('/admin/posts?status=3');
+            }
+            loadFb[0].DatetimeApproval = moment(loadFb[0].DatetimeApproval, 'YYYY/MM/DD HH:mm:ss').format('HH:mm:ss DD/MM/YYYY');
+            posts[0].Feedback = loadFb[0];
+        }
         const listStatus = await statusModel.all();
 
         for (l of listStatus){
@@ -528,7 +567,7 @@ module.exports = (router) => {
         for (l of listTags){
             for(t of idTagPost){
                 if(l.Id === t.IdTag){
-                    l.checked = true;
+                    l.checked = true;       
                     break;
                 }
             }
@@ -548,28 +587,42 @@ module.exports = (router) => {
     })
 
     router.post('/posts/status/deny', restrict, isAdmin, async function (req, res){
-        const id = req.body.Id;
+        const idPost = req.body.Id;
+        const Note = req.body.Note;
+        if(!Note)
+        {
+            req.flash('error', 'Cần ghi chú rõ lý do để phóng viên có thể hiệu chỉnh lại bài viết cho phù hợp.');
+            return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
+        }
+
         const entity = {
-            Id: id,
+            Id: idPost,
             IdStatus: 3
         }
         await postModel.patch(entity);
+        
+        const IdEditorAccount = res.locals.lcAuthUser.Id;
+        const DatetimeApproval = moment().format('YYYY-MM-DD HH:mm:ss');
+        
+        const ValueOfFeedback = ['Note', 'DatetimeApproval', 'IdEditorAccount', 'IdPost', 'IsDelete', `${Note}`, `${DatetimeApproval}`, `${IdEditorAccount}`, `${idPost}`, 0];
+        await editorModel.InsertFeedbackPost(ValueOfFeedback);
+        
         return res.redirect('/admin/posts?status=3');
     })
     router.post('/posts/status/accept', restrict, isAdmin, async function (req, res){
         const listTag = req.body.TagSeleted || [];
-
+        
         if (listTag.length === 0){
             req.flash('error', 'Phải lựa chọn ít nhất 1 thẻ Tag.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
-
+        
         if (!req.body.TimePost || isNaN(Date.parse(req.body.TimePost)))
         {
             req.flash('error', 'Chưa chọn thời gian đăng bài.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
-
+        
         const dt_exp = new Date(moment(req.body.TimePost, 'YYYY/MM/DD HH:mm:ss').format('YYYY/MM/DD HH:mm:ss'));
         const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
         if (dt_exp < dt_now){
@@ -578,24 +631,34 @@ module.exports = (router) => {
         }
         
         const id = req.body.Id;
-        const entity = {
-            Id: id,
-            IdStatus: 1,
-            IdCategories: req.body.selectCatSub
-        }
         await editorModel.DeleteTagsOfPost(id);
+        
         for (l of listTag){
-            const entity = {
+            const entityTag = {
                 IdTag: +l,
                 IdPost: id
             }
-            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
+            const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
             await editorModel.InsertTagsPost(value);
         }
 
+        const entity = {
+            Id: id,
+            IdStatus: 1,
+            IdCategories: req.body.selectCatSub,
+            DatetimePost: dt_exp
+        }
         await postModel.patch(entity);
+
+        const IsPremium = +req.body.Premium || 0;
+        const entityPostDetails = {
+            Id: id,
+            IsPremium: IsPremium
+        }
+        await editorModel.UpdateIsPremium(entityPostDetails);
         return res.redirect('/admin/posts?status=1');
     })
+
     router.post('/posts/status/repost', restrict, isAdmin, async function (req, res){
         const listTag = req.body.TagSeleted || [];
 
@@ -605,22 +668,26 @@ module.exports = (router) => {
         }
         
         const id = req.body.Id;
+        await editorModel.DeleteTagsOfPost(id);
+
+        for (l of listTag){
+            const entityTag = {
+                IdTag: +l,
+                IdPost: id,
+            }
+            const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
+            await editorModel.InsertTagsPost(value);
+        }
+        
         const entity = {
             Id: id,
             IdStatus: 4,
             IdCategories: req.body.selectCatSub
         }
-        await editorModel.DeleteTagsOfPost(id);
-        for (l of listTag){
-            const entity = {
-                IdTag: +l,
-                IdPost: id
-            }
-            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
-            await editorModel.InsertTagsPost(value);
-        }
-
         await postModel.patch(entity);
+
+        await postModel.provisionFeedback(id);
+
         return res.redirect('/admin/posts?status=4');
     })
 
@@ -784,7 +851,7 @@ module.exports = (router) => {
         }
 
         const details = await postModel.detailsTags_idPost(posts[0].Id);
-        console.log(posts[0]);
+
         posts[0].DatePost = moment(posts[0].DatePost, 'YYYY/MM/DD HH:mm:ss').format('DD/MM/YYYY ');
         posts[0].DatetimePost = moment(posts[0].DatetimePost, 'YYYY/MM/DD HH:mm:ss').format('HH:mm DD/MM/YYYY');
         
@@ -804,5 +871,74 @@ module.exports = (router) => {
         await commentModel.provision(id);
         return res.redirect(`/admin/posts/comment?url=${url}`)
     })
-    
+
+    router.post('/posts/del', restrict, isAdmin, async function(req, res){
+        const id = +req.body.Id;
+        const status = req.body.Status;
+
+        await postModel.provisionPost(id);
+        return res.redirect(`/admin/posts?stauts=${status}`);
+    })
+
+
+    router.get('/posts/activate', restrict, isAdmin, async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
+
+        const list = await postModel.dislayList_activate();
+
+        for (i = 0; i < list.length; i++){
+            if (list[i].IdStatus === 4)
+            {
+                list[i].DatetimePost = 'Chưa có';
+            }
+            else{
+                list[i].DatetimePost = moment(list[i].DatetimePost, 'YYYY/MM/DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+            }
+            
+            if (list[i].IdStatus === 2 || list[i].IdStatus === 1){
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
+            }
+        }
+
+        return res.render('vwAdmin/vwPosts/activatePost', {
+            layout: 'homeadmin',
+            posts: list,
+            empty: list.length === 0,
+            err: req.flash('error'),
+            success: req.flash('success')
+        });
+    })
+
+    router.post('/posts/activate', restrict, isAdmin, async function(req, res){
+        const id = req.body.Id;
+        const checkId = await postModel.checkId(id);
+        if (checkId.length === 0){
+            req.flash('error', 'Bài viết đã xóa tạm không tồn tại.');
+            return res.redirect('/admin/posts/activate');
+        }
+        const checkUrl = await postModel.checkPost(checkId[0].Url);
+        if (checkUrl.length !== 0){
+            req.flash('error', 'Bài viết không thể kích hoạt.');
+            return res.redirect('/admin/posts/activate');
+        }
+        await postModel.activatePost(id);
+        return res.redirect('/admin/posts/activate');
+    })
 }

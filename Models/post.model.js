@@ -1,5 +1,6 @@
 const db = require('../utils/db');
 const TBL_POSTS = 'posts'
+const TBL_POSTDETAILS = 'postdetails'
 
 module.exports = {
     all: function () {
@@ -12,6 +13,13 @@ module.exports = {
         where p.IsDelete = 0 and s.Id = p.IdStatus
         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
+    dislayList_activate: function () {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
+                        s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IsDelete = 1 and s.Id = p.IdStatus
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
+    },
     dislayList_Status: function (idStatus) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
         s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
@@ -22,8 +30,8 @@ module.exports = {
     },
     countStatus: function(idStatus){
         if (idStatus !== 0)
-            return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS} WHERE IdStatus = ${idStatus}`);
-        return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS}`)   
+            return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS} WHERE IdStatus = ${idStatus} AND IsDelete = 0`);
+        return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS} WHERE IsDelete = 0`)   
     },
     trending: function () {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium 
@@ -97,6 +105,11 @@ module.exports = {
                         FROM tag_posts
                         WHERE IdPost = ${idPost} `);
     },
+    singlePremium_idPost: function (idPost) {
+        return db.load(`SELECT IsPremium
+                        FROM postdetails
+                        WHERE IdPost = ${idPost}`);
+    },
     detailsTags_idPost: function (idPost) {
         return db.load(`SELECT t.Id, t.TagName
                         FROM tag_posts tp, tags t
@@ -111,6 +124,44 @@ module.exports = {
         }
         delete entity.Id;
         return db.patch(TBL_POSTS, entity, condition);
+    },
+    patchPostDetails: function (entity) {
+        const condition = {
+          IdPost: entity.IdPost
+        }
+        delete entity.IdPost;
+        return db.patch(TBL_POSTDETAILS, entity, condition);
+    },
+    LoadFeedBackOfPosts:(idPost)=>
+    {
+        return db.load(`SELECT f.Id, f.Note, f.DatetimeApproval, i.Name as 'NameEditorAccount' 
+        FROM feedback f, information i
+        WHERE IdPost=${idPost} and f.IdEditorAccount = i.IdAccount
+        AND IsDelete=0`);
+    },
+    provisionFeedback: function (id) {
+        const condition = {
+          IdPost: id
+        }
+        return db.del_provisional('feedback', condition);
+    },
+    provisionPost: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.del_provisional(TBL_POSTS, condition);
+    },
+    checkId: function(id){
+        return db.load(`SELECT Url FROM ${TBL_POSTS} WHERE Id = ${id}`)
+    },
+    checkPost: function(url){
+        return db.load(`SELECT Id FROM ${TBL_POSTS} WHERE IsDelete = 0 and Url = '${url}'`)
+    },
+    activatePost: function (id) {
+        const condition = {
+          Id: id
+        }
+        return db.activate(TBL_POSTS, condition);
     },
     del: function (id) {
         const condition = {

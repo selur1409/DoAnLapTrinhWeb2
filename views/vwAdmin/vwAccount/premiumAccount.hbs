@@ -65,15 +65,15 @@
         <li>Phone: {{this.account.Phone}}</li>
         <li>Sex: {{#if this.account.Sex}} Nữ {{else}} Nam {{/if}}</li>
         <li><i class="fab fa-vuejs"></i>Thời hạn VIP: 
-        {{#if this.account.prenium}}
-            {{#if this.account.prenium.Notvalue}}
+        {{#if this.account.premium}}
+            {{#if this.account.premium.Notvalue}}
             Hết hạn
             {{else}}             
-            Còn: {{this.account.prenium.days}} ngày {{this.account.prenium.hours}} giờ {{this.account.prenium.minutes}} phút
+            Còn: {{this.account.premium.days}} ngày {{this.account.premium.hours}} giờ {{this.account.premium.minutes}} phút
             {{/if}}
         {{else}}
             {{!-- Dành cho admin, editor, writer --}}
-            {{#if this.account.preniumForever}} 
+            {{#if this.account.premiumForever}} 
             Vĩnh viễn
             {{else}}
             Chưa đăng kí
@@ -99,7 +99,7 @@
           </div>
         </div>
         <hr>
-        <button type="submit" class="btn btn-warning btn-lg" title="Thanh toán" formaction="/admin/accounts/prenium-plus">
+        <button type="submit" class="btn btn-warning btn-lg" title="Thanh toán" formaction="/admin/accounts/premium-plus">
             <i class="fas fa-check-double"></i> Thanh toán
         </button>
     </form>

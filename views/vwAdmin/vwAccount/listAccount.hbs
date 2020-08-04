@@ -93,33 +93,33 @@
             </button>
             {{else}}
 
-            {{#if prenium}}
-                {{#if prenium.Notvalue}}
-                <a class="btn btn-warning btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Prenium">
+            {{#if premium}}
+                {{#if premium.Notvalue}}
+                <a class="btn btn-warning btn-sm" href="/admin/accounts/premium-plus/{{Username}}" role="button" title="Premium">
                   <i class="fab fa-vuejs"></i>
                   Hết hạn
                   <i class="fas fa-plus-square"></i>
                 </a>
                 {{else}}
-                <a class="btn btn-warning btn-sm" href="#" role="button" title="Prenium">
+                <a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
                 <i class="fab fa-vuejs"></i>
-                    Còn: {{prenium.days}} ngày {{prenium.hours}} giờ {{prenium.minutes}}
-                    {{!-- :{{prenium.miniutes}}:{{prenium.seconds}}s --}}
+                    Còn: {{premium.days}} ngày {{premium.hours}} giờ {{premium.minutes}}
+                    {{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
                 </a>
-                <a class="btn btn-danger btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Add Prenium">                  
+                <a class="btn btn-danger btn-sm" href="/admin/accounts/premium-plus/{{Username}}" role="button" title="Add Premium">                  
                   <i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
                 </a>
-                <button type="submit" class="btn btn-danger btn-sm" title="Delete Prenium" formaction="/admin/accounts/delete-prenium">
+                <button type="submit" class="btn btn-danger btn-sm" title="Delete Premium" formaction="/admin/accounts/delete-premium">
                     <i class="fas fa-trash-alt"></i>
                 </button>
                 {{/if}}
             {{else}}
-              {{#if preniumForever}}
+              {{#if premiumForever}}
               <a class="btn btn-info btn-sm" href="#" role="button" title="Pernium Forever">
                   <i class="fab fa-vuejs"></i>
               </a>
               {{else}}
-                <a class="btn btn-danger btn-sm" href="/admin/accounts/prenium-plus/{{Username}}" role="button" title="Add Prenium">                  
+                <a class="btn btn-danger btn-sm" href="/admin/accounts/premium-plus/{{Username}}" role="button" title="Add Premium">                  
                   <i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
                 </a>
               {{/if}}

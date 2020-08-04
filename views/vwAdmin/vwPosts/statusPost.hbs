@@ -79,7 +79,7 @@
       </div>
 
       <div class="form-group required">
-        <label class="control-label" for="txtStatus">Trạng thái</label>
+        <label class="control-label" for="txtStatus">Status</label>
             <select name="selectStatus" id="txtStatus" class="form-control" disabled="disabled">
             {{#each listStatus}}
                 <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Name}}</option>
@@ -94,7 +94,7 @@
             {{#each listCategories}}
             <optgroup label="{{Name}}">
                 {{#each categoriesSub}}
-                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Id}}- {{Name}}</option>
+                <option value="{{Id}}" {{#if selected}} selected {{/if}}>{{Name}}</option>
                 {{/each}}
             </optgroup>
             {{/each}}
@@ -120,21 +120,52 @@
 
       <input type="hidden" name="Id" value="{{post.Id}}">
       <input type="hidden" name="number" value="{{status}}">
+
+
       {{#if isApproved}}
-      <div class="form-group required">
-        <label class="control-label" for="txtTimePost"><i class="far fa-calendar-check"></i>Schedule Post:</label>
-        <input type="text" class="form-control" placeholder="Thời gian xuất bản" id="txtTimePost" name="TimePost">
+      <div class="row">
+        <div class="card card-lightblue col-6 p-3">
+          <div class="form-group required">
+            <label class="control-label" for="txtTimePost"><i class="far fa-calendar-check"></i>Schedule Post:</label>
+            <input type="text" class="form-control" placeholder="Thời gian xuất bản" id="txtTimePost" name="TimePost">
+          </div>
+          <div class="form-group">
+            <div class="custom-control custom-switch mb-3 mr-6">
+            <input type="checkbox" name="Premium" id="checkboxPremium" class="custom-control-input" value="1">
+            <label class="custom-control-label btn btn-sm" for="checkboxPremium"><i class="fas fa-crown"></i></label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-success" formaction="/admin/posts/status/accept">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            Accept
+          </button>
+        </div>
+        <div class="card card-lightblue col-6 p-3">
+          <div class="form-group required">
+              <label class="control-label" for="txtNote">Note</label>
+              <textarea class="form-control" name="Note" id="txtNote" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger" formaction="/admin/posts/status/deny">
+            <i class="fas fa-ban"></i>
+            Deny
+          </button>
+        </div>
       </div>
-      <button type="submit" class="btn btn-danger" formaction="/admin/posts/status/deny">
-        <i class="fas fa-ban"></i>
-        Deny
-      </button>
-      <button type="submit" class="btn btn-success" formaction="/admin/posts/status/accept">
-        <i class="fa fa-check" aria-hidden="true"></i>
-        Accept
-      </button>
       {{/if}}
       {{#if isDenied}}
+      <div class="form-group required">
+        <label class="control-label" for="txtFeedback">Editor feedback</label>
+        <input type="text" class="form-control" id="txtFeedback" name="NameEditorFeedback" placeholder="Người từ chối" value="{{post.Feedback.NameEditorAccount}}" readonly>
+      </div>
+      <div class="form-group required">
+        <label class="control-label" for="txtApproval">Datetime approval</label>
+        <input type="text" class="form-control" id="txtApproval" name="DatetimeApproval" placeholder="Thời gian từ chối" value="{{post.Feedback.DatetimeApproval}}" readonly>
+      </div>
+      <div class="form-group required">
+        <label class="control-label" for="txtNote">Note</label>
+        <textarea class="form-control" name="Note" id="txtNote" rows="4" readonly>{{post.Feedback.Note}}</textarea>
+      </div>
+      <input type="hidden" name="IdFeedback" value="{{post.Feedback.Id}}">
       <button type="submit" class="btn btn-warning" formaction="/admin/posts/status/repost">
         <i class="far fa-flag"></i>
         Repost
