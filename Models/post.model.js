@@ -34,30 +34,30 @@ module.exports = {
         return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS} WHERE IsDelete = 0`)   
     },
     trending: function () {
-        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium 
-                        from posts p, accounts a, information i, postdetails pt 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL' 
+                        from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
-                        from posts p, accounts a, information i, postdetails pt 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
+                        from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories 
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 10`);
     },
     postnew: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
-                        from posts p, accounts a, information i, postdetails pt 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
+                        from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb  
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
-        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium  
-                        from posts p, accounts a, information i, postdetails pt 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost 
+        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
+                        from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb  
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
@@ -65,15 +65,28 @@ module.exports = {
         return db.load(`SELECT * FROM ${TBL_POSTS} WHERE IdCategories = ${id}`);
     },
     postRandomByCategories: function (idCat, idPost) {
-        return db.load(`SELECT p.*, i.Nickname FROM posts p, information i, postdetails pd 
+        return db.load(`SELECT p.*, i.Nickname 
+                        FROM ${TBL_POSTS} p, information i, postdetails pd 
                         WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
                         ORDER BY RAND() LIMIT 5`);
     },
+    postTags: function () {
+        return db.load(`SELECT p.Id AS 'IdPost', tp.Id as 'IdTagPosts', t.Name, t.TagName
+                        FROM ${TBL_POSTS} p, tag_posts tp, tags t
+                        WHERE p.Id = tp.IdPost AND tp.IdTag = t.Id`);
+    },
     postByTag: function (tn) {
-        return db.load(`select DISTINCT(p.Id), p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost
-                        from posts p, accounts a, information i, postdetails pt, tag_posts tp, tags t 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND tp.IdPost = p.Id AND t.Id = tp.IdTag 
+        return db.load(`select DISTINCT(p.Id), p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, cb.Name, cb.Url as 'CatURL'
+                        from posts p, accounts a, information i, postdetails pt, tag_posts tp, tags t, categories_sub cb
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND tp.IdPost = p.Id AND t.Id = tp.IdTag AND cb.Id = p.IdCategories
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND t.TagName = '${tn}' 
+                        ORDER BY p.DatetimePost DESC`);
+    },
+    postByCategory: function (catURL) {
+        return db.load(`SELECT DISTINCT(p.Id), p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, cb.Name, cb.Url as 'CatURL'
+                        FROM categories_sub cb, posts p, information i, accounts a, postdetails pd
+                        WHERE cb.Id = p.IdCategories AND a.Id = i.Id AND p.Id = pd.IdPost AND pd.IdAccount = a.Id
+                        AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND cb.IsDelete = 0 AND cb.Url = '${catURL}'
                         ORDER BY p.DatetimePost DESC`);
     },
     single: function (url) {

@@ -55,6 +55,9 @@ const {exposeTemplates} = require('./public/js/exposeTemplate');
 // route tag
 app.use('/tag', require('./route/tag.route'));
 
+// route tag
+app.use('/category', require('./route/category.route'));
+
 // route account
 const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
