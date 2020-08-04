@@ -1,4 +1,4 @@
-// const categoryModel = require('../models/category.model');
+const categoriesModel = require('../models/category.model');
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -16,6 +16,17 @@ module.exports = function (app) {
 
     next();
   })
+
+  app.use(async function (req, res, next) {
+    const listMenu = await categoriesModel.allMain();
+    for (l of listMenu){
+        l.Sub = await categoriesModel.allSub_Id(l.Id);
+    }
+    res.locals.lcListMenu = listMenu;
+
+    next();
+  })
+
 
   // app.use(async function (req, res, next) {
   //   const rows = await categoryModel.allWithDetails();

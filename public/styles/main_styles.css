@@ -247,6 +247,7 @@ section
 	-ms-transition: all 200ms ease;
 	-o-transition: all 200ms ease;
 	transition: all 200ms ease;
+	background: rgba(19, 18, 18, 0.699);
 }
 .header_content
 {

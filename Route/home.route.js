@@ -4,7 +4,7 @@ const tagModel = require('../Models/tag.model');
 const commentModel = require('../Models/comment.model');
 const moment = require('moment');
 const { restrict } = require('../middlewares/auth.mdw');
-
+const categoriesModel = require('../models/category.model');
 const router = express.Router();
 
 // Trang index
@@ -15,7 +15,6 @@ router.get('/',async function (req, res) {
     const listPostNew = await postModel.postnew();
     const listCatPostNew = await postModel.categorypostnew();
     const listTag = await tagModel.all();
-
 
     //console.log(listTreding);
 
