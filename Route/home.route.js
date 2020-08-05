@@ -1,3 +1,4 @@
+const config = require('../config/default.json');
 const express = require('express');
 const postModel = require('../models/post.model');
 const tagModel = require('../Models/tag.model');
@@ -14,7 +15,7 @@ router.get('/',async function (req, res) {
     const listMostView = await postModel.mostview();
     const listPostNew = await postModel.postnew();
     const listCatPostNew = await postModel.categorypostnew();
-    const listTag = await tagModel.all();
+    const listTag = await tagModel.listTagHome();
 
     //console.log(listTreding);
 
@@ -85,7 +86,7 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
     //console.log(oriURL);
 
 
-    console.log(req.session);
+    //console.log(req.session);
     const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
 
     const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
@@ -95,8 +96,7 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
 
     // console.log(test);
 
-    // console.log(dt_now);
-    // console.log(dateEx);
+    
 
 
     if(dateEx < dt_now)
@@ -108,8 +108,16 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
 
     const post = rows[0];
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
+
+
+    //console.log(post);
+    //console.log(postRandom);
+
+
     const listTag = await tagModel.tagByIdPost(post.Id);
     const listComment = await commentModel.commentByIdPost(post.Id);
+
+    const listPostTags = await postModel.postTags();
 
     //console.log(req.session);
     //console.log(post);
@@ -123,7 +131,26 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
         postRandom,
         listComment,
         countComment,
-        emptyPostRandom: postRandom.length === 0
+        emptyPostRandom: postRandom.length === 0,
+        listPostTags,
+        helpers:{
+            load_list_tags: function(context, Id, options)
+            {
+                let ret = "";
+                let count = 0;
+                for(let i = 0; i < context.length; i++)
+                {
+                    //console.log(context[i].Id);
+                    //console.log(context[i]);
+                    if(context[i].IdPost === Id && count < 3)
+                    {
+                        ret = ret + options.fn(context[i]);
+                        count++;
+                    }
+                }
+                return ret;
+            }
+        }
     })
 
 
@@ -138,8 +165,15 @@ router.get('/detail/:Url', async function(req, res){
 
     const post = rows[0];
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
+
+
+    console.log(post);
+    console.log(postRandom);
+
     const listTag = await tagModel.tagByIdPost(post.Id);
     const listComment = await commentModel.commentByIdPost(post.Id);
+
+    const listPostTags = await postModel.postTags();
 
     //console.log(post);
     //console.log(listComment);
@@ -152,7 +186,121 @@ router.get('/detail/:Url', async function(req, res){
         postRandom,
         listComment,
         countComment,
-        emptyPostRandom: postRandom.length === 0
+        emptyPostRandom: postRandom.length === 0,
+        listPostTags,
+        helpers:{
+            load_list_tags: function(context, Id, options)
+            {
+                let ret = "";
+                let count = 0;
+                for(let i = 0; i < context.length; i++)
+                {
+                    //console.log(context[i].Id);
+                    //console.log(context[i]);
+                    if(context[i].IdPost === Id && count < 3)
+                    {
+                        ret = ret + options.fn(context[i]);
+                        count++;
+                    }
+                }
+                return ret;
+            }
+        }
+    })
+});
+
+
+
+
+
+
+
+
+
+router.post('/search',async function(req, res){
+
+
+    const ValueSearch = req.body.searchPost || '';
+    //const offset = (page - 1) * config.pagination.limit;
+    const offset = 0;
+    const [listPost, Total] = await Promise.all([postModel.LoadPostBySearch(config.pagination.limit, offset, ValueSearch), postModel.CountPostSearch(config.pagination.limit, offset, ValueSearch)]);
+    // const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+    //     const page_items = [];
+    //     let count = 0;
+    //     let lengthPagination = 0;
+    //     let temp = page;
+        
+
+        // while (true) {
+        //     if (temp - config.pagination.limitPaginationLinks > 0) {
+        //         count++;
+        //         temp = temp - config.pagination.limitPaginationLinks;
+        //     }
+        //     else {
+        //         break;
+        //     }
+        // }
+        // if ((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages) {
+        //     lengthPagination = nPages;
+        // }
+        // else {
+        //     lengthPagination = (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+        // }
+        // for (let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++) {
+        //     const item = {
+        //         value: i,
+        //         isActive: i === page,
+        //         IdStatus,
+        //         Opt
+        //     }
+        //     page_items.push(item);
+        // }
+
+
+        //console.log(ValueSearch);
+        //console.log(listPost);
+
+        //Total
+
+
+    console.log(Total);
+
+
+
+
+
+
+    
+    const listPostTags = await postModel.postTags();
+
+    for(let i = 0; i < listPost.length; i++)
+    {
+        listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
+    }
+    
+    res.render('vwPost/search', {
+        layout: 'listCategoryTag',
+        listPost,
+        emptyPost: listPost.length === 0,
+        listPostTags,
+        helpers:{
+            load_list_tags: function(context, Id, options)
+            {
+                let ret = "";
+                let count = 0;
+                for(let i = 0; i < context.length; i++)
+                {
+                    //console.log(context[i].Id);
+                    //console.log(context[i]);
+                    if(context[i].IdPost === Id && count < 3)
+                    {
+                        ret = ret + options.fn(context[i]);
+                        count++;
+                    }
+                }
+                return ret;
+            }
+        }
     })
 });
 

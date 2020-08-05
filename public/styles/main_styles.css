@@ -1905,3 +1905,21 @@ section
 	background: #ededed;
 	border-color: #ededed;
 }
+
+
+.btnSeeAllTag
+{
+	display: block;
+	margin-top: 20px;
+	padding: 10px 25px;
+	background-color: rgb(38, 71, 180);
+	text-align: center;
+	color: rgb(253, 253, 253);
+	font-size: 16px;
+}
+
+.btnSeeAllTag:hover
+{
+	background-color: black;
+	color: yellow;
+}
