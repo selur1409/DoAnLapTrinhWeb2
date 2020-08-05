@@ -117,7 +117,7 @@ module.exports = {
 
     /*Feedback*/
     LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
-        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.DatetimeApproval, inf.Name
         FROM feedback fb, editoraccount ec, information inf 
         WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete} LIMIT ${Limit} OFFSET ${OffSet}`);
     },
