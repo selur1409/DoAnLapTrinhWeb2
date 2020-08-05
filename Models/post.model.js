@@ -37,13 +37,13 @@ module.exports = {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL' 
                         from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb 
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
                         from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb 
-                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories 
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories  AND p.IdStatus = 2
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
                         ORDER BY p.Views DESC LIMIT 10`);
     },
@@ -51,23 +51,24 @@ module.exports = {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
                         from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb  
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
                         from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb  
                         where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
-                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2
                         ORDER BY p.DatetimePost DESC LIMIT 10`);
     },
     postByCategories: function (id) {
         return db.load(`SELECT * FROM ${TBL_POSTS} WHERE IdCategories = ${id}`);
     },
     postRandomByCategories: function (idCat, idPost) {
-        return db.load(`SELECT p.*, i.Nickname 
-                        FROM ${TBL_POSTS} p, information i, postdetails pd 
-                        WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
+                        return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pt.IsPremium, cb.Name, cb.Url as 'CatURL'   
+                        from ${TBL_POSTS} p, accounts a, information i, postdetails pt, categories_sub cb  
+                        where a.Id = i.IdAccount AND p.Id = pt.IdPost AND cb.Id = p.IdCategories
+                        AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2 AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
                         ORDER BY RAND() LIMIT 5`);
     },
     postTags: function () {
@@ -128,6 +129,19 @@ module.exports = {
                         FROM tag_posts tp, tags t
                         WHERE tp.IdPost = ${idPost} and tp.IdTag = t.Id`);
     },
+    LoadPostBySearch:(Limit, Offset, Value)=>{
+        return db.load(`SELECT p.Id, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar AS 'ImagePost', p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Nickname, cb.Name
+        FROM posts p, postdetails pd, information inf, categories_sub cb 
+        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = inf.IdAccount AND p.IdCategories = cb.Id AND p.IdStatus = 2
+        LIMIT ${Limit} OFFSET ${Offset}`);
+    },
+
+    CountPostSearch:(Limit, Offset, Value)=>{
+        return db.load(`SELECT Count(*) AS Number
+        FROM posts p, postdetails pd, information inf
+        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = inf.IdAccount`);
+    },
+
     add: function (entity) {
         return db.add(TBL_POSTS, entity);
     },
