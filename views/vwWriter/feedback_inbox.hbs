@@ -206,17 +206,6 @@
         document.getElementById('formRemove').submit();
     }
 
-    function DisabledRemove(flag)
-    {
-        if(flag === 0)
-        {
-            document.getElementById('btnRemove').setAttribute('disabled', true);
-        }
-        else{
-            document.getElementById('btnRemove').removeAttribute('disabled');
-        }
-    }
-
     function Check()
     {
         const checkbox = document.getElementsByClassName('checkbox');
@@ -225,18 +214,33 @@
         {
             checkbox[i].addEventListener('change', function () {
                 if(checkbox[i].checked) {
-                    flag = 1;
-                    DisabledRemove(flag);
+                    flag++;
+                    if(flag === 0)
+                    {
+                        document.getElementById('btnRemove').setAttribute('disabled', true);
+                    }
+                    else
+                    {
+                        document.getElementById('btnRemove').removeAttribute('disabled');
+                    }
                 }
                 else
                 {
-                    flag = 0;
-                    DisabledRemove(flag);
+                    flag--;
+                    if(flag === 0)
+                    {
+                        document.getElementById('btnRemove').setAttribute('disabled', true);
+                    }
+                    else
+                    {
+                        document.getElementById('btnRemove').removeAttribute('disabled');
+                    }
                 }
-            }, true);
+            });
         }
     }
     
+
     window.onload = ()=>{
         document.getElementById('btnRemove').setAttribute('disabled', true);
         Check();

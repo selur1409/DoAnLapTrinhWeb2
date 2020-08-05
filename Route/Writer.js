@@ -666,10 +666,6 @@ router.post('/FeedBack_Inbox/RemoveFeedBack/:id', restrict, Authories, upload.fi
         const IdPost = +req.params.id;
         const checkbox = req.body.checkbox;
         let value = [];
-        if(checkbox.length === 0)
-        {
-            
-        }
         for(let i = 0; i < checkbox.length; i++)
         {
             let tmp = [];
