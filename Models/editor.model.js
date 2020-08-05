@@ -70,11 +70,6 @@ module.exports = {
             FROM ${TBL_POSTS} p, ${TBL_POST_DETAILS} pdt, ${TBL_INFORMATION} i 
                 WHERE p.Id=pdt.IdPost AND pdt.IdAccount=i.IdAccount AND p.Id=${idPost} AND p.IsDelete=0`)
     },
-    LoadIdEditor: (idEditor, idCategories) => {
-        return db.load(`SELECT edtacc.id 
-            FROM ${TBL_ACCOUNTS} acc, ${TBL_EDITOR_ACCOUNT} edtacc 
-                WHERE acc.Id=edtacc.IdAccount AND acc.Id=${idEditor} AND edtacc.IdCategories=${idCategories} AND acc.IsDelete=0 and edtacc.IsDelete=0`)
-    },
     UpdateStatusPost: (entity) =>{
         const condition = {
             Id: entity.Id
@@ -83,7 +78,7 @@ module.exports = {
         return db.patch(TBL_POSTS, entity, condition);
     },
     InsertFeedbackPost: (value) => {
-        return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?)`, value);
+        return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)`, value);
     },
     LoadCateSub: (idCategories) => {
         return db.load(`SELECT Name, Id 

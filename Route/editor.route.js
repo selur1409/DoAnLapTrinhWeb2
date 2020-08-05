@@ -188,10 +188,10 @@ router.get('/denied', restrict, Authories, async function (req, res) {
 router.get('/deny/:Id', restrict, Authories, async function (req, res) {
   const list = await editorModel.LoadInforPost(req.params.Id);
   const categories = await editorModel.LoadCateById(list[0].IdCategories);
-  const cateSub= await editorModel.LoadCateSub(list[0].IdCategories);
+  const cateSub = await editorModel.LoadCateSub(list[0].IdCategories);
 
   res.render('vwEditor/deny', {
-    cateSub:cateSub[0],
+    cateSub: cateSub[0],
     categories: categories[0],
     denyPost: list[0],
     empty: list.length === 0,
@@ -240,7 +240,7 @@ router.get('/accept/:Id', restrict, Authories, async function (req, res) {
     }
   }
   res.render('vwEditor/accept', {
-    cate:cate[0],
+    cate: cate[0],
     listCategoriesSub,
     templistTags,
     author: author[0],
@@ -251,53 +251,64 @@ router.get('/accept/:Id', restrict, Authories, async function (req, res) {
 });
 
 router.post('/denyPost', restrict, Authories, async function (req, res) {
-  const IsDelete = 0;
-  const IdPostDenied = 3;
-  const DatetimeApproval = moment().format('YYYY-MM-DD HH:mm:ss');
-  const IdPost = req.body.idPost;
-  const Note = req.body.reasonDeny;
-  const IdEditor = res.locals.lcAuthUser.IdAccount;
-  const categoriesPost = req.body.idCate;
-  const cateSub=req.body.idCateSub;
+  try {
+    const IsDelete = 0;
+    const IdPostDenied = 3;
+    const DatetimeApproval = moment().format('YYYY-MM-DD HH:mm:ss');
+    const IdPost = req.body.idPost;
+    const Note = req.body.reasonDeny;
+    const IdEditor = res.locals.lcAuthUser.IdAccount;
+    const categoriesPost = req.body.idCate;
+    const cateSub = req.body.idCateSub;
 
-  const IdEditorAccount = await editorModel.LoadIdEditor(IdEditor, categoriesPost);
-  const ValueOfFeedback = ['Note', 'Status', 'DatetimeApproval', 'IdEditorAccount', 'IdPost', 'IsDelete', `${Note}`, `${IdPostDenied}`, `${DatetimeApproval}`, `${IdEditorAccount[0].id}`, `${IdPost}`, `${IsDelete}`];
-  const result = await editorModel.InsertFeedbackPost(ValueOfFeedback);
-  const entity = {
-    Id: IdPost,
-    IdStatus: IdPostDenied
+    const ValueOfFeedback = ['Note', 'DatetimeApproval', 'IdEditorAccount', 'IdPost', 'IsDelete', `${Note}`, `${DatetimeApproval}`, `${IdEditor}`, `${IdPost}`, `${IsDelete}`];
+    await editorModel.InsertFeedbackPost(ValueOfFeedback);
+    const entity = {
+      Id: IdPost,
+      IdStatus: IdPostDenied
+    }
+    await editorModel.UpdateStatusPost(entity);
+
+    res.redirect('/editor/pending/?cate=' + categoriesPost + '&catesub=' + cateSub);
   }
-  await editorModel.UpdateStatusPost(entity);
-
-  res.redirect('/editor/pending/?cate='+categoriesPost+'&catesub='+cateSub);
+  catch (err) {
+    console.log(err);
+  }
 });
 
 router.post('/editdeny', restrict, Authories, async function (req, res) {
-
-  const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+  try{
+    const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
   const IdPost = req.body.idPost;
   const note = req.body.reasonDeny;
-  const cate=req.body.idCate;
-  const catesub=req.body.idCateSub;
+  const cate = req.body.idCate;
+  const catesub = req.body.idCateSub;
   const fb = await editorModel.LoadFeedBackOfPosts(IdPost);
   if (fb.length == 0) {
     res.redirect('/editor/denied');
   }
-  const entity={
-    Id:fb[0].Id,
-    Node:note,
+  const entity = {
+    Id: fb[0].Id,
+    Node: note,
     DatetimeApproval: dt_now
   }
-  const update_fb= await editorModel.UpdateFeedBackOfPosts(entity);
+  const update_fb = await editorModel.UpdateFeedBackOfPosts(entity);
 
-  res.redirect('/editor/denied/?cate='+cate+'&catesub='+catesub);
+  res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
+  }
+  catch (err)
+  {
+    console.log(err);
+  }
+
 });
 
 router.post('/acceptPost', restrict, Authories, async function (req, res) {
-  const IsDelete = 0;
+  try{
+    const IsDelete = 0;
   var IdStatus = 1;
   const newListTags = req.body.tags;
-  const cate=req.body.cate;
+  const cate = req.body.cate;
   const IdPost = req.body.IdPost;
   const catesub = req.body.subCate;
   const ScheduleTime = req.body.Schedule;
@@ -336,7 +347,12 @@ router.post('/acceptPost', restrict, Authories, async function (req, res) {
       await editorModel.UpdateFeedBackOfPosts(fb_entity);
     }
   }
-  res.redirect('/editor/pending/?cate='+cate+'&catesub='+catesub);
+  res.redirect('/editor/pending/?cate=' + cate + '&catesub=' + catesub);
+  }
+  catch (err)
+  {
+    console.log(err);
+  }
 });
 
 
