@@ -520,7 +520,7 @@ ALTER TABLE `categories_sub`
 --
 ALTER TABLE `comments`
   ADD PRIMARY KEY (`Id`),
-  ADD KEY `Comment_Informations` (`IdAccount`),
+  ADD KEY `Comment_Accounts` (`IdAccount`),
   ADD KEY `Comment_Posts` (`IdPost`);
 
 --
@@ -689,7 +689,7 @@ ALTER TABLE `accounts`
 -- Constraints for table `comments`
 --
 ALTER TABLE `comments`
-  ADD CONSTRAINT `Comment_Informations` FOREIGN KEY (`IdAccount`) REFERENCES `information` (`Id`),
+  ADD CONSTRAINT `Comment_Accounts` FOREIGN KEY (`IdAccount`) REFERENCES `accounts` (`Id`),
   ADD CONSTRAINT `Comment_Posts` FOREIGN KEY (`IdPost`) REFERENCES `posts` (`Id`);
 
 --

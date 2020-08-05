@@ -1865,9 +1865,10 @@ section
 }
 
 
-.post_tags
+.post_tag
 {
 	margin-top: 20px;
+	background-color: red;
 }
 .post_tag
 {
@@ -1895,7 +1896,7 @@ section
 	font-size: 12px;
 	padding-left: 10px;
 	padding-right: 10px;
-	color: rgba(0,0,0,0.5);
+	color: rgba(252, 252, 252, 0.884);
 	font-weight: 500;
 }
 .post_tag:hover

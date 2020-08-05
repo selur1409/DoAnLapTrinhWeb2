@@ -92,7 +92,7 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
     const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
 
 
-    const test = moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD').format('YYYY-MM-DD HH:mm:ss');
+    //const test = moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD').format('YYYY-MM-DD HH:mm:ss');
 
     // console.log(test);
 

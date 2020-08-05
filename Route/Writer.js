@@ -210,9 +210,9 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         }
         else {
             
-            const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+            const Check = await db.CheckTitleIsExistsInPost(Title, Url);
 
-            if (Check.length === 0) {
+            if (Check.length !== 0) {
                 res.json({ fail: 'The title of article is already exists.' });
             }
             else {
@@ -548,7 +548,7 @@ router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, n
         }
         else{
 
-            const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+            const Check = await db.CheckTitleIsExistsInUpdate(Title, Url, IdPost);
             if(Check.length === 0)
             {
                 res.json({fail:'The title of article is already exists'});

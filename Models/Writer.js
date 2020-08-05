@@ -12,10 +12,14 @@ module.exports = {
         return db.load(`SELECT * FROM tag_posts tp WHERE tp.IdPost = ${IdPost}`)
     },
 
-    CheckTitleIsExists:(title, Url, IdPost)=>{
+    CheckTitleIsExistsInPost:(title, Url)=>{
         return db.load(`SELECT * 
         FROM posts 
-        WHERE (((Title = '${title}' OR Url = '${Url}') AND ${IdPost} IN (SELECT p.Id FROM posts p)) OR (Title != '${title}' OR Url != '${Url}'))`);
+        WHERE Title = '${title}' OR Url = '${Url}'`);
+    },
+
+    CheckTitleIsExistsInUpdate:(title, Url, IdPost)=>{
+        return db.load(`SELECT * FROM posts WHERE (Title = '${title}' OR Url = '${Url}') AND Id = ${IdPost}`);
     },
 
     LoadSubCategories:()=>{

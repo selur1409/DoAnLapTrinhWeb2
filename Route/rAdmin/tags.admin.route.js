@@ -5,8 +5,11 @@ const multer = require('multer');
 const path = require('path');
 const check = require('../../js/check');
 const {filesize} = require('../../config/default.json');
+const {restrict} = require('../../middlewares/auth.mdw');
+const {isAdmin} = require('../../middlewares/auth.mdw');
+
 module.exports = (router) =>{
-    router.get('/tags', async function(req, res){
+    router.get('/tags', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'tags') {
               c.isActive = true;
@@ -26,7 +29,7 @@ module.exports = (router) =>{
         });
     });
 
-    router.get('/tags/add', async function(req, res){
+    router.get('/tags/add', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'tags') {
               c.isActive = true;
@@ -66,7 +69,7 @@ module.exports = (router) =>{
     })
     const upload = multer({storage});
 
-    router.post('/tags/add', upload.single('ImgURL'), async function(req, res){
+    router.post('/tags/add', restrict, isAdmin, upload.single('ImgURL'), async function(req, res){
         try{
             const name = req.body.Name;
             const tagName = check.mark_tag(req.body.TagName);
@@ -121,7 +124,7 @@ module.exports = (router) =>{
     });
 
 
-    router.get('/tags/edit', async function(req, res){
+    router.get('/tags/edit', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'tags') {
               c.isActive = true;
@@ -140,8 +143,6 @@ module.exports = (router) =>{
         isTagName[0].href = isTagName[0].TagName;
         isTagName[0].TagName = '#'.concat(isTagName[0].TagName);
 
-        console.log(isTagName[0]);
-
         return res.render('vwAdmin/vwTags/editTag', {
             layout: 'homeadmin',
             tag: isTagName[0],
@@ -150,7 +151,7 @@ module.exports = (router) =>{
         });
     });
 
-    router.post('/tags/edit', upload.single('ImgURL'), async function(req, res){
+    router.post('/tags/edit', restrict, isAdmin, upload.single('ImgURL'), async function(req, res){
         try{
             const hashtag = req.query.hashtag || "";
             const hashtaghref = check.change_characters(hashtag);
@@ -160,7 +161,6 @@ module.exports = (router) =>{
                 if (req.file){
                     fs.unlinkSync(req.file.path);
                 }
-                console.log(1);
                 return res.redirect(`/admin/tags`);
             }
             const name = req.body.Name;
@@ -169,7 +169,7 @@ module.exports = (router) =>{
             if(!name || !tempTagName || tempTagName === '#'){
                 if (req.file){
                     fs.unlinkSync(req.file.path);
-                }                console.log(2);
+                }                
                 req.flash('error', 'Mục bắt buộc không được để trống hoặc nhập sai định dạng.');
                 return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
             }
@@ -187,7 +187,7 @@ module.exports = (router) =>{
             if (isName.length !== 0 || isTagName.length !== 0){
                 if (req.file){
                     fs.unlinkSync(req.file.path);
-                }                console.log(3);
+                }                
                 req.flash('error', 'Tag hoặc TagName đã tồn tại.');
                 return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
             }
@@ -203,7 +203,7 @@ module.exports = (router) =>{
                 req.flash('success', 'Chỉnh sửa Tag thành công.');
                 return res.redirect(`/admin/tags/edit?hashtag=${hashtaghref}`);
             }
-
+            // file ảnh không vượt quá 2MB
             if (req.file.size/filesize > 2)
             {
                 fs.unlinkSync(req.file.path);
@@ -235,7 +235,7 @@ module.exports = (router) =>{
         }
     });
 
-    router.get('/tags/activate', async function(req, res){
+    router.get('/tags/activate', restrict, isAdmin, async function(req, res){
         try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'tags') {
@@ -259,7 +259,7 @@ module.exports = (router) =>{
             
     });
     
-    router.post('/tags/activate', async function(req, res){
+    router.post('/tags/activate', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
         
@@ -293,7 +293,7 @@ module.exports = (router) =>{
     });
 
     // xóa tags (update IsDelete = 1)
-    router.post('/tags/del', async function(req, res){
+    router.post('/tags/del', restrict, isAdmin, async function(req, res){
         try{
             const id = req.body.Id;
             await tagModel.Provision(id);

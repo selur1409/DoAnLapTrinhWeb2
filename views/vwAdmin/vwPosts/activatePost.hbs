@@ -19,32 +19,16 @@
 }
 </style>
 {{/section}}
-
+<div class="col mb-2 mt-2 ml-3">
+    <a class="btn btn-info" href="/admin/posts" role="button" title="Back to List">
+      <i class="fas fa-reply"></i>
+      Trở về
+    </a>
+</div>
 <div class="card">
   <div class="card-header d-flex justify-content-between">
     <h4>POSTS</h4>
-    <a class="btn btn-outline-success" href="/admin/posts/add" role="button">
-        <i class="fa fa-plus" aria-hidden="true"></i>
-        Thêm
-    </a>
-    <a class="btn btn-outline-warning" href="/admin/posts/activate" role="button">
-        <i class="fas fa-key"></i>
-        Kích hoạt
-    </a>
   </div>
-  <div class="row">
-      <div class="col-12">
-          <nav class="nav nav-pills flex-column flex-sm-row p-2">
-              {{#each status}}
-              <a class="flex-sm-fill text-sm-center nav-link  {{#if isActive}} active {{/if}}" href="/admin/posts?status={{Id}}">
-                {{Name}} <span class="badge badge-danger float-right">{{number_of_status}}</span>
-              </a>
-              {{/each}}
-          </nav>
-      </div>
-  </div>
-  
-
 
   {{#if this.empty}}
   <div class="card-body">
@@ -70,7 +54,7 @@
     </div>
     {{/if}}
     
-  <table class="table table-hover table-fixed">
+  <table class="table table-hover table-fixed table-dark">
     <thead>
       <tr>
         <th scope="col" class="text-center col-1">#</th>
@@ -95,26 +79,9 @@
         <td class="col-1"><b>{{NameStatus}}</b></td>
         <td class="text-right col-2">
         <form method="POST">
-            {{#if isUpdate}}
-            <a class="btn btn-warning btn-sm" href="/admin/posts/status?number={{sttSelect}}&url={{Url}}" role="button" title="Status">
-                <i class="fas fa-bell"></i>
-            </a>
-            <a class="btn btn-info btn-sm" href="/admin/posts/update?id={{Id}}" role="button" title="Edit">
-                <i class="fas fa-pen"></i>
-            </a>
-            {{/if}}
-            {{#if IsComment}}
-            <a class="btn btn-primary btn-sm" href="/admin/posts/comment?url={{Url}}" role="button" title="Comment">
-                <i class="fas fa-comment-alt"><span class="badge badge-danger float-right">{{#if AmountComment}}{{AmountComment}}{{/if}}</span></i>
-            </a>
-            {{/if}}
-            <a class="btn btn-dark btn-sm" href="/admin/posts/details?number={{sttSelect}}&url={{Url}}" role="button" title="Details">
-                <i class="fas fa-info"></i>
-            </a>
-            <input type="hidden" name="Id" value="{{Id}}">           
-            <input type="hidden" name="Status" value="{{sttSelect}}">
-            <button type="submit" class="btn btn-danger btn-sm" title="Delete" formaction="/admin/posts/del">
-                <i class="fas fa-trash-alt"></i>
+            <input type="hidden" name="Id" value="{{Id}}">
+            <button type="submit" class="btn btn-warning btn-sm" title="Activate" formaction="/admin/posts/activate">
+                <i class="fas fa-key"></i>
             </button>
         </form>
         </td>

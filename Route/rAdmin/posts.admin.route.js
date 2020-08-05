@@ -3,7 +3,7 @@ const moment = require('moment');
 const statusModel = require('../../models/statuspost.model');
 const {getTimeBetweenDate} = require('../../js/betweendate');
 const db = require('../../models/Writer');
-const {restrict, referer} = require('../../middlewares/auth.mdw');
+const {restrict, isAdmin} = require('../../middlewares/auth.mdw');
 const {mark_url} = require('../../js/check');
 const multer = require('multer');
 let upload = multer();
@@ -14,9 +14,11 @@ const categoryModel = require('../../models/category.model');
 const tagModel = require('../../models/tag.model');
 const flash = require('express-flash');
 const editorModel = require('../../models/editor.model');
+const commentModel = require('../../models/comment.model');
+const { resolveSoa } = require('dns');
+const {pagination} = require('../../config/default.json');
 
 module.exports = (router) => {
-
     function getTagImg(value) {
         let result;
         let res = [];
@@ -32,8 +34,6 @@ module.exports = (router) => {
             //handling error
             if (err) {
                 return console.log('Unable to scan directory: ' + err);
-                console.log(directoryPath);
-                console.log(tagsImg);
             }
 
             //listing all files using forEach
@@ -83,7 +83,7 @@ module.exports = (router) => {
     }
 
     //Using to save img from editor tinymce to folder at server 
-    router.post('/Upload_IMG', restrict, async (req, res) => {
+    router.post('/Upload_IMG', restrict, isAdmin, async (req, res) => {
         const folderName =  './public/img/ImagePost/temp';
         try {
             if (!fs.existsSync(folderName)) {
@@ -104,9 +104,13 @@ module.exports = (router) => {
     });
 
     //render editor tinymce to post
-    router.get('/posts/add', restrict, async (req, res) => {
+    router.get('/posts/add', restrict, isAdmin, async (req, res) => {
         try {
-
+            for (const c of res.locals.lcManage) {
+                if (c.link === 'posts') {
+                  c.isActive = true;
+                }
+            }
             const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
             res.setHeader("Access-Control-Allow-Origin", "*");
             res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
@@ -115,8 +119,6 @@ module.exports = (router) => {
                 ListTag: Tags,
                 ListCat: Categories,
                 ListSubCat: Categories_sub,
-                Name: res.locals.lcAuthUser.Username,
-                Avatar: res.locals.lcAuthUser.Avatar,
                 helpers: {
                     count_index: function (value) {
                         if (value % 3 === 0 && value !== 0) {
@@ -142,7 +144,7 @@ module.exports = (router) => {
         }
     });
 
-    router.post('/posts/add', restrict, upload.fields([]), async (req, res, next) => {
+    router.post('/posts/add', restrict, isAdmin, upload.fields([]), async (req, res, next) => {
         try {
 
             let checkbox = JSON.parse(req.body.arrCheck);
@@ -170,7 +172,7 @@ module.exports = (router) => {
             }
             else {
 
-                const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+                const Check = await db.CheckTitleIsExistsInPost(Title, Url, IdPost);
                 if (Check.length === 0) {
                     res.json({ fail: 'The title of article is already exists.' });
                 }
@@ -226,7 +228,7 @@ module.exports = (router) => {
     }); 
 
     //Using to save img from update-post page into folder at server
-    router.post('/UpdateIMG', restrict, async (req, res)=>{
+    router.post('/UpdateIMG', restrict, isAdmin, async (req, res)=>{
         const idPost = +req.query.id;
         const folderName = path.join(__dirname, '../../public/img/ImagePost/' + idPost);
         try {
@@ -248,7 +250,12 @@ module.exports = (router) => {
     });
     
     //render page update post
-    router.get('/posts/update', restrict, async (req, res)=>{
+    router.get('/posts/update', restrict, isAdmin, async (req, res)=>{
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
         const IdPost = +req.query.id;
         const Post = await db.LoadSinglePost(IdPost);
         const TagOfPost = await db.LoadTagOfPost(IdPost);
@@ -334,7 +341,7 @@ module.exports = (router) => {
         }   
     });
     
-    router.post('/posts/update', restrict, upload.fields([]), async (req,res, next)=>{
+    router.post('/posts/update', restrict, isAdmin, upload.fields([]), async (req,res, next)=>{
         try{
             let checkbox = JSON.parse(req.body.arrCheck);
             const IdPost = +req.query.id;
@@ -368,7 +375,7 @@ module.exports = (router) => {
                     let TagsImg = getTagImg(content);
                     Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
-                    const Result = await db.UpdatePostOfWriter(ValueOfPost);
+                    const Result = await db.CheckTitleIsExistsInUpdate(ValueOfPost);
                     await db.DeleteTagPost(IdPost);
                     let tmp = [];
                     for (let i = 0; i < checkbox.length; i++) {
@@ -397,7 +404,7 @@ module.exports = (router) => {
     }); 
     
 
-    router.get('/posts', async function(req, res){
+    router.get('/posts', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
             if (c.link === 'posts') {
               c.isActive = true;
@@ -442,17 +449,60 @@ module.exports = (router) => {
             if (list[i].IdStatus === 3 || list[i].IdStatus === 4){
                 list[i].isUpdate = true;
             }
+            else if (list[i].IdStatus === 2){
+                const amount = await commentModel.countCommentByIdPost_admin_NotCheck(list[i].Id);
+                list[i].IsComment = true;
+                list[i].AmountComment = amount[0].Count;
+                
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
+            }
+            else if (list[i].IdStatus === 1){
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
+            }
         }
-        
+
         return res.render('vwAdmin/vwPosts/listPost', {
             layout: 'homeadmin',
             posts: list,
             empty: list.length === 0,
-            status: listStatus
+            status: listStatus,
+            err: req.flash('error'),
+            success: req.flash('success')
         });
     });
     
-    router.get('/posts/status', async function(req, res){
+    router.get('/posts/status', restrict, isAdmin, async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
         const status = +req.query.number || 0;
         if (status < 0 || status > 4)
         {
@@ -476,8 +526,16 @@ module.exports = (router) => {
         
         var isDenied = false;
         if (select === 3)
+        {    
             isDenied = true;
-
+            const loadFb = await postModel.LoadFeedBackOfPosts(posts[0].Id);
+            if (loadFb.length === 0){
+                req.flash('error', 'Bài viết bị từ chối nhưng không có phản hồi.');
+                return res.redirect('/admin/posts?status=3');
+            }
+            loadFb[0].DatetimeApproval = moment(loadFb[0].DatetimeApproval, 'YYYY/MM/DD HH:mm:ss').format('HH:mm:ss DD/MM/YYYY');
+            posts[0].Feedback = loadFb[0];
+        }
         const listStatus = await statusModel.all();
 
         for (l of listStatus){
@@ -509,7 +567,7 @@ module.exports = (router) => {
         for (l of listTags){
             for(t of idTagPost){
                 if(l.Id === t.IdTag){
-                    l.checked = true;
+                    l.checked = true;       
                     break;
                 }
             }
@@ -528,29 +586,43 @@ module.exports = (router) => {
         })
     })
 
-    router.post('/posts/status/deny', async function (req, res){
-        const id = req.body.Id;
+    router.post('/posts/status/deny', restrict, isAdmin, async function (req, res){
+        const idPost = req.body.Id;
+        const Note = req.body.Note;
+        if(!Note)
+        {
+            req.flash('error', 'Cần ghi chú rõ lý do để phóng viên có thể hiệu chỉnh lại bài viết cho phù hợp.');
+            return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
+        }
+
         const entity = {
-            Id: id,
+            Id: idPost,
             IdStatus: 3
         }
         await postModel.patch(entity);
+        
+        const IdEditorAccount = res.locals.lcAuthUser.Id;
+        const DatetimeApproval = moment().format('YYYY-MM-DD HH:mm:ss');
+        
+        const ValueOfFeedback = ['Note', 'DatetimeApproval', 'IdEditorAccount', 'IdPost', 'IsDelete', `${Note}`, `${DatetimeApproval}`, `${IdEditorAccount}`, `${idPost}`, 0];
+        await editorModel.InsertFeedbackPost(ValueOfFeedback);
+        
         return res.redirect('/admin/posts?status=3');
     })
-    router.post('/posts/status/accept', async function (req, res){
+    router.post('/posts/status/accept', restrict, isAdmin, async function (req, res){
         const listTag = req.body.TagSeleted || [];
-
+        
         if (listTag.length === 0){
             req.flash('error', 'Phải lựa chọn ít nhất 1 thẻ Tag.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
-
+        
         if (!req.body.TimePost || isNaN(Date.parse(req.body.TimePost)))
         {
             req.flash('error', 'Chưa chọn thời gian đăng bài.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
-
+        
         const dt_exp = new Date(moment(req.body.TimePost, 'YYYY/MM/DD HH:mm:ss').format('YYYY/MM/DD HH:mm:ss'));
         const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
         if (dt_exp < dt_now){
@@ -559,25 +631,35 @@ module.exports = (router) => {
         }
         
         const id = req.body.Id;
-        const entity = {
-            Id: id,
-            IdStatus: 1,
-            IdCategories: req.body.selectCatSub
-        }
         await editorModel.DeleteTagsOfPost(id);
+        
         for (l of listTag){
-            const entity = {
+            const entityTag = {
                 IdTag: +l,
                 IdPost: id
             }
-            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
+            const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
             await editorModel.InsertTagsPost(value);
         }
 
+        const entity = {
+            Id: id,
+            IdStatus: 1,
+            IdCategories: req.body.selectCatSub,
+            DatetimePost: dt_exp
+        }
         await postModel.patch(entity);
+
+        const IsPremium = +req.body.Premium || 0;
+        const entityPostDetails = {
+            Id: id,
+            IsPremium: IsPremium
+        }
+        await editorModel.UpdateIsPremium(entityPostDetails);
         return res.redirect('/admin/posts?status=1');
     })
-    router.post('/posts/status/repost', async function (req, res){
+
+    router.post('/posts/status/repost', restrict, isAdmin, async function (req, res){
         const listTag = req.body.TagSeleted || [];
 
         if (listTag.length === 0){
@@ -586,36 +668,161 @@ module.exports = (router) => {
         }
         
         const id = req.body.Id;
+        await editorModel.DeleteTagsOfPost(id);
+
+        for (l of listTag){
+            const entityTag = {
+                IdTag: +l,
+                IdPost: id,
+            }
+            const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
+            await editorModel.InsertTagsPost(value);
+        }
+        
         const entity = {
             Id: id,
             IdStatus: 4,
             IdCategories: req.body.selectCatSub
         }
-        await editorModel.DeleteTagsOfPost(id);
-        for (l of listTag){
-            const entity = {
-                IdTag: +l,
-                IdPost: id
-            }
-            const value = ['IdTag', 'IdPost', `${entity.IdTag}`, `${entity.IdPost}`];
-            await editorModel.InsertTagsPost(value);
-        }
-
         await postModel.patch(entity);
+
+        await postModel.provisionFeedback(id);
+
         return res.redirect('/admin/posts?status=4');
     })
 
-    router.get('/posts/comment/:url', function(req, res){
-        return res.send('ok');
+    router.get('/posts/comment', restrict, isAdmin, async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
+        const url = req.query.url || "empty";
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
+            return res.redirect('/admin/posts');
+        }
+        if (posts[0].IdStatus !== 2){
+            req.flash('error', 'Bài viết chưa được xuất bản.');
+            return res.redirect('/admin/posts');
+        }
+
+        const offset = (+req.body.number || 0) * pagination.limit;
+        
+        const post = posts[0];
+        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, pagination.limit);
+
+        for (l of listComment){
+            l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+            l.Url = url;
+        }
+        const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+
+        // load lên và cập nhật đã xem
+        for (l of listComment){
+            const entity = {
+                Id: l.Id,
+                IsCheck: 1
+            }
+            await commentModel.patch(entity);
+        }
+
+        return res.render('vwAdmin/vwPosts/commentPost', {
+            layout: 'homeadmin',
+            post: post,
+            listComment: listComment,
+            empty: empty[0].Count,
+            more: empty[0].Count > pagination.limit,
+            err: req.flash('error'),
+            success: req.flash('success')
+        })
+    })
+
+    router.post('/posts/comment/load', restrict, isAdmin, async function (req, res){
+        const url = req.body.url || "empty";
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
+            return res.redirect('/admin/posts');
+        }
+        if (posts[0].IdStatus !== 2){
+            req.flash('error', 'Bài viết chưa được xuất bản.');
+            return res.redirect('/admin/posts');
+        }
+
+        const offset = (+req.body.number || 1) * pagination.limit;
+
+        const post = posts[0];
+        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, pagination.limit);
+
+        for (l of listComment){
+            l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+            l.Url = url;
+        }
+        
+        const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+        var more = true;
+        if (offset + pagination.limit >= empty[0].Count){
+            more = false;
+        }
+        
+        const number = +req.body.number + 1;
+
+        const data = {
+            listComment: listComment,
+            number: number,
+            more: more
+        }
+
+        // load lên và cập nhật đã xem
+        for (l of listComment){
+            const entity = {
+                Id: l.Id,
+                IsCheck: 1
+            }
+            await commentModel.patch(entity);
+        }
+        return res.json(data);
+    })
+
+    router.post('/posts/comment/add', restrict, isAdmin, async function(req, res){
+        const IdPost = req.body.IdPost;
+        const Content = req.body.Content;
+        const Img = req.body.Img;
+        const Url = req.body.Url;
+        if (!Content){
+            req.flash('error', 'Nội dung bình luận không thể để trống ');
+            return res.redirect(`/admin/posts/comment?url=${Url}`);
+        }
+
+        const DatetimeComment = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        const entity = {
+            IdPost,
+            Content,
+            DatetimeComment,
+            IsDelete: 0,
+            IdAccount: res.locals.lcAuthUser.Id
+        }
+        await commentModel.add(entity);
+
+        return res.redirect(`/admin/posts/comment?url=${Url}`);
     })
 
     
-    router.get('/posts/details', async function(req, res){
+    router.get('/posts/details', restrict, isAdmin, async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
         const status = +req.query.number || 0;
-        const url = req.query.url;
+        const url = req.query.url || "empty";
 
         const posts = await postModel.single_url_posts(url);
         if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
             return res.redirect('/admin/posts');
         }
         const select = posts[0].IdStatus;
@@ -643,7 +850,7 @@ module.exports = (router) => {
             }
         }
 
-        const details = await postModel.details_idPost(posts[0].Id);
+        const details = await postModel.detailsTags_idPost(posts[0].Id);
 
         posts[0].DatePost = moment(posts[0].DatePost, 'YYYY/MM/DD HH:mm:ss').format('DD/MM/YYYY ');
         posts[0].DatetimePost = moment(posts[0].DatetimePost, 'YYYY/MM/DD HH:mm:ss').format('HH:mm DD/MM/YYYY');
@@ -655,5 +862,83 @@ module.exports = (router) => {
             listStatus: listStatus,
             listTags: details
         })
+    })
+
+    router.post('/posts/comment/notdislayed', restrict, isAdmin, async function(req, res){
+        const id = req.body.Id;
+        const url = req.body.Url;
+        
+        await commentModel.provision(id);
+        return res.redirect(`/admin/posts/comment?url=${url}`)
+    })
+
+    router.post('/posts/del', restrict, isAdmin, async function(req, res){
+        const id = +req.body.Id;
+        const status = req.body.Status;
+
+        await postModel.provisionPost(id);
+        return res.redirect(`/admin/posts?stauts=${status}`);
+    })
+
+
+    router.get('/posts/activate', restrict, isAdmin, async function(req, res){
+        for (const c of res.locals.lcManage) {
+            if (c.link === 'posts') {
+              c.isActive = true;
+            }
+        }
+
+        const list = await postModel.dislayList_activate();
+
+        for (i = 0; i < list.length; i++){
+            if (list[i].IdStatus === 4)
+            {
+                list[i].DatetimePost = 'Chưa có';
+            }
+            else{
+                list[i].DatetimePost = moment(list[i].DatetimePost, 'YYYY/MM/DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+            }
+            
+            if (list[i].IdStatus === 2 || list[i].IdStatus === 1){
+                list[i].IsPremium = false;
+                try{
+                    const premium = await postModel.singlePremium_idPost(list[i].Id);
+                    if (premium.length === 0){
+                        ;
+                    }
+                    else if (premium[0].IsPremium === 1){
+                        list[i].IsPremium = true;
+                    }
+                }
+                catch{
+                    req.flash('error', 'Premium không tồn tại.');
+                    return res.redirect('/admin/posts');
+                }
+            }
+        }
+
+        return res.render('vwAdmin/vwPosts/activatePost', {
+            layout: 'homeadmin',
+            posts: list,
+            empty: list.length === 0,
+            err: req.flash('error'),
+            success: req.flash('success')
+        });
+    })
+
+    router.post('/posts/activate', restrict, isAdmin, async function(req, res){
+        const id = req.body.Id;
+        const checkId = await postModel.checkId(id);
+        if (checkId.length === 0){
+            req.flash('error', 'Bài viết đã xóa tạm không tồn tại.');
+            return res.redirect('/admin/posts/activate');
+        }
+        const checkUrl = await postModel.checkPost(checkId[0].Url);
+        if (checkUrl.length !== 0){
+            req.flash('error', 'Bài viết không thể kích hoạt.');
+            return res.redirect('/admin/posts/activate');
+        }
+        await postModel.activatePost(id);
+        return res.redirect('/admin/posts/activate');
     })
 }
