@@ -68,7 +68,7 @@ module.exports = {
         return db.patch(TBL_POSTS, entity, condition);
     },
     InsertFeedbackPost: (value) => {
-        return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?, ?)`, value);
+        return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)`, value);
     },
     LoadCateSub: (idCategories) => {
         return db.load(`SELECT Name, Id from ${TBL_CATEGORIES_SUB} WHERE IdCategoriesMain=${idCategories} AND IsDelete=0`)

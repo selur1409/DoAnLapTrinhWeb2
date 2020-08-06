@@ -146,7 +146,6 @@ module.exports = (router) => {
 
     router.post('/posts/add', restrict, isAdmin, upload.fields([]), async (req, res, next) => {
         try {
-
             let checkbox = JSON.parse(req.body.arrCheck);
             const IsDelete = 0;
             const IdStatus = 4;
@@ -173,7 +172,7 @@ module.exports = (router) => {
             else {
 
                 const Check = await db.CheckTitleIsExistsInPost(Title, Url, IdPost);
-                if (Check.length === 0) {
+                if (Check.length !== 0) {
                     res.json({ fail: 'The title of article is already exists.' });
                 }
                 else {
@@ -193,7 +192,6 @@ module.exports = (router) => {
 
                     const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
                     const result = await db.InsertTagPost(ValueOfTagPost);
-
                     //remove image is not exists in full content 
                     RemoveImage(directoryPath, tagsImg);
 
@@ -216,16 +214,14 @@ module.exports = (router) => {
                         });
                     }
 
-                    if (result !== null) {
-                        res.json({ success: 'This article has been sent successfully!' });
-                    }
+                    res.json({ success: 'This article has been sent successfully!' });
                 }
             }
         }
         catch (e) {
             console.log(e);
         }
-    }); 
+    });
 
     //Using to save img from update-post page into folder at server
     router.post('/UpdateIMG', restrict, isAdmin, async (req, res)=>{
@@ -364,7 +360,7 @@ module.exports = (router) => {
             }
             else{
     
-                const Check = await db.CheckTitleIsExists(Title, Url, IdPost);
+                const Check = await db.CheckTitleIsExistsInUpdate(Title, Url, IdPost);
                 if(Check.length === 0)
                 {
                     res.json({fail:'The title of article is already exists'});
@@ -375,7 +371,7 @@ module.exports = (router) => {
                     let TagsImg = getTagImg(content);
                     Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
-                    const Result = await db.CheckTitleIsExistsInUpdate(ValueOfPost);
+                    const Result = await db.UpdatePostOfWriter(ValueOfPost);
                     await db.DeleteTagPost(IdPost);
                     let tmp = [];
                     for (let i = 0; i < checkbox.length; i++) {
@@ -389,6 +385,7 @@ module.exports = (router) => {
     
                     //remove image is not exists in full content 
                     const directoryPath = path.join(__dirname, '../../public/img/ImagePost/' + IdPost);
+
                     RemoveImage(directoryPath, TagsImg);
     
                     if (result !== null) {
@@ -399,7 +396,7 @@ module.exports = (router) => {
         }
         catch(e)
         {
-            console.log(e);m
+            console.log(e);
         }
     }); 
     
@@ -484,6 +481,8 @@ module.exports = (router) => {
                     req.flash('error', 'Premium không tồn tại.');
                     return res.redirect('/admin/posts');
                 }
+
+                list[i].Publish = true;
             }
         }
 
@@ -940,5 +939,15 @@ module.exports = (router) => {
         }
         await postModel.activatePost(id);
         return res.redirect('/admin/posts/activate');
+    })
+
+    router.post('/posts/publish', restrict, isAdmin, async function(req, res){
+        const id = req.body.Id;
+        const entity = {
+            Id: id,
+            IdStatus: 2
+        }
+        await postModel.patch(entity);
+        return res.redirect('/admin/posts?status=1');
     })
 }
