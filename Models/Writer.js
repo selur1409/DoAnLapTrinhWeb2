@@ -117,15 +117,19 @@ module.exports = {
 
     /*Feedback*/
     LoadInboxFB:(IdPost, Limit, OffSet, IsDelete)=>{
-        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.DatetimeApproval, inf.Name
         FROM feedback fb, editoraccount ec, information inf 
         WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete} LIMIT ${Limit} OFFSET ${OffSet}`);
     },
 
     LoadFB:(Id)=>{
-        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.Status, fb.DatetimeApproval, inf.Name
-        FROM feedback fb, editoraccount ec, information inf
-        WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount`);
+        return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.DatetimeApproval, inf.Name
+        FROM feedback fb, accounts ac, information inf
+        WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ac.Id AND ac.Id = inf.IdAccount`);
+    },
+
+    UpdateFB:(IdPost)=>{
+        return db.load(`UPDATE feedback SET IsDelete = 1 WHERE IdPost = ${IdPost}`);
     },
 
     CountFB:(IdPost, IsDelete)=>{
@@ -146,6 +150,8 @@ module.exports = {
         FROM accounts a, information i, typeaccount ta 
         WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
     },
+
+
 
     UpdateProfile:(value)=>{
         return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ?, Avatar = ? WHERE IdAccount = ?`, value);

@@ -570,6 +570,7 @@ router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, n
                 }
                 const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
                 const result = await db.InsertTagPost(ValueOfTagPost);
+                await db.UpdateFB(IdPost);
 
                 //remove image is not exists in full content 
                 const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
@@ -587,12 +588,12 @@ router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, n
     }
 }); 
 
-router.get('/FeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, next)=>{
+router.get('/FeedBack_Read/:idPost/:id', restrict, Authories, async (req,res, next)=>{
     try{
-        const Id = req.params.id;
-        const IdPost = req.params.idPost;
+        const Id = +req.params.id;
+        const IdPost = +req.params.idPost;
         const IsDelete = 0;
-        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost, IsDelete)]);
+        const [Result, Total] = await Promise.all([db.LoadFB(IdPost), CountFB(IdPost, IsDelete)]);
      
         res.render('vwWriter/feedback_read', {
             layout:'homewriter',
@@ -662,7 +663,7 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
 
 router.post('/FeedBack_Inbox/RemoveFeedBack/:id', restrict, Authories, upload.fields([]), async (req, res, next)=>{
     try{
-        const IdPost = req.params.id;
+        const IdPost = +req.params.id;
         const checkbox = req.body.checkbox;
         let value = [];
         for(let i = 0; i < checkbox.length; i++)
@@ -672,7 +673,6 @@ router.post('/FeedBack_Inbox/RemoveFeedBack/:id', restrict, Authories, upload.fi
             tmp.push(1);
             value.push(tmp);
         }
-        console.log(value);
         const result = await db.RemoveFB(value);
         console.log(checkbox);
         res.redirect(`/writer/FeedBack_Inbox/${IdPost}/1`);
