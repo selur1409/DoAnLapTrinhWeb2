@@ -84,24 +84,20 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
     
     //const oriURL = "/detail/" + req.params.Url;
     //console.log(oriURL);
+    //console.log(res.locals.lcAuthUser);
+    //console.log(res.locals);
 
 
-    //console.log(req.session);
     const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+    if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
+        && res.locals.lcAuthUser.TypeAccount === 1)
+        return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
 
     const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
 
 
-    //const test = moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD').format('YYYY-MM-DD HH:mm:ss');
-
-    // console.log(test);
-
-    
-
-
-    if(dateEx < dt_now)
+    if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
         return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
-
 
     const url = req.params.Url;
     const rows = await postModel.single(url);
@@ -110,18 +106,15 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
 
-    //console.log(post);
-    //console.log(postRandom);
-
+    for(let i = 0; i < postRandom.length; i++)
+    {
+        postRandom[i].DatetimePost = moment(postRandom[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
+    }
 
     const listTag = await tagModel.tagByIdPost(post.Id);
     const listComment = await commentModel.commentByIdPost(post.Id);
 
     const listPostTags = await postModel.postTags();
-
-    //console.log(req.session);
-    //console.log(post);
-    //console.log(listComment);
 
     const countComment = listComment.length;
     res.render('vwPost/detailPost', {
@@ -166,19 +159,17 @@ router.get('/detail/:Url', async function(req, res){
     const post = rows[0];
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
-
-    console.log(post);
-    console.log(postRandom);
+    for(let i = 0; i < postRandom.length; i++)
+    {
+        postRandom[i].DatetimePost = moment(postRandom[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
+    }
 
     const listTag = await tagModel.tagByIdPost(post.Id);
     const listComment = await commentModel.commentByIdPost(post.Id);
 
     const listPostTags = await postModel.postTags();
-
-    //console.log(post);
-    //console.log(listComment);
-
     const countComment = listComment.length;
+
     res.render('vwPost/detailPost', {
         layout: 'detailpost',
         post,
