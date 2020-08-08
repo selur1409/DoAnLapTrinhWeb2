@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/main_styles.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/responsive.css">
-
+<link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/menu_dropdown.css">
 <link rel="stylesheet" href="/public/styles/menu.css">
@@ -33,30 +33,30 @@
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
 						<div class="logo"><a href="/">avision</a></div>
 						<nav class="main_nav">
-                                <menu>
-                                    <menuitem id="demo1">
-                                        <a>Lập trình  </a>
-                                        <menu>
-										{{#if lcListMenu}}
+							<menu>
+								<menuitem id="demo1">
+									<a href="/category">Lập trình  </a>
+									<menu>
+									{{#if lcListMenu}}
 										{{#each lcListMenu}}
-                                        <menuitem id="demo2">
-                                            <a>{{Name}}</a>
-                                            <menu>
-											{{#each Sub}}
-                                                <menuitem><a>{{Name}}</a></menuitem>
-											{{/each}}
-                                            </menu>
-                                        </menuitem>
+											<menuitem id="demo2">
+												<a>{{Name}}</a>
+												<menu>
+													{{#each Sub}}
+														<menuitem><a href="/category/{{Url}}">{{Name}}</a></menuitem>
+													{{/each}}
+												</menu>
+											</menuitem>
 										{{/each}}
-										{{else}}
-										<menuitem id="demo2">
-                                            <a>Chưa tải locals</a>
-                                        </menuitem>
-										{{/if}}
-                                        </menu>
-                                    </menuitem>
-                                </menu>
-                            </nav>
+									{{else}}
+									<menuitem id="demo2">
+										<a>Chưa tải locals</a>
+									</menuitem>
+									{{/if}}
+									</menu>
+								</menuitem>
+							</menu>
+                        </nav>
 						<div class="search_container ml-5">
 							<!-- <div class="weather">
 								<div class="temperature">+10°</div>
@@ -185,29 +185,19 @@
 			</form>
 		</div>
 		<nav class="container-fluid">
+			{{#each lcListMenu}}
 			<div class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				  Dropdown
-				</a>
-				<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
-				  <a class="dropdown-item" href="#">Action</a>
-				  <a class="dropdown-item" href="#">Another action</a>
-				  <div class="dropdown-divider"></div>
-				  <a class="dropdown-item" href="#">Something else here</a>
-				</div>
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{Name}}
+					</a>
+					<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
+						{{#each Sub}}
+							<a class="dropdown-item" href="/category/{{Url}}">{{Name}}</a>
+						{{/each}}
+					</div>
 			</div>
-			<div class="nav-item dropdown">
-				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				  Dropdown
-				</a>
-				<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
-				  <a class="dropdown-item" href="#">Action</a>
-				  <a class="dropdown-item" href="#">Another action</a>
-				  <div class="dropdown-divider"></div>
-				  <a class="dropdown-item" href="#">Something else here</a>
-				</div>
-			</div>
-		  </nav>
+			{{/each}}
+		</nav>
 	</div>
 	
 	<!-- Home -->

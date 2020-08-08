@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>SelurProjectWeb2</title>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="description" content="Demo project">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" type="text/css" href="/public/styles/bootstrap4/bootstrap.min.css">
-<link href="/public/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
-<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
-<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/animate.css">
-<link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
-<link rel="stylesheet" type="text/css" href="/public/styles/post.css">
-<link rel="stylesheet" type="text/css" href="/public/styles/post_responsive.css">
+	<title>SelurProjectWeb2</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="Demo project">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="/public/styles/bootstrap4/bootstrap.min.css">
+	<link href="/public/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
+	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
+	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/animate.css">
+	<link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
+	<link rel="stylesheet" type="text/css" href="/public/styles/post.css">
+	<link rel="stylesheet" type="text/css" href="/public/styles/post_responsive.css">
+	<link rel="stylesheet" href="/public/styles/menu.css">
+</head>
+
 <body>
 
 <div class="super_container">
@@ -26,15 +29,30 @@
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
 						<div class="logo"><a href="/">avision</a></div>
 						<nav class="main_nav">
-							<ul>
-								<li class="active"><a href="/">Home</a></li>
-								<li><a href="#">Fashion</a></li>
-								<li><a href="#">Gadgets</a></li>
-								<li><a href="#">Lifestyle</a></li>
-								<li><a href="#">Video</a></li>
-								<li><a href="contact.html">Contact</a></li>
-							</ul>
-						</nav>
+							<menu>
+								<menuitem id="demo1">
+									<a href="/category">Lập trình  </a>
+									<menu>
+									{{#if lcListMenu}}
+										{{#each lcListMenu}}
+										<menuitem id="demo2">
+											<a>{{Name}}</a>
+											<menu>
+												{{#each Sub}}
+													<menuitem><a href="/category/{{Url}}">{{Name}}</a></menuitem>
+												{{/each}}
+											</menu>
+										</menuitem>
+										{{/each}}
+									{{else}}
+									<menuitem id="demo2">
+										<a>Chưa tải locals</a>
+									</menuitem>
+									{{/if}}
+									</menu>
+								</menuitem>
+							</menu>
+                        </nav>
 						<div class="search_container ml-5">
 							<!-- <div class="weather">
 								<div class="temperature">+10°</div>
@@ -161,15 +179,19 @@
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
-		<nav class="menu_nav">
-			<ul class="menu_mm">
-				<li class="menu_mm"><a href="/">home</a></li>
-				<li class="menu_mm"><a href="#">Fashion</a></li>
-				<li class="menu_mm"><a href="#">Gadgets</a></li>
-				<li class="menu_mm"><a href="#">Lifestyle</a></li>
-				<li class="menu_mm"><a href="#">Video</a></li>
-				<li class="menu_mm"><a href="contact.html">Contact</a></li>
-			</ul>
+		<nav class="container-fluid">
+			{{#each lcListMenu}}
+			<div class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{Name}}
+					</a>
+					<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
+						{{#each Sub}}
+							<a class="dropdown-item" href="/category/{{Url}}">{{Name}}</a>
+						{{/each}}
+					</div>
+			</div>
+			{{/each}}
 		</nav>
 	</div>
 
