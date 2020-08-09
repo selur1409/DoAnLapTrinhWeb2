@@ -1319,7 +1319,7 @@ section
 {
 	width: 70px;
 	height: 70px;
-	border-radius: 50%;
+	/* border-radius: 50%; */
 	overflow: hidden;
 }
 .video_image div::after
@@ -1624,7 +1624,7 @@ section
 }
 .newest_videos .side_post_image div
 {
-	border-radius: 50%;
+	/* border-radius: 50%; */
 	overflow: hidden;
 }
 .advertising_2

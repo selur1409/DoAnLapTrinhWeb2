@@ -71,6 +71,18 @@ module.exports = {
                         AND pt.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2 AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
                         ORDER BY RAND() LIMIT 5`);
     },
+    postRandomSideBar: function () {
+                        return db.load(`SELECT p.Url, p.Title, p.Avatar, i.Nickname, p.DatetimePost, pt.IsPremium
+                        FROM ${TBL_POSTS} p, postdetails pt, information i
+                        WHERE p.Id = pt.IdPost AND pt.IdAccount = i.IdAccount AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2 
+                        ORDER BY RAND() LIMIT 12`);
+    },
+    furuteEvents: function () {
+                        return db.load(`SELECT p.Url, p.Title, p.Avatar, i.Nickname, p.DatetimePost, DAY(p.DatetimePost) 'dayEvent', MONTH(p.DatetimePost) 'monthEvent', pt.IsPremium
+                        FROM ${TBL_POSTS} p, postdetails pt, information i
+                        WHERE p.Id = pt.IdPost AND pt.IdAccount = i.IdAccount AND p.DatetimePost > NOW() AND p.IsDelete = 0  AND p.IdStatus = 1 
+                        ORDER BY RAND() LIMIT 12`);
+    },
     postTags: function () {
         return db.load(`SELECT p.Id AS 'IdPost', tp.Id as 'IdTagPosts', t.Name, t.TagName
                         FROM ${TBL_POSTS} p, tag_posts tp, tags t
