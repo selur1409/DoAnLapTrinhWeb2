@@ -27,6 +27,7 @@ router.get('/',async function (req, res) {
         emptyTag: listTag.length === 0,
         listRandomSidebar,
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers: {
             loadListRandomSideBar_1: function(context, options)
             {
@@ -107,6 +108,7 @@ router.get('/:TagName',async function(req, res){
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers:{
             load_list_tags: function(context, Id, options)
             {
