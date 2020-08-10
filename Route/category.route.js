@@ -30,6 +30,7 @@ router.get('/',async function (req, res) {
         emptyCat: listCat.length === 0,
         listRandomSidebar,
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers: {
             loadListRandomSideBar_1: function(context, options)
             {

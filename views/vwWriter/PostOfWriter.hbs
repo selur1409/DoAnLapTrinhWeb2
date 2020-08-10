@@ -98,12 +98,7 @@
                             <div class="collapse-content">
 
                                 <!-- Text -->
-                                <p class="card-text collapse" id="collapseContent{{@index}}">Recently, we added
-                                    several exotic new dishes
-                                    to our restaurant menu. They come from countries such as Mexico, Argentina,
-                                    and Spain. Come
-                                    to us, have some delicious wine and enjoy our juicy meals from around the
-                                    world.</p>
+                                <p class="card-text collapse" id="collapseContent{{@index}}">{{Content_Summary}}</p>
                                 <!-- Button -->
                                 <a class="btn btn-primary red-text p-1 my-1 mr-0 mml-1 collapsed" data-toggle="collapse"
                                     href="#collapseContent{{@index}}" aria-expanded="false"
@@ -218,7 +213,7 @@
                             const DetailCategories = dataParsed.Categories[0].SubCategories;
                             let Avatar = dataParsed.Post[0].Avatar !== null ? dataParsed.Post[0].Avatar : false;
                             let AvatarEmpty = Avatar === 'null';
-                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, FullCont, AvatarEmpty });
+                            document.getElementById("DetailPage").innerHTML = Handlebars.templates.DetailPost({ Title, Views, DatePost, DatetimePost, IdStatus, Categories, DetailCategories, Avatar, BriefCont, FullCont, AvatarEmpty });
                             $("#modalDetailPost").modal("show");
                         }
                     }
@@ -249,3 +244,7 @@
 {{#section 'css'}}
 <link rel="stylesheet" href="/public/css/styleOfWriter.css">
 {{/section}}
+
+
+
+

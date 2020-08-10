@@ -28,6 +28,16 @@ module.exports = (router) => {
         return res;
     }
 
+    function getFullSrcImg(value) {
+        let result;
+        let res = [];
+        const regex = RegExp(`<img.*?src="([^">]*\/([^">]*?))".*?>`, 'g');
+        while ((result = regex.exec(value))) {
+            res.push(result[1]);
+        }
+        return res;
+    }
+
     function RemoveImage(directoryPath, tagsImg) {
         fs.readdir(directoryPath, function (err, files) {
             //handling error
@@ -163,6 +173,7 @@ module.exports = (router) => {
 
             //get tagImg in full content
             const tagsImg = getTagImg(FullContent);
+            const fullSrcImg = getFullSrcImg(FullContent);
             const directoryPath = path.join(__dirname, '../../public/img/ImagePost/temp');
 
             if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
@@ -171,6 +182,7 @@ module.exports = (router) => {
             else {
 
                 const Check = await db.CheckTitleIsExistsInPost(Title, Url, IdPost);
+
                 if (Check.length !== 0) {
                     res.json({ fail: 'The title of article is already exists.' });
                 }
@@ -196,9 +208,25 @@ module.exports = (router) => {
 
                     //Update src for img tag in Full Content 
                     const NewTagImg = '/public/img/ImagePost/' + Result.insertId;
+                    const regexTest =  RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
                     const regex = RegExp(`(<img.*?src=")([^">]*)(\/[^">]*?")(.*?>)`, 'g');
-                    let NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
-                    let NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                    let NewFullContent;
+                    let NewAvatar;
+
+                    if (FullContent.match(regexTest)) {
+                        NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
+                        if (tagsImg[0].match(regexTest)) {
+                            NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                        }
+                        else {
+                            NewAvatar = fullSrcImg.length > 0 ? fullSrcImg[0] : null;
+                        }
+                    }
+                    else {
+                        NewFullContent = FullContent;
+                        NewAvatar = fullSrcImg.length > 0 ? fullSrcImg[0] : null;
+                    }
+
 
                     await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
@@ -366,9 +394,17 @@ module.exports = (router) => {
                 }
                 else
                 {
-                    let content = FullContent + BriefContent;
-                    let TagsImg = getTagImg(content);
-                    Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
+
+                    let TagsImg = getTagImg(FullContent);
+                    let FullSrcImg = getFullSrcImg(FullContent)
+                    const regexTest = RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
+                    if (TagsImg[0].match(regexTest)) {
+                        Avatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0] : null;
+                    }
+                    else {
+                        Avatar = FullSrcImg.length > 0 ? FullSrcImg[0] : null;
+                    }
+
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
                     const Result = await db.UpdatePostOfWriter(ValueOfPost);
                     await db.DeleteTagPost(IdPost);
