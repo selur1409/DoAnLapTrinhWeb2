@@ -160,10 +160,13 @@ module.exports = {
         WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
     },
 
-
+    CheckMailIsExists:(IdAccount, value)=>{
+        return db.load(`SELECT i.* FROM information i WHERE i.Email IS NOT NULL AND
+        '${value}' IN (SELECT BINARY inf.Email FROM information inf, accounts ac WHERE ac.Id != ${IdAccount} AND ac.Id = inf.IdAccount AND inf.Email IS NOT NULL)`)
+    },
 
     UpdateProfile:(value)=>{
-        return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ?, Avatar = ? WHERE IdAccount = ?`, value);
+        return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ?, Avatar = ?, Sex = ? WHERE IdAccount = ?`, value);
     },
 
     UpdatePassword:(value)=>{
