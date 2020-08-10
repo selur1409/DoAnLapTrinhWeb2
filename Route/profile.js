@@ -42,6 +42,12 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
         const IdAccount = res.locals.lcAuthUser.Id;
         const [AccountProfile, NumberOfPost]  = await Promise.all([db.LoadProfile(IdAccount), db.CountAllPost(IdAccount)]);
         req.session.authAccount = AccountProfile[0];
+
+        var avtGoogle = false;
+        if (AccountProfile[0].Avatar.indexOf('lh3.googleusercontent.com/')){
+            avtGoogle = true;
+        }
+
         res.render('vwAccount/profile',{
             layout: TypeLayout,
             Username:AccountProfile[0].Username,
@@ -57,7 +63,8 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
             IsActiveProfile:true,
             IsNotUser:TypeAccount !== 1,
             IsWriter:TypeAccount === 2,
-            TypeAccount:AccountProfile[0].Type
+            TypeAccount:AccountProfile[0].Type,
+            AvtGoogle: avtGoogle
         });
     }
     catch(e){

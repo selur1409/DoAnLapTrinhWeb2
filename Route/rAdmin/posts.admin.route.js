@@ -12,7 +12,6 @@ const path = require('path');
 const categoriesModel = require('../../models/category.model');
 const categoryModel = require('../../models/category.model');
 const tagModel = require('../../models/tag.model');
-const flash = require('express-flash');
 const editorModel = require('../../models/editor.model');
 const commentModel = require('../../models/comment.model');
 const { resolveSoa } = require('dns');

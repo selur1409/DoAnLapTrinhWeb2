@@ -1,53 +1,29 @@
 const express = require('express');
 const passport = require('passport');
-const passportfb = require('passport-facebook').Strategy;
 const db = require('./models/account.model');
-
+const cors = require('cors')
 // Phần của Khương mới thêm
 const flash = require('express-flash');
 
 const app = express();
-
+app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'));
 // middlewares
+// đăng nhập bằng facebook
+
 require('./middlewares/session.mdw')(app);
 require('./middlewares/locals.mdw')(app);
 require('./middlewares/view.mdw')(app);
-
+app.use(passport.initialize());
+app.use(passport.session());
+require('./passport-setup');
+app.use(flash());
 
 // Trang chủ Home
 app.use('/', require('./route/home.route'));
 app.use('/index.html', require('./route/home.route'));
 
-// đăng nhập bằng facebook
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new passportfb(
-  {
-    clientID: "593141928292244",
-    clientSecret: "f4f2260540dc4d6beb61d8088cb71ccb",
-    callbackURL: "http://localhost:3000/auth/facebook/callback",
-    profileFields: ['email']
-  },
-  function(accessToken, refreshToken, profile, done) {
-    console.log(profile);
-  }
-));
-
-passport.serializeUser((user, done) =>{
-    done(null, user.id);
-});
-
-passport.deserializeUser(async function (id, done){
-    const rows = await db.singleId(id);
-    console.log("rows:" + rows);
-    if (rows.length === 0){
-      return;
-    }
-    const user = rows[0];
-    done (null, user);
-});
 
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
@@ -68,7 +44,7 @@ app.use('/auth', require('./route/auth.route'));
 app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
-app.use(flash());
+
 app.use('/account', require('./route/ForgotPW'));
 
 
