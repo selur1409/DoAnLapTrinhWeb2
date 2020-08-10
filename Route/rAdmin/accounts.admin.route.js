@@ -39,6 +39,7 @@ module.exports = (router) =>{
             for (i = 0; i < list.length; i++){
                 if (list[i].DateExpired)
                 {
+                    console.log(list[i].DateExpired);
                     const dt_exp = new Date(moment(list[i].DateExpired, 'YYYY/MM/DD HH:mm:ss'));
                     const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
                     // if (dt_exp <= dt_now){

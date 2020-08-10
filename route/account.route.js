@@ -121,7 +121,6 @@ router.post('/login', async function (req, res) {
     }
     
     const acc = rows[0];
-    console.log(acc);
     if (acc.IsGoogle !== 0){
         req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
         return res.redirect('/account/login');
@@ -134,7 +133,9 @@ router.post('/login', async function (req, res) {
     }
 
     delete acc.Password_hash;
-    
+    acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+    acc.DOB = moment(acc.DOB, 'YYYY-MM-DD').format('DD-MM-YYYY');
+
     req.session.isAuthenticated = true;
     req.session.authAccount = acc;
 

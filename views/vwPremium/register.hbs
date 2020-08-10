@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="card">
+  <div class="card-header">
+    <h4>Gia hạn tài khoản vip</h4>
+  </div>
+  <div class="card-body">
+    {{#if err}}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        {{err}}
+    </div>
+    {{/if}}
+    {{!-- xử lý thành công --}}
+    {{#if success}}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{success}}
+    </div>
+    {{/if}}
+    <div class="col-md-4 border border-danger rounded">
+
+        <ul class="list-unstyled text-left" style="padding: 0 24px;">
+            <b>Quyền lợi VIP:</b>
+            <li><i class="fa fa-check text-success"></i><span style="color:#800080"><strong> Đặc quyền của thành viên VIP</strong></span></li>
+            <li><i class="fa fa-check text-success"></i> Xem các bài viết VIP</li>
+            <li><i class="fa fa-check text-success"></i> Xem không giới hạn</li>
+            <li><i class="fa fa-check text-success"></i> Tải ấn bản (.pdf)</li>
+        </ul>
+    </div>
+    <h3>Thông tin người dùng</h3>
+    <ul class="text-left">
+        <li>Name: {{this.account.Name}}</li>
+        <li>DOB: {{this.account.DOB}}</li>
+        <li>Email: {{this.account.Email}}</li>
+        <li>Phone: {{this.account.Phone}}</li>
+        <li>Sex: {{#if this.account.Sex}} Nữ {{else}} Nam {{/if}}</li>
+        <li><i class="fab fa-vuejs"></i>Thời hạn VIP: 
+        {{#if this.account.premium}}
+            {{#if this.account.premium.Notvalue}}
+            Hết hạn
+            {{else}}             
+            Còn: {{this.account.premium.days}} ngày {{this.account.premium.hours}} giờ {{this.account.premium.minutes}} phút
+            {{/if}}
+        {{else}}
+            {{!-- Dành cho admin, editor, writer --}}
+            {{#if this.account.premiumForever}} 
+            Vĩnh viễn
+            {{else}}
+            Chưa đăng kí
+            {{/if}}
+        {{/if}}
+        </li>
+    </ul>
+    <form method="POST">
+        {{!-- <input type="text" name="Id" value="{{this.account.Id}}"> --}}
+        <input type="hidden" name="Username" value="{{this.account.Username}}">
+        {{!-- <input type="text" name="TypeAccount" value="{{this.account.TypeAccount}}"> --}}
+        <div class="form-group required">
+        <h3>Gói VIP</h3>
+        <div class="form-check">
+          <div class="form-row">
+              <div class="form-group col-sm-4">
+                <input type="radio" id="radioMale" class="form-check-input" name="Time" value="{{this.time.value}}" checked>
+                <a class="btn btn-info" href="#" role="button">
+                    <i class="fas fa-plus"></i> {{#if this.time.days}}{{this.time.days}} ngày{{/if}} {{#if this.time.hours}}{{this.time.hours}} giờ{{/if}} {{#if this.time.minutes}}{{this.time.minutes}} phút{{/if}}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr>
+        <button type="submit" class="btn btn-warning btn-lg" title="Thanh toán" formaction="/admin/accounts/premium-plus">
+            <i class="fas fa-check-double"></i> Thanh toán
+        </button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
+

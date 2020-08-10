@@ -67,11 +67,43 @@
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
 						</div>
+						{{!-- Đã đăng nhập hay chưa --}}
+						{{#if lcIsAuthenticated}}
+						{{!-- Kiểm tra xem có phải là độc giả hay không --}}
+						{{#if isSubscriber}}
+						{{!-- Kiểm tra xem độc giả còn hạn premium hay không --}}
+						{{#if Premium}} 
+						{{#if Premium.Notvalue}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+						Hết hạn
+						<i class="fas fa-plus-square"></i>
+						</a>
+						{{else}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+							Còn: {{Premium.days}} ngày {{Premium.hours}} giờ {{Premium.minutes}}
+							{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
+						</a>
+						<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  
+						<i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
+						</a>
+						{{/if}}
+						{{else}}
+						{{!-- Chưa đăng kí premium lần nào --}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+							<i class="fab fa-vuejs"></i>
+							Mua ngay
+							<i class="fas fa-plus-square"></i>
+						</a>
+						{{/if}}
+						{{/if}}
+						{{/if}}
 
-						{{!-- register_login --}}
+    					{{!-- register_login --}}
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
-							<ul>								
+							<ul>
 							{{#if lcIsWriter}}
 							<li>		
 								<a class="nav-link" href="/writer/Writer" role="button"

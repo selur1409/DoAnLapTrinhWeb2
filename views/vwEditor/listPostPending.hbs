@@ -1,3 +1,20 @@
+{{#if err}}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+      {{err}}
+  </div>
+  {{/if}}
+
+  {{#if success}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{success}}
+  </div>
+  {{/if}}
 <div class="d-flex justify-content-center">
   {{#each this.listCate}}
   <a href="/editor/pending/?cate={{IdCategories}}" type="button"
@@ -11,9 +28,10 @@
   {{/each}}
 </div>
 
- {{#if this.empty}}
-    <div class="text-center">No data</div>
-  {{else}}
+{{#if this.empty}}
+<div class="text-center">No data</div>
+{{else}}
+
 <div class="list-group">
   <table class="table">
     <thead class="bg-primary">
@@ -37,7 +55,7 @@
         <td class="text-center">{{DatePost}}</td>
         <td class="text-center">{{statusName}}</td>
         <td class="text-right">
-          <a class="btn btn-outline-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
+          <a class="btn btn-outline-primary btn-sm" href="/editor/reviewPost/{{Url}}" role="button" title="Review Post">
             Review
             <i class="fa fa-eye" aria-hidden="true"></i>
           </a>

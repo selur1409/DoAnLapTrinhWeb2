@@ -138,6 +138,10 @@ module.exports = {
         WHERE fb.IdEditorAccount = ec.Id AND ec.IdAccount = inf.IdAccount AND fb.IdPost = ${IdPost} AND fb.IsDelete = ${IsDelete}`);
     },
 
+    UpdateFB:(IdPost)=>{
+        return db.load(`UPDATE feedback fb SET IsDelete = 1 WHERE IdPost = ${IdPost}`);
+    },
+
     RemoveFB:(value)=>{
         return db.insert(`INSERT INTO feedback (Id, IsDelete) VALUES ?
         ON DUPLICATE KEY UPDATE IsDelete=VALUES(IsDelete)`, [value]);
