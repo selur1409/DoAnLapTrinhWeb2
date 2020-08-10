@@ -5,39 +5,41 @@
     <b><i class="fa fa-check-circle" aria-hidden="true"></i> DENY POST</b>
   </div>
 
-<form action="/editor/denyPost" method="POST" onsubmit="return validateForm">
-  <div class="form-group">
-    <label for="exampleInputTitle1">Tilte</label>
-    <input type="text" class="form-control" value="{{this.denyPost.Title}}" readonly>
-    <label for="exampleInputAuthor1">Author: </label>
-    <input type="text" class="form-control" value="{{this.denyPost.Nickname}}" readonly>
-    <label for="exampleInputAuthor1">Categories: </label>
-    <input type="text" class="form-control" value="{{this.categories.CateName}}" readonly>
-    <label for="exampleInputAuthor1">Categories Sub: </label>
-    <input type="text" class="form-control"  value="{{this.cateSub.Name}}" readonly>
-    <label for="exampleInputAuthor1">Summary: </label>
-    <input type="text" class="form-control" value="{{this.denyPost.Content_Summary}}" readonly>
+  <form action="/editor/denyPost" method="POST" onsubmit="return validateForm">
+    <div class="form-group">
+      <label for="exampleInputTitle1">Tilte</label>
+      <input type="text" class="form-control" value="{{this.denyPost.Title}}" readonly>
+      <label for="exampleInputAuthor1">Author: </label>
+      <input type="text" class="form-control col-4" value="{{this.denyPost.Nickname}}" readonly>
+      <label for="exampleInputAuthor1">Categories: </label>
+      <input type="text" class="form-control col-4" value="{{this.categories.CateName}}" readonly>
+      <label for="exampleInputAuthor1">Categories Sub: </label>
+      <input type="text" class="form-control col-4" value="{{this.cateSub.Name}}" readonly>
+      <label for="exampleInputAuthor1">Summary: </label>
+      <textarea type="text" class="form-control" cols="30" rows="5"
+        readonly>{{this.denyPost.Content_Summary}}</textarea>
 
-    <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
-    <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
-    <input type="hidden" id="idCateSub" name="idCateSub" value="{{this.cateSub.Id}}"
-  </div>
-  <div class="form-group">
-    <label for="exampleFormControlTextarea1">Reason for the rejection</label>
-    <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required
-      pattern="\S+.*"></textarea>
-  </div>
-  <a type="button" href="#" class="btn btn-primary">Back</a>
-  <button type="submit" class="btn btn-primary">Send</button>
-</form>
+      <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
+      <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
+      <input type="hidden" id="idCateSub" name="idCateSub" value="{{this.cateSub.Id}}" </div>
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1">Reason for the rejection</label>
+        <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required
+          pattern="\S+.*"></textarea>
+      </div>
+      <div class="text-center mt-3">
+        <a type="button" href="#" class="btn btn-danger mr-3">Back</a>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </div>
+  </form>
 
-<script type="text/javascript">
-  function validateForm() {
-    var u = document.getElementById("exampleFormControlTextarea1").value;
+  <script type="text/javascript">
+    function validateForm() {
+      var u = document.getElementById("exampleFormControlTextarea1").value;
 
-    if (u == "") {
-      return false;
+      if (u == "") {
+        return false;
+      }
+      return true;
     }
-    return true;
-  }
-</script>
+  </script>

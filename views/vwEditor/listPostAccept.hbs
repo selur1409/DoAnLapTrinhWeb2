@@ -39,10 +39,10 @@
         <td class="text-center">{{statusName}}</td>
         <td class="text-center">{{DatetimePost}}</td>
         <td class="text-right">
-          <a class="btn btn-outline-danger btn-sm" href="/editor/deleteaccept/?cate={{cateId}}&catesub={{IdCategories}}&id={{Id}}" role="button" title="Delete from the list of accepted posts">
+          <a class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to Remove?');" href="/editor/deleteaccept/?cate={{cateId}}&catesub={{IdCategories}}&id={{Id}}" role="button" title="Delete from the list of accepted posts">
           <i class="far fa-trash-alt"></i>
           </a>
-          <a class="btn btn-outline-warning btn-sm" href="/editor/accept/{{Id}}" role="button" title="Edit">
+          <a class="btn btn-outline-warning btn-sm" href="/editor/editaccept/{{Id}}" role="button" title="Edit">
           <i class="fas fa-pen"></i>
           </a>
         </td>

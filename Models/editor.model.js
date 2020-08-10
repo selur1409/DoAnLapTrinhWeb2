@@ -102,7 +102,7 @@ module.exports = {
         st.Name as'statusName' 
             FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
                 WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
-                    AND p.IsDelete=0 AND p.IsDelete=0 AND p.IdStatus=${postStatus} AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub}
+                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=${postStatus} OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub}
                     limit ${limit} offset ${offset}`);
     },
     LoadPostDeny_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {

@@ -250,6 +250,43 @@ router.get('/accept/:Id', restrict, Authories, async function (req, res) {
   });
 });
 
+router.get('/editaccept/:Id', restrict, Authories, async function (req, res) {
+  const IdPost = req.params.Id;
+  const cate = await editorModel.LoadCateSubOfPost(IdPost);
+  var listCategoriesSub = await editorModel.LoadCateSub(cate[0].IdCategoriesMain);
+  const inforOfPost = await editorModel.LoadSinglePost(IdPost);
+  const author = await editorModel.LoadInforPost(IdPost);
+  for (c of listCategoriesSub) {
+    if (c.Id == cate[0].IdCategories) {
+      c.isActiveCategories = true;
+      break;
+    }
+  }
+
+  const listTagOfPost = await editorModel.LoadTagOfPost(IdPost);
+  var templistTags = await editorModel.LoadAllTags();
+  for (t of templistTags) {
+    for (h of listTagOfPost) {
+      if (t.Id == h.Id) {
+        t.isActiveTags = true;
+        break;
+      }
+      else {
+        t.isActiveTags = false;
+      }
+    }
+  }
+  res.render('vwEditor/accept', {
+    cate: cate[0],
+    listCategoriesSub,
+    templistTags,
+    author: author[0],
+    inforOfPost: inforOfPost[0],
+    empty: listCategoriesSub.length === 0,
+    layout: 'homeeditor'
+  });
+});
+
 router.post('/denyPost', restrict, Authories, async function (req, res) {
   try {
     const IsDelete = 0;
@@ -277,80 +314,66 @@ router.post('/denyPost', restrict, Authories, async function (req, res) {
 });
 
 router.post('/editdeny', restrict, Authories, async function (req, res) {
-  try{
+  try {
     const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-  const IdPost = req.body.idPost;
-  const note = req.body.reasonDeny;
-  const cate = req.body.idCate;
-  const catesub = req.body.idCateSub;
-  const fb = await editorModel.LoadFeedBackOfPosts(IdPost);
-  if (fb.length == 0) {
-    res.redirect('/editor/denied');
-  }
-  const entity = {
-    Id: fb[0].Id,
-    Node: note,
-    DatetimeApproval: dt_now
-  }
-  const update_fb = await editorModel.UpdateFeedBackOfPosts(entity);
+    const IdPost = req.body.idPost;
+    const note = req.body.reasonDeny;
+    const cate = req.body.idCate;
+    const catesub = req.body.idCateSub;
+    const fb = await editorModel.LoadFeedBackOfPosts(IdPost);
+    const entity = {
+      Id: fb[0].Id,
+      Node: note,
+      DatetimeApproval: dt_now
+    }
+    const update_fb = await editorModel.UpdateFeedBackOfPosts(entity);
 
-  res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
+    res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
   }
-  catch (err)
-  {
+  catch (err) {
     console.log(err);
   }
 
 });
 
 router.post('/acceptPost', restrict, Authories, async function (req, res) {
-  try{
+  try {
     const IsDelete = 0;
-  var IdStatus = 1;
-  const newListTags = req.body.tags;
-  const cate = req.body.cate;
-  const IdPost = req.body.IdPost;
-  const catesub = req.body.subCate;
-  const ScheduleTime = req.body.Schedule;
-  const dt_post = new Date(moment(ScheduleTime, 'YYYY-MM-DD HH:mm:ss'));
-  const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-  if (dt_post <= dt_now) {
-    IdStatus = 2;
-  }
-  const isPremium = req.body.isPremium;
-  const entity = {
-    Id: IdPost,
-    DatetimePost: ScheduleTime,
-    IdCategories: catesub,
-    IdStatus: IdStatus
-  }
-  await editorModel.DeleteTagsOfPost(IdPost);
-  const premium_entity = {
-    Id: IdPost,
-    isPremium: 1
-  }
-  if (typeof isPremium != "undefined") {
-    await editorModel.UpdateIsPremium(premium_entity);
-  }
-  for (t of newListTags) {
-    const value = ['IdTag', 'IdPost', `${t}`, `${IdPost}`];
-    await editorModel.InsertTagsPost(value);
-  }
-  const fb_entity = {
-    Id: IdPost,
-    IsDelete: 1
-  }
-  await editorModel.UpdateStatusPost(entity);
-  const node = await editorModel.LoadFeedBackOfPosts(IdPost);
-  if (node.length != 0) {
-    for (n of node) {
-      await editorModel.UpdateFeedBackOfPosts(fb_entity);
+    var IdStatus = 1;
+    const newListTags = req.body.tags;
+    const cate = req.body.cate;
+    const IdPost = req.body.IdPost;
+    const catesub = req.body.subCate;
+    const ScheduleTime = req.body.Schedule;
+    const dt_post = new Date(moment(ScheduleTime, 'YYYY-MM-DD HH:mm:ss'));
+    const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+    if (dt_post <= dt_now) {
+      IdStatus = 2;
     }
+    const isPremium = req.body.isPremium;
+    const entity = {
+      Id: IdPost,
+      DatetimePost: ScheduleTime,
+      IdCategories: catesub,
+      IdStatus: IdStatus
+    }
+    await editorModel.DeleteTagsOfPost(IdPost);
+    const premium_entity = {
+      Id: IdPost,
+      isPremium: 1
+    }
+    if (typeof isPremium != "undefined") {
+      await editorModel.UpdateIsPremium(premium_entity);
+    }
+    for (t of newListTags) {
+      const value = ['IdTag', 'IdPost', `${t}`, `${IdPost}`];
+      await editorModel.InsertTagsPost(value);
+    }
+
+    await editorModel.UpdateStatusPost(entity);
+    res.redirect('/editor/pending/?cate=' + cate + '&catesub=' + catesub);
   }
-  res.redirect('/editor/pending/?cate=' + cate + '&catesub=' + catesub);
-  }
-  catch (err)
-  {
+  catch (err) {
     console.log(err);
   }
 });
