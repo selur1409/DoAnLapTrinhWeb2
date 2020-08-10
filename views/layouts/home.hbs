@@ -14,10 +14,10 @@
 <link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/main_styles.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/responsive.css">
-
+<link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/menu_dropdown.css">
-
+<link rel="stylesheet" href="/public/styles/menu.css">
 
 
 </head>
@@ -31,31 +31,39 @@
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
-						<div class="logo"><a href="#">avision</a></div>
+						<div class="logo"><a href="/">avision</a></div>
 						<nav class="main_nav">
-							
-							<ul class="navbar_home">
-								  <a href="#home">Home</a>
-									<a href="#news">News</a>
-									<div class="menudropdown">
-										<button class="dropbtn">Dropdown 
-											<i class="fa fa-caret-down"></i>
-										</button>
-											<div class="menudropdown-content">
-												<a href="#">Link 1</a>
-												<a href="#">Link 2</a>
-												<a href="#">Link 3</a>
-											</div>
-									</div> 
-							</ul>
-						</nav>
+							<menu>
+								<menuitem id="demo1">
+									<a href="/category">Lập trình  </a>
+									<menu>
+									{{#if lcListMenu}}
+										{{#each lcListMenu}}
+											<menuitem id="demo2">
+												<a>{{Name}}</a>
+												<menu>
+													{{#each Sub}}
+														<menuitem><a href="/category/{{Url}}">{{Name}}</a></menuitem>
+													{{/each}}
+												</menu>
+											</menuitem>
+										{{/each}}
+									{{else}}
+									<menuitem id="demo2">
+										<a>Chưa tải locals</a>
+									</menuitem>
+									{{/if}}
+									</menu>
+								</menuitem>
+							</menu>
+                        </nav>
 						<div class="search_container ml-5">
 							<!-- <div class="weather">
 								<div class="temperature">+10°</div>
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
-							<form action="#">
-								<input type="search" class="header_search_input" required="required" placeholder="Type to Search...">
+							<form action="/search" method="POST">
+								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
 						</div>
@@ -169,22 +177,26 @@
 
 	<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
 		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
-		<div class="logo menu_mm"><a href="#">Avision</a></div>
+		<div class="logo menu_mm"><a href="/">Avision</a></div>
 		<div class="search">
-			<form action="#">
+			<form action="/search" method="POST">
 				<input type="search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
-		<nav class="menu_nav">
-			<ul class="menu_mm">
-				<li class="menu_mm"><a href="index.html">home</a></li>
-				<li class="menu_mm"><a href="#">Fashion</a></li>
-				<li class="menu_mm"><a href="#">Gadgets</a></li>
-				<li class="menu_mm"><a href="#">Lifestyle</a></li>
-				<li class="menu_mm"><a href="#">Video</a></li>
-				<li class="menu_mm"><a href="contact.html">Contact</a></li>
-			</ul>
+		<nav class="container-fluid">
+			{{#each lcListMenu}}
+			<div class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{Name}}
+					</a>
+					<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
+						{{#each Sub}}
+							<a class="dropdown-item" href="/category/{{Url}}">{{Name}}</a>
+						{{/each}}
+					</div>
+			</div>
+			{{/each}}
 		</nav>
 	</div>
 	
@@ -436,7 +448,7 @@
 			<div class="row row-lg-eq-height">
 				<div class="col-lg-9 order-lg-1 order-2">
 					<div class="footer_content">
-						<div class="footer_logo"><a href="#">avision</a></div>
+						<div class="footer_logo"><a href="/">avision</a></div>
 						<div class="footer_social">
 							<ul>
 								<li class="footer_social_facebook"><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
@@ -483,5 +495,46 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="/public/plugins/masonry/masonry.js"></script>
 <script src="/public/plugins/masonry/images_loaded.js"></script>
 <script src="/public/js/custom.js"></script>
+<script>
+    // For the thumbnail demo! :]
+
+var count = 1
+setTimeout(demo, 500)
+setTimeout(demo, 700)
+setTimeout(demo, 900)
+setTimeout(reset, 2000)
+
+setTimeout(demo, 2500)
+setTimeout(demo, 2750)
+setTimeout(demo, 3050)
+
+
+var mousein = false
+function demo() {
+   if(mousein) return
+   document.getElementById('demo' + count++)
+      .classList.toggle('hover')
+   
+}
+
+function demo2() {
+   if(mousein) return
+   document.getElementById('demo2')
+      .classList.toggle('hover')
+}
+
+function reset() {
+   count = 1
+   var hovers = document.querySelectorAll('.hover')
+   for(var i = 0; i < hovers.length; i++ ) {
+      hovers[i].classList.remove('hover')
+   }
+}
+
+document.addEventListener('mouseover', function() {
+   mousein = true
+   reset()
+})
+</script>
 </body>
 </html>

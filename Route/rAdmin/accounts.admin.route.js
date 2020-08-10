@@ -493,38 +493,9 @@ module.exports = (router) =>{
             username
         });
     });
-    router.get('/accounts/views/resetpassword/:username', restrict, isAdmin, async function(req, res){
-        for (const c of res.locals.lcManage) {
-            if (c.link === 'accounts') {
-              c.isActive = true;
-            }
-        }
-
+ 
+    router.post('/accounts/views/changepassword/:username', restrict, isAdmin, async function(req, res){
         const username = req.params.username;
-        const list = await accountModel.singleUser_Resetpassword(username);
-        if (list.length === 0){
-            return res.redirect('/admin/accounts?select=subscriber');
-        }
-
-        const account = list[0];
-        var select = 'subscriber';
-        if (account.TypeAccount === 2){
-            select = 'writer';
-        }
-        else if (account.TypeAccount === 3){
-            select = 'editor';
-        }
-                
-        return res.render('vwAdmin/vwAccount/resetAccount', {
-            layout: 'homeadmin',
-            err: req.flash('error'),
-            success: req.flash('success'),
-            select: select,
-            username
-        });
-    });
-    router.post('/accounts/views/changepassword', restrict, isAdmin, async function(req, res){
-        const username = req.body.username;
         const list = await accountModel.singleUser_Resetpassword(username);
         if (list.length === 0){
             return res.redirect('/admin/accounts?select=subscriber');

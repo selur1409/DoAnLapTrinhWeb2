@@ -11,6 +11,9 @@ module.exports = {
     allActivate: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 1`);
     },
+    listTagHome: function () {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0 LIMIT 10`);
+    },
     single: function (id) {
         return db.load(`SELECT * FROM ${TBL_TAGS} WHERE Id = ${id} and IsDelete = 0`);
     },

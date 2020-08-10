@@ -247,6 +247,7 @@ section
 	-ms-transition: all 200ms ease;
 	-o-transition: all 200ms ease;
 	transition: all 200ms ease;
+	background: rgba(19, 18, 18, 0.699);
 }
 .header_content
 {
@@ -1318,7 +1319,7 @@ section
 {
 	width: 70px;
 	height: 70px;
-	border-radius: 50%;
+	/* border-radius: 50%; */
 	overflow: hidden;
 }
 .video_image div::after
@@ -1623,7 +1624,7 @@ section
 }
 .newest_videos .side_post_image div
 {
-	border-radius: 50%;
+	/* border-radius: 50%; */
 	overflow: hidden;
 }
 .advertising_2
@@ -1903,4 +1904,22 @@ section
 {
 	background: #ededed;
 	border-color: #ededed;
+}
+
+
+.btnSeeAllTag
+{
+	display: block;
+	margin-top: 20px;
+	padding: 10px 25px;
+	background-color: rgb(38, 71, 180);
+	text-align: center;
+	color: rgb(253, 253, 253);
+	font-size: 16px;
+}
+
+.btnSeeAllTag:hover
+{
+	background-color: black;
+	color: yellow;
 }

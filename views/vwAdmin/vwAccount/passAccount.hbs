@@ -1,7 +1,83 @@
 {{#section 'css'}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
+    <style>
+      .ip-icon{
+        padding-left: 40px;
+      }
+      .icon{
+        position: relative;
+        top: -34px;
+        left: 4px;
+        border: none;
+        color: rgb(41, 39, 39);
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 2px 2px;
+        cursor: pointer;
+      }
+    </style>
 {{/section}}
 {{#section 'js'}}
+  <script type="text/javascript" charset="utf-8">
+      document.getElementById('icon').addEventListener('click', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "text";
+        var eye = document.getElementById('icon');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon').addEventListener('mouseover', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "text";
+        var eye = document.getElementById('icon');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon').addEventListener('mouseout', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "password";
+        var eye = document.getElementById('icon');
+        eye.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      });
+
+      document.getElementById('icon2').addEventListener('click', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "text";
+        var eye = document.getElementById('icon2');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon2').addEventListener('mouseover', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "text";
+        var eye = document.getElementById('icon2');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon2').addEventListener('mouseout', function() {
+        var obj = document.getElementById('txtPasswordOld');
+        obj.type = "password";
+        var eye = document.getElementById('icon2');
+        eye.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      });
+
+        document.getElementById('icon3').addEventListener('click', function() {
+        var obj = document.getElementById('txtConfirm');
+        obj.type = "text";
+        var eye = document.getElementById('icon3');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon3').addEventListener('mouseover', function() {
+        var obj = document.getElementById('txtConfirm');
+        obj.type = "text";
+        var eye = document.getElementById('icon3');
+        eye.innerHTML = '<i class="fas fa-eye"></i>';
+      });
+      document.getElementById('icon3').addEventListener('mouseout', function() {
+        var obj = document.getElementById('txtConfirm');
+        obj.type = "password";
+        var eye = document.getElementById('icon3');
+        eye.innerHTML = '<i class="fas fa-eye-slash"></i>';
+      });
+  </script> 
     <script
      src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js">
     </script>
@@ -24,7 +100,7 @@ $('#frmChangePassword').on('submit', function (e) {
 
 function validate() {
   // ... các lệnh validate khác
-  if (!validatePasswordOld() || !validatePassword() || !validateConfirmPassword()){
+  if (!validatePassword() || !validateConfirmPassword()){
     return alert('Thông tin nhập không chính xác hoặc không đầy đủ.'); 
   }
   return $('#frmChangePassword').off('submit').submit();    
@@ -122,28 +198,31 @@ function validateConfirmPassword() {
     </div>
     {{/if}}
 
-    <form method="POST" id="frmChangePassword">
+    <form method="POST" id="frmChangePassword" action="/admin/accounts/views/changepassword/{{username}}">
       <div class="form-group required">
         <label class="control-label" for="txtUsername">Tên tài khoản</label>
         <input type="text" class="form-control" placeholder="Tên tài khoản" id="txtUsername" name="Username" readonly value="{{username}}">
       </div>
       <div class="form-group required">
         <label class="control-label" for="txtPasswordOld">Mật khẩu cũ</label>
-        <input type="password" class="form-control" placeholder="Mật khẩu cũ" id="txtPasswordOld" name="PasswordOld">
+        <input type="password" class="form-control ip-icon" placeholder="Mật khẩu cũ" id="txtPasswordOld" name="PasswordOld">
+        <button id="icon" class="icon"><i class="fas fa-eye-slash"></i></button>
         <span id="rsPasswordOld"></span>
       </div>
       <div class="form-group required">
         <label class="control-label" for="txtPassword">Mật khẩu mới</label>
         <input type="password" class="form-control" placeholder="Mật khẩu mới" id="txtPassword" name="Password">
+        <button id="icon2" class="icon"><i class="fas fa-eye-slash"></i></button>
         <span id="rsPassword"></span>
       </div>
       <div class="form-group required">
         <label class="control-label" for="txtConfirm">Nhập lại mật khẩu mới</label>
         <input type="password" class="form-control" placeholder="Nhập lại mật khẩu mới" id="txtConfirm" name="Confirm">
+        <button id="icon3" class="icon"><i class="fas fa-eye-slash"></i></button>
         <span id="rsConfirm"></span>
       </div>
-      <button type="submit" class="btn btn-primary" formaction="/admin/accounts/views/changepassword">
-        <i class="fa fa-check" aria-hidden="true"></i>
+      <button type="submit" class="btn btn-primary">
+        <i class="fa fa-check" aria-hidden="true"></i>  
         Thay đổi
       </button>
       <br>

@@ -95,6 +95,13 @@
         <td class="col-1"><b>{{NameStatus}}</b></td>
         <td class="text-right col-2">
         <form method="POST">
+            <input type="hidden" name="Id" value="{{Id}}">           
+            <input type="hidden" name="Status" value="{{sttSelect}}">
+            {{#if Publish}}
+            <button class="btn btn-warning btn-sm" type="submit" formaction="/admin/posts/publish" role="button" title="Publish">
+                Xuất bản
+            </button>
+            {{/if}}
             {{#if isUpdate}}
             <a class="btn btn-warning btn-sm" href="/admin/posts/status?number={{sttSelect}}&url={{Url}}" role="button" title="Status">
                 <i class="fas fa-bell"></i>
@@ -111,8 +118,7 @@
             <a class="btn btn-dark btn-sm" href="/admin/posts/details?number={{sttSelect}}&url={{Url}}" role="button" title="Details">
                 <i class="fas fa-info"></i>
             </a>
-            <input type="hidden" name="Id" value="{{Id}}">           
-            <input type="hidden" name="Status" value="{{sttSelect}}">
+
             <button type="submit" class="btn btn-danger btn-sm" title="Delete" formaction="/admin/posts/del">
                 <i class="fas fa-trash-alt"></i>
             </button>

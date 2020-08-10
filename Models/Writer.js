@@ -123,10 +123,13 @@ module.exports = {
     },
 
     LoadFB:(Id)=>{
-        console.log(Id);
         return db.load(`SELECT fb.Id, fb.Note, fb.IdPost, fb.DatetimeApproval, inf.Name
-        FROM feedback fb, accounts ec, information inf
-        WHERE fb.IdPost = ${Id} AND fb.IdEditorAccount = ec.Id AND ec.Id = inf.IdAccount`);
+        FROM feedback fb, accounts ac, information inf
+        WHERE fb.Id = ${Id} AND fb.IdEditorAccount = ac.Id AND ac.Id = inf.IdAccount`);
+    },
+
+    UpdateFB:(IdPost)=>{
+        return db.load(`UPDATE feedback SET IsDelete = 1 WHERE IdPost = ${IdPost}`);
     },
 
     CountFB:(IdPost, IsDelete)=>{
@@ -151,6 +154,8 @@ module.exports = {
         FROM accounts a, information i, typeaccount ta 
         WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
     },
+
+
 
     UpdateProfile:(value)=>{
         return db.insert(`UPDATE information SET Name = ?, Nickname = ?, DOB = ?, Email = ?, Phone = ?, Avatar = ? WHERE IdAccount = ?`, value);

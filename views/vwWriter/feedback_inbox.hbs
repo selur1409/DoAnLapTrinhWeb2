@@ -205,5 +205,45 @@
     {
         document.getElementById('formRemove').submit();
     }
+
+    function Check()
+    {
+        const checkbox = document.getElementsByClassName('checkbox');
+        let flag = 0;
+        for(let i = 0; i < checkbox.length; i++)
+        {
+            checkbox[i].addEventListener('change', function () {
+                if(checkbox[i].checked) {
+                    flag++;
+                    if(flag === 0)
+                    {
+                        document.getElementById('btnRemove').setAttribute('disabled', true);
+                    }
+                    else
+                    {
+                        document.getElementById('btnRemove').removeAttribute('disabled');
+                    }
+                }
+                else
+                {
+                    flag--;
+                    if(flag === 0)
+                    {
+                        document.getElementById('btnRemove').setAttribute('disabled', true);
+                    }
+                    else
+                    {
+                        document.getElementById('btnRemove').removeAttribute('disabled');
+                    }
+                }
+            });
+        }
+    }
+    
+
+    window.onload = ()=>{
+        document.getElementById('btnRemove').setAttribute('disabled', true);
+        Check();
+    }
 </script>
 {{/section}}
