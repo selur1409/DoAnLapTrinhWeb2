@@ -243,6 +243,9 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
                 await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
+                console.log(tagsImg);
+                console.log(NewAvatar);
+
                 // Rename folder containt image of post by post's Id
                 const NewDirName = path.join(__dirname, '../public/img/ImagePost/' + Result.insertId);
                 if (fs.existsSync(directoryPath)) {
@@ -254,6 +257,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
                     });
                 }
 
+                
                 if (result !== null) {
                     res.json({ success: 'This article has been sent successfully!' });
                 }
@@ -570,6 +574,7 @@ router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, n
                 }
                 const ValueOfTagPost = ['IdPost', 'IdTag', tmp];
                 const result = await db.InsertTagPost(ValueOfTagPost);
+                await db.UpdateFB(IdPost);
 
                 //remove image is not exists in full content 
                 const directoryPath = path.join(__dirname, '../public/img/ImagePost/' + IdPost);
@@ -592,7 +597,7 @@ router.get('/FeedBack_Read/:id/:idPost', restrict, Authories, async (req,res, ne
         const Id = req.params.id;
         const IdPost = req.params.idPost;
         const IsDelete = 0;
-        const [Result, Total] = await Promise.all([db.LoadFB(Id), CountFB(IdPost, IsDelete)]);
+        const [Result, Total] = await Promise.all([db.LoadFB(IdPost), CountFB(IdPost, IsDelete)]);
      
         res.render('vwWriter/feedback_read', {
             layout:'homewriter',
