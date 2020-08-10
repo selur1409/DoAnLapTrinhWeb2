@@ -70,12 +70,17 @@
       {{/each}}
     </tbody>
   </table>
-  {{/if}}
-
-  <nav aria-label="...">
+  <div class="row">
+    <div class="col-sm-3"></div>
+    <nav aria-label="..." class="col-sm-6">
       <ul class="pagination">
-        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-          <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
+        <li class="page-item {{#unless entity.can_go_prev_backward}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{entity.prev_backward_value}}" aria-label="Previous">
+            <i class="fas fa-backward"></i>
+          </a>
+        </li>
+        <li class="page-item {{#unless entity.can_go_prev}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{entity.prev_value}}" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
@@ -93,11 +98,19 @@
         </li>
         {{/if}}
         {{/each}}
-        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-          <a class="page-link" href="?page={{next_value}}" aria-label="Next">
+        <li class="page-item {{#unless entity.can_go_next}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{entity.next_value}}" aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        <li class="page-item {{#unless entity.can_go_next_forward}}disabled{{/unless}}">
+          <a class="page-link" href="?page={{entity.next_forward_value}}" aria-label="Next">
+            <i class="fas fa-forward"></i>
           </a>
         </li>
       </ul>
     </nav>
+    <div class="col-sm-3"></div>
+  </div>
+  {{/if}}
 </div>
