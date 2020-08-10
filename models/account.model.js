@@ -46,13 +46,16 @@ module.exports = {
         return db.load(`select a.Id, i.Name from ${TBL_ACCOUNTS} a, information i where a.Id = i.IdAccount and a.Username = '${username}' and a.IsDelete = 0`);
     },
     singleId_info_editAccount: function (id) {
-        return db.load(`select Id from information where IdAccount = ${id}`);
+        return db.load(`select Id, Avatar from information where IdAccount = ${id}`);
     },
     singleGoogle_check: function(username){
-        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = ${username} and IsGoogle = 1 and IsDelete = 0`);
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsGoogle = 1 and IsDelete = 0`);
     },
     singleEmail: function(email){
         return db.load(`select IdAccount from information where Email = '${email}'`);
+    },
+    singleEmail_US: function(email, username){
+        return db.load(`select IdAccount from information i, ${TBL_ACCOUNTS} a where a.Username != '${username}' and a.Id = i.IdAccount and i.Email = '${email}'`);
     },
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);

@@ -10,11 +10,10 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'));
 // middlewares
-// đăng nhập bằng facebook
-
 require('./middlewares/session.mdw')(app);
 require('./middlewares/locals.mdw')(app);
 require('./middlewares/view.mdw')(app);
+// đăng nhập bằng google
 app.use(passport.initialize());
 app.use(passport.session());
 require('./passport-setup');
