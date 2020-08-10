@@ -13,7 +13,7 @@
                             </div>
                             <div class="avatar-preview">
                                 <div>
-                                    <img id="imagePreview" class="profile-user-img img-fluid img-circle"  {{#if AvatarEmpty}} src="/public/img/avatar2.png" {{else}} {{#if AvtGoogle}} src="{{Avatar}}" {{else}} src="/public/img/Avatar/{{Avatar}}" {{/if}} {{/if}} 
+                                    <img id="imagePreview" class="profile-user-img img-fluid img-circle" {{#if AvatarEmpty}} src="/public/img/Avatar/NoAvatar.png" {{else}} {{#if isGg}} src="{{Avatar}}" {{else}} src="/public/img/Avatar/{{Avatar}}" {{/if}} {{/if}} 
                                 alt="User profile picture">
                                 </div>
                             </div>
