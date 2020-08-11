@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const db = require('./models/account.model');
+const db = require('./Models/account.model');
 const cors = require('cors')
 // Phần của Khương mới thêm
 const flash = require('express-flash');
@@ -37,27 +37,27 @@ app.use('/tag', require('./Route/tag.route'));
 app.use('/category', require('./Route/category.route'));
 
 // route account
-const accountRoute = require('./route/account.route');
+const accountRoute = require('./Route/account.route');
 app.use('/account', accountRoute);
 // passport
-app.use('/auth', require('./route/auth.route'));
+app.use('/auth', require('./Route/auth.route'));
 
 // Trang writer
 app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 
-app.use('/account', require('./route/ForgotPW'));
+app.use('/account', require('./Route/ForgotPW'));
 
 
 //Trang Profile
-app.use('/account', exposeTemplates, require('./route/profile'));
+app.use('/account', exposeTemplates, require('./Route/profile'));
 
 
-app.use('/admin', exposeTemplates, require('./route/admin.route'));
+app.use('/admin', exposeTemplates, require('./Route/admin.route'));
 
 //Trang editor
-app.use('/editor', require('./route/editor.route'));
+app.use('/editor', require('./Route/editor.route'));
 
 app.use(function (req, res) {
   res.render('404', { layout: false });

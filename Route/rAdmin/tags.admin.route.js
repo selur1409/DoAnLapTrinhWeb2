@@ -1,4 +1,4 @@
-const tagModel = require('../../models/tag.model');
+const tagModel = require('../../Models/tag.model');
 const fs = require('fs-extra');
 const mkdirp = require('mkdirp');
 const multer = require('multer');

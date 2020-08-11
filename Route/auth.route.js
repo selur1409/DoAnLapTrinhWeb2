@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const accountModel = require('../models/account.model');
+const accountModel = require('../Models/account.model');
 const moment = require('moment');
 const router = express.Router();
 // Auth middleware that checks if the user is logged in

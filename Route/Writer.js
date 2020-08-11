@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/Writer');
+const db = require('../Models/Writer');
 const flash = require('express-flash');
 const config = require('../config/default.json');
 const bcrypt = require('bcryptjs');
@@ -9,10 +9,10 @@ let upload = multer();
 const moment = require('moment'); moment.locale("vi");
 const fs = require('fs');
 const path = require('path');
-const account = require('../models/account.model');
+const account = require('../Models/account.model');
 const {restrict, referer} = require('../middlewares/auth.mdw');
 const { route } = require('./account.route');
-const { CountFB } = require('../models/Writer');
+const { CountFB } = require('../Models/Writer');
 const { query } = require('express');
 const {mark_url} = require('../public/js/ConvertTitleToUrl');
 

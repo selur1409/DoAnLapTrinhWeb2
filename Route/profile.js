@@ -7,8 +7,8 @@ let upload = multer();
 const moment = require('moment'); moment.locale("vi");
 const fs = require('fs');
 const path = require('path');
-const db = require('../models/Writer');
-const account = require('../models/account.model');
+const db = require('../Models/Writer');
+const account = require('../Models/account.model');
 const {restrict, referer} = require('../middlewares/auth.mdw');
 
 function Authories(req, res, next)
