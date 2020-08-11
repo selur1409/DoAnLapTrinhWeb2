@@ -33,7 +33,8 @@ const {exposeTemplates} = require('./public/js/exposeTemplate');
 app.use('/tag', require('./Route/tag.route'));
 
 // route tag
-app.use('/category', require('./route/category.route'));
+//sửa require của '/category' (require('./route/category.route') -> require('./Route/category.route'))
+app.use('/category', require('./Route/category.route'));
 
 // route account
 const accountRoute = require('./route/account.route');
