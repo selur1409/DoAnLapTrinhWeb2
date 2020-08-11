@@ -13,7 +13,6 @@ const {getTime_Minutes} = require('../js/betweendate');
 const {addMinutes}= require('../config/default.json');
 const accountModel = require('../models/account.model');
 const router = express.Router();
-const querystring = require('querystring');
 
 const printPdf = async(htmlPage)=>{
     console.log('Starting: Generating PDF Process, Kindly wait ..');
