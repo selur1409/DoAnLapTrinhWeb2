@@ -7,7 +7,8 @@ const check = require('../../js/check');
 const {filesize} = require('../../config/default.json');
 const {restrict} = require('../../middlewares/auth.mdw');
 const {isAdmin} = require('../../middlewares/auth.mdw');
-
+const pagination_js = require('../../js/pagination');
+const config = require('../../config/default.json');
 module.exports = (router) =>{
     router.get('/tags', restrict, isAdmin, async function(req, res){
         for (const c of res.locals.lcManage) {
@@ -15,17 +16,30 @@ module.exports = (router) =>{
               c.isActive = true;
             }
         }
-    
-        const list = await tagModel.all();
+        
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+       
+        const [list, total] = await Promise.all([
+            tagModel.all_lo(config.pagination.limit, offset),
+            tagModel.countAll()
+        ]);
+        
         for (l of list){
             // l.href = check.change_characters(l.TagName);
             l.href = l.TagName;
             l.TagName = '#'.concat(l.TagName);
         }
+
+        const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+
         return res.render('vwAdmin/vwTags/listTag', {
             layout: 'homeadmin',
             empty: list.length === 0,
-            tags: list
+            tags: list,
+            page_items,
+            entity
         });
     });
 
@@ -243,11 +257,23 @@ module.exports = (router) =>{
                 }
             }
         
-            const list = await tagModel.allActivate();
+            const page = +req.query.page || 1;
+            if (page < 0) page = 1;
+            const offset = (page - 1) * config.pagination.limit;
+           
+            const [list, total] = await Promise.all([
+                tagModel.allActivate(config.pagination.limit, offset),
+                tagModel.countAllActivate()
+            ]);
+
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+            
             return res.render('vwAdmin/vwTags/activateTag', {
                 layout: 'homeadmin',
                 empty: list.length === 0,
                 tags: list,
+                page_items,
+                entity,
                 err: req.flash('error'),
                 success: req.flash('success')
             });
