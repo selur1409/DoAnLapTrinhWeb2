@@ -3,17 +3,17 @@
   href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css">
 {{/section}}
 <div class="card pl-2 pr-2">
-  <div class="card-header text-primary bg-success d-flex justify-content-between mt-2 pb-2">
-    <button class="btn btn-info btn-sm" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i></i>
+  <div class="card-header text-primary bg-warning d-flex justify-content-between mt-2 pb-2">
+    <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i></i>
       Back</button>
-    <b><i class="fa fa-check-circle" aria-hidden="true"></i> ACCEPT POST</b>
+    <b><i class="fa fa-check-circle" aria-hidden="true"></i>EDIT ACCEPT POST</b>
   </div>
 
-  <form action="/editor/acceptPost" method="POST">
+  <form action="/editor/editaccept" method="POST">
     <class class="form-group pl-2">
       <div class="mb-4">
         <label for="exampleInputTitle1"><i class="fas fa-bookmark"></i> <u>Tilte: </u> </label>
-        <input type="text" class="form-control" id="postTitle" name="postTitle" value="{{this.inforOfPost.Title}}"
+        <input type="text" class="form-control col-6" id="postTitle" name="postTitle" value="{{this.inforOfPost.Title}}"
           readonly>
       </div>
       <div class="mb-4">
@@ -63,14 +63,14 @@
       </div>
       <div class="mb-4">
         <b><i class="fas fa-dollar-sign"></i> <u>Is premium post: </u><input type="checkbox"
-            aria-label="Checkbox for following text input" name="isPremium"></b>
+            aria-label="Checkbox for following text input" name="isPremium" {{#if isPremium}}checked{{/if}}></b>
       </div>
 
       <div class="d-flex justify-content-center">
         <a type="button" class="btn btn-danger mr-4" onclick="goBack()">
           Cancel
         </a>
-        <button type="submit" class="btn btn-primary"><i class="fab fa-telegram-plane"></i> Send</button>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane" aria-hidden="true"></i> Send</button>
       </div>
   </form>
 </div>

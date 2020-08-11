@@ -273,6 +273,9 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
                 await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
+                console.log(tagsImg);
+                console.log(NewAvatar);
+
                 // Rename folder containt image of post by post's Id
                 const NewDirName = path.join(__dirname, '../public/img/ImagePost/' + Result.insertId);
                 if (fs.existsSync(directoryPath)) {
@@ -284,6 +287,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
                     });
                 }
 
+                
                 if (result !== null) {
                     res.json({ success: 'This article has been sent successfully!' });
                 }

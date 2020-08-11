@@ -4,70 +4,71 @@ const bcrypt = require('bcryptjs');
 const config = require('../config/default.json');
 const moment = require('moment');
 const auth = require('../middlewares/auth.mdw');
-
-
 const router = express.Router();
-
 // Trang đăng kí (register)
-router. get('/register', auth.referer, function (req, res) {
+router.get('/register', auth.referer, function (req, res) {
     res.render('vwAccount/register',{
-    layout: false
+        layout: false,
+        err: req.flash('error'),
+        success: req.flash('success')
     });
 }) 
+
+router.get('/is-available', auth.referer, async function(req, res){
+    if (req.query.username){
+        const list = await accountModel.singleId_editAccount(req.query.username);
+        if (list.length !== 0)
+        {
+            return res.json(false);
+        }
+        return res.json(true);
+    }
+})
 
 router.post('/register', async function(req, res){
     const rows = await accountModel.singleId(req.body.Username);
 
     if (rows.length !== 0){
-        return res.render('vwAccount/register', {
-            layout: false,
-            err: "Username already exist."
-        })
+        req.flash('error', 'Username already exist.');
+        return res.redirect('/account/register');
     }
 
     // kiểm tra pw vs confirm pw
     if(req.body.Password !== req.body.Confirm)
     {
-        return res.render('vwAccount/register', {
-            layout: false,
-            err: "Password doesn't match."
-        })
+        req.flash('error', "Password doesn't match.");
+        return res.redirect('/account/register');
     }
 
     if (req.body.Name === "" ||
-        moment(req.body.DOB, "DD/MM/YYYY").isValid === false||
-        req.body.Email === "" ||
+        isNaN(Date.parse(req.body.DOB))||
         req.body.Sex === undefined){
-            return res.render('vwAccount/register', {
-                layout: false,
-                err: "Have a item don't empty."
-            })
+            req.flash('error', "Have a item don't empty.");
+            return res.redirect('/account/register');
     }
 
-    const em = await accountModel.singleEmail(req.body.Email);
-    if (em.length !== 0){
-        return res.render('vwAccount/register', {
-            layout: false,
-            err: "Email already exist."
-        })
-    }
-    
+    // const em = await accountModel.singleEmail(req.body.Email);
+    // if (em.length !== 0){
+    //     return res.render('vwAccount/register', {
+    //         layout: false,
+    //         err: "Email already exist."
+    //     })
+    // }
     
     
     // Lấy ngày giờ hiện tại
-    const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+    const dt_now = moment().format('YYYY-MM-DD');
     // gia hạn ngày
-    const dt_expired = moment(dt_now).add(config.momentDefault.NumberTime, config.momentDefault.Duration.Days).format('YYYY-MM-DD HH:mm:ss');
+    var dob = '1999/01/01';
+    if (!isNaN(Date.parse(req.body.DOB))){
+        dob = moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    }
 
-    const dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
-
-    // Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
+    //Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
     if (dt_now <= dob)
-    {
-        return res.render('vwAccount/register', {
-            layout: false,
-            err: "Date of birth is smaller than the current day."
-        })
+    {   
+        req.flash('error', 'Date of birth is smaller than the current day.');
+        return res.redirect('/account/register');
     }    
 
     const pw_hash = bcrypt.hashSync(req.body.Password, config.authentication.saltRounds);
@@ -75,7 +76,6 @@ router.post('/register', async function(req, res){
         Username: req.body.Username,
         Password_hash: pw_hash,
         DateRegister: dt_now,
-        DateExpired: dt_expired,
         TypeAccount: 1,
         IsDelete: 0
     }
@@ -85,64 +85,65 @@ router.post('/register', async function(req, res){
     const registered = await accountModel.singleId(req.body.Username);
     const id = registered[0].Id;
 
-    var phone = "0123456789";
-    if (req.body.Phone !== ""){
-        phone = req.body.Phone;
-    }
-
     const entity_information = {
         Name: req.body.Name,
         DOB: dob,
-        Email: req.body.Email,
-        Phone: phone,
         IdAccount: id,
-        Sex: req.body.Sex
+        Sex: +req.body.Sex
     }
 
     await accountModel.addInfor(entity_information);
 
-    res.render('vwAccount/register', {
-        layout: false,
-        success: 'Created new account success!!!!'
-    })
+    req.flash('success', 'Created new account success!!!!');
+    return res.redirect('/account/register');
 })
 
 // Trang đăng nhập (login)
 router.get('/login', auth.referer, function (req, res) {
     res.render('vwAccount/login',{
-        layout: false
+        layout: false,
+        err: req.flash('error'),
+        success: req.flash('success')
     });
 }) 
 
 router.post('/login', async function (req, res) {
     if (req.body.Username === "" || req.body.Password === ""){
-        return res.render('vwAccount/login',{
-            layout: false,
-            err: 'Please fill data in items'
-        })
+        req.flash('error', 'Please fill data in items.');
+        return res.redirect('/account/login');
     }
 
     const rows = await accountModel.single(req.body.Username);
 
     if (rows.length === 0){
-        return res.render('vwAccount/login', {
-            layout: false,
-            err: 'Username already not exist or Password incorrect.'
-        })
+        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
+        return res.redirect('/account/login');
     }
     
     const acc = rows[0];
-    
+    if (acc.IsGoogle !== 0){
+        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
+        return res.redirect('/account/login');
+    }
+
     const rs = bcrypt.compareSync(req.body.Password, acc.Password_hash);
     if (rs === false){
-        return res.render('vwAccount/login', {
-            layout: false,
-            err: 'Username already not exist or Password incorrect.'
-        })
+        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
+        return res.redirect('/account/login');
     }
 
     delete acc.Password_hash;
-    
+    if (acc.Avatar)
+    {
+      if (acc.Avatar.indexOf("https://") !== -1){
+        acc.isGg = true;
+      }
+    }
+    if (acc.DateExpired){
+        acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+    }
+    acc.DOB = moment(acc.DOB, 'YYYY-MM-DD').format('DD-MM-YYYY');
+
     req.session.isAuthenticated = true;
     req.session.authAccount = acc;
 
@@ -165,8 +166,9 @@ router.post('/login', async function (req, res) {
 }) 
 
 router.post('/logout', auth.restrict, function (req, res) {
+    req.logout();
+
     req.session.isAuthenticated = false;
-    
     req.session.authAccount = null;
     req.session.isSubscriber = false;
     req.session.isWriter = false;

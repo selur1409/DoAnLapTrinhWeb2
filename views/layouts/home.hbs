@@ -67,22 +67,46 @@
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
 						</div>
+						{{!-- Đã đăng nhập hay chưa --}}
+						{{#if lcIsAuthenticated}}
+						{{!-- Kiểm tra xem có phải là độc giả hay không --}}
+						{{#if isSubscriber}}
+						{{!-- Kiểm tra xem độc giả còn hạn premium hay không --}}
+						{{#if Premium}} 
+						{{#if Premium.Notvalue}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+						Hết hạn
+						<i class="fas fa-plus-square"></i>
+						</a>
+						{{else}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+							Còn: {{Premium.days}} ngày {{Premium.hours}} giờ {{Premium.minutes}}
+							{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
+						</a>
+						<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  
+						<i class="fas fa-plus"></i><i class="fab fa-vuejs"></i>
+						</a>
+						{{/if}}
+						{{else}}
+						{{!-- Chưa đăng kí premium lần nào --}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+							<i class="fab fa-vuejs"></i>
+							Mua ngay
+							<i class="fas fa-plus-square"></i>
+						</a>
+						{{/if}}
+						{{/if}}
+						{{/if}}
 
-						{{!-- register_login --}}
+    					{{!-- register_login --}}
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
 							<ul>
-							{{#if lcIsSubscriber}}
-							<li>		
-								<a class="nav-link" href="/subcriber" role="button"
-								aria-haspopup="true" aria-expanded="false">
-								<b>SUBSCRIBER</b>
-								</a>	
-							</li>
-							{{/if}}								
 							{{#if lcIsWriter}}
 							<li>		
-								<a class="nav-link" href="/write/Writer" role="button"
+								<a class="nav-link" href="/writer/Writer" role="button"
 								aria-haspopup="true" aria-expanded="false">
 								<b>WRITER</b>
 								</a>	
@@ -115,29 +139,7 @@
 								<a class="dropdown-item bg-info" href="/account/Profile/{{lcAuthUser.TypeAccount}}">
 									<i class="fa fa-user" aria-hidden="true"></i>
 									Account Profile
-								</a>
-								<!-- Dropdown to change page -->
-								<div class="dropdown-divider"></div>
-								{{#if lcIsSubscriber}}
-									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>SUBSCRIBER</b>
-									</a>
-								{{/if}}
-								{{#if lcIsWriter}}
-									<a class="nav-link" href="/writer/Writer" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>WRITER</b>
-									</a>
-								{{/if}}
-								{{#if lcIsEditor}}
-									<a class="nav-link" href="/editor" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>EDITOR</b>
-									</a>
-								{{/if}}
-								{{#if lcIsAdmin}}
-									<a class="nav-link" href="/admin" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>ADMINISTRATOR</b>
-									</a>
-								{{/if}}
+								</a>							
 								<div class="dropdown-divider"></div>
 								<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
 									<i class="fa fa-sign-out" aria-hidden="true"></i>

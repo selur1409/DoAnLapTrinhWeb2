@@ -6,6 +6,8 @@ const commentModel = require('../Models/comment.model');
 const moment = require('moment');
 const { restrict } = require('../middlewares/auth.mdw');
 const categoriesModel = require('../models/category.model');
+const {getTimeBetweenDate} = require('../js/betweendate');
+const {getTime_Minutes} = require('../js/betweendate');
 const router = express.Router();
 
 // Trang index
@@ -47,7 +49,34 @@ router.get('/',async function (req, res) {
     {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
+    // khởi tạo biến premium chưa được đăng kí
+    var premium = false;
+    // Khởi tạo isSubscriber là tài khoản độc giả
+    var isSubscriber = true;
 
+    // Kiểm tra đăng nhập
+    if (res.locals.lcIsAuthenticated === true){
+        // Kiểm tra tài khoản là độc giả
+        if (res.locals.lcAuthUser.TypeAccount === 1){
+            isSubscriber = true;
+
+            if (res.locals.lcAuthUser)
+            {
+                // Tính thời hạn đăng kí premium
+                if (res.locals.lcAuthUser.DateExpired)
+                {
+                    const authU = res.locals.lcAuthUser;
+                    const dt_exp = new Date(moment(res.locals.lcAuthUser.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+                    const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+
+                    premium = getTimeBetweenDate(dt_now, dt_exp);
+                }
+            }
+        }
+        else{
+            isSubscriber = false;
+        }
+    }
 
     res.render('index', {
         Treding: listTreding,
@@ -68,6 +97,8 @@ router.get('/',async function (req, res) {
         listRandomSidebar, 
         listFutureEvent,
         emptyFutureEvent: listFutureEvent.length === 0,
+        isSubscriber: isSubscriber,
+        Premium: premium,
         helpers: {
             load_Post1: function(context, options)
             {
@@ -131,7 +162,22 @@ router.get('/',async function (req, res) {
 
     });
 
-}) 
+})
+
+router.get('/premium/register', restrict, function(req, res){
+    console.log(res.locals.lcAuthUser);
+
+    return res.render('vwPremium/register', {
+        layout: false,
+        err: req.flash('error'),
+        success: req.flash('success')
+    })
+})
+
+// router.post('/premium/register', restrict, function(req, res){
+//     req.flash('error', 'Lỗi nè');
+//     return res.redirect('/premium/register');
+// })
 
 
 router.get('/detail/premium/:Url', restrict, async function(req, res){

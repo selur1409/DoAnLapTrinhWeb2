@@ -5,7 +5,6 @@ const accountModel = require('../../models/account.model');
 const check = require('../../js/check');
 const config = require('../../config/default.json');
 const pageination = require('../../js/pagination');
-const notify = require('../../config/notify.json');
 const {restrict} = require('../../middlewares/auth.mdw');
 const {isAdmin} = require('../../middlewares/auth.mdw');
 
@@ -126,7 +125,7 @@ module.exports = (router) => {
             const description = req.body.Description;
             if (!name || !url)
             {   
-                req.flash('error', notify.mucbb)
+                req.flash('error', 'Mục bắt buộc chưa được điền.')
                 return res.redirect('/admin/categories/addlv1');
             }
         
@@ -134,7 +133,7 @@ module.exports = (router) => {
             const isNameSub = await categoryModel.singleNameSub(name);
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                req.flash('error', notify.tentontai)
+                req.flash('error', 'Tên chuyên mục đã tồn tại')
                 return res.redirect('/admin/categories/addlv1');
             }
             
@@ -142,7 +141,7 @@ module.exports = (router) => {
             const isUrlSub = await categoryModel.singleUrlSub(url);
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                req.flash('error', notify.duongdantontai)
+                req.flash('error', 'Đường dẫn tĩnh đã tồn tại.')
                 return res.redirect('/admin/categories/addlv1');
             }
             
@@ -165,7 +164,7 @@ module.exports = (router) => {
                 await editoraccountModel.add(entity_Editor);
             }
             
-            req.flash('success', `${notify.themthanhcong} ${name}`)
+            req.flash('success', `Thêm chuyên mục thành công: ${name}`)
             return res.redirect('/admin/categories/addlv1');
         }
         catch(error){
@@ -229,7 +228,7 @@ module.exports = (router) => {
             
             if (!name)
             {
-                res.flash('error', notify.mucbb)
+                res.flash('error', 'Mục bắt buộc chưa được điền.')
                 return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
             const isNameMain = await categoryModel.singleNameMainEdit(name, idCat);
@@ -237,7 +236,7 @@ module.exports = (router) => {
             
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                res.flash('error', notify.tentontai)
+                res.flash('error', 'Tên chuyên mục đã tồn tại')
                 return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
             
@@ -246,7 +245,7 @@ module.exports = (router) => {
             
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                res.flash('error', notify.duongdantontai)
+                res.flash('error', 'Đường dẫn tĩnh đã tồn tại.')
                 return res.redirect(`/admin/categories/edit/${urlParam}`);
             }
             
@@ -288,7 +287,7 @@ module.exports = (router) => {
             }
         
             // load thành công 
-            req.flash('success', `${notify.chinhsuathanhcong} ${name}`)
+            req.flash('success', `Chỉnh sửa chuyên mục thành công: ${name}`)
             return res.redirect(`/admin/categories/edit/${urlParam}`);
         }
         catch(error){
@@ -371,7 +370,7 @@ module.exports = (router) => {
         
             const list = await categoryModel.singleIdMain_Provision(id);
             if (list.length === 0){
-                req.flash('error', notify.khongcochuyenmuc)
+                req.flash('error', 'Không có tên chuyên mục.')
                 return res.redirect('/admin/categories/activatelv1');
             }
             const cat = list[0];
@@ -381,7 +380,7 @@ module.exports = (router) => {
             
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                req.flash('error', notify.tenkichhoattontai)
+                req.flash('error', 'Trùng tên chuyên mục đã tồn tại.')
                 return res.redirect('/admin/categories/activatelv1');
             }
             
@@ -390,7 +389,7 @@ module.exports = (router) => {
             
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                req.flash('error', notify.duongdankichhoattontai)
+                req.flash('error', 'Trùng đường dẫn tĩnh đã tồn tại.')
                 return res.redirect('/admin/categories/activatelv1');
             }
             
@@ -524,7 +523,7 @@ module.exports = (router) => {
             const url = check.mark_url(req.body.Url);
         
             if (!name || !url){
-                req.flash('error', notify.mucbb)
+                req.flash('error', 'Mục bắt buộc chưa được điền.')
                 return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
@@ -532,7 +531,7 @@ module.exports = (router) => {
             const isNameSub = await categoryModel.singleNameSub(name);
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                req.flash('error', notify.tentontai)
+                req.flash('error', 'Tên chuyên mục đã tồn tại.')
                 return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
@@ -540,7 +539,7 @@ module.exports = (router) => {
             const isUrlSub = await categoryModel.singleUrlSub(url);
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                req.flash('error', notify.duongdantontai)
+                req.flash('error', 'Đường dẫn tĩnh đã tồn tại.')
                 return res.redirect(`/admin/categories/addlv2/${urlParams}`);
             }
         
@@ -556,7 +555,7 @@ module.exports = (router) => {
                 IsDelete: 0
             };
             await categoryModel.addSub(entity);
-            req.flash('success', `${notify.themthanhcong} ${name}`)
+            req.flash('success', `Thêm chuyên mục thành công: ${name}`)
             return res.redirect(`/admin/categories/addlv2/${urlParams}`);
         }
         catch(error){
@@ -628,7 +627,7 @@ module.exports = (router) => {
             
             const catMain = await categoryModel.singleIdMain(catSub[0].IdCategoriesMain);
             if (catMain.length === 0){
-                req.flash('error', notify.khongcocha)
+                req.flash('error', 'Chuyên mục gốc không tồn tại.')
                 return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
             
@@ -637,7 +636,7 @@ module.exports = (router) => {
             const url = check.mark_url(req.body.Url);
             
             if (!name || !url){
-                req.flash('error', notify.mucbb)
+                req.flash('error', 'Mục bắt buộc chưa được điền.')
                 return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
         
@@ -646,7 +645,7 @@ module.exports = (router) => {
             
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                req.flash('error', notify.tentontai)
+                req.flash('error', 'Tên chuyên mục đã tồn tại.')
                 return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
             
@@ -655,7 +654,7 @@ module.exports = (router) => {
         
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {
-                req.flash('error', notify.duongdantontai)
+                req.flash('error', 'Đường dẫn tĩnh đã tồn tại.')
                 return res.redirect(`/admin/categories/editlv2/${urlParam}`);
             }
         
@@ -769,7 +768,7 @@ module.exports = (router) => {
             const id = req.body.Id;
             const list = await categoryModel.singleIdSub_Provision(id);
             if (list.length === 0){
-                req.flash('error', notify.khongcochuyenmuc)
+                req.flash('error', 'Chuyên mục gốc không tồn tại.')
                 return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
             const cat = list[0];
@@ -779,7 +778,7 @@ module.exports = (router) => {
         
             if (isNameMain.length !== 0 || isNameSub.length !== 0)
             {  
-                req.flash('error', notify.tenkichhoattontai)
+                req.flash('error', 'Trùng tên chuyên mục đã tồn tại.')
                 return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
         
@@ -788,7 +787,7 @@ module.exports = (router) => {
         
             if (isUrlMain.length !== 0 || isUrlSub.length !== 0)
             {  
-                req.flash('error', notify.duongdankichhoattontai)
+                req.flash('error', 'Trùng đường dẫn tĩnh đã tồn tại.')
                 return res.redirect(`/admin/categories/activatelv2/${url}`);
             }
         

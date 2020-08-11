@@ -54,7 +54,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
               Welcome, <b>{{lcAuthUser.Name}}</b>!
             </a>
             <div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item bg-info" href="/account/profile">
+              <a class="dropdown-item bg-info" href="/account/profile/4">
                 <i class="fa fa-user" aria-hidden="true"></i>
                 Account Profile
               </a>
@@ -89,8 +89,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="{{#if lcAuthUser.Avatar}}/public/img/Avatar/{{lcAuthUser.Avatar}}{{else}}/public/img/user2-160x160.jpg{{/if}}"
-              class="img-circle elevation-2" alt="User Image">
+              <img {{#if lcAuthUser.isGg}} src="{{lcAuthUser.Avatar}}" {{else}} {{#if lcAuthUser.Avatar}} src="/public/img/Avatar/{{lcAuthUser.Avatar}}" {{else}} src="/public/img/Avatar/NoAvatar.png" {{/if}} {{/if}}
+                class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
             <a href="#" class="d-block">{{lcAuthUser.Name}}</a>

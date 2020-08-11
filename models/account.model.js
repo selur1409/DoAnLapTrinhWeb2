@@ -17,9 +17,14 @@ module.exports = {
          a.TypeAccount = 3 and a.IsDelete = 0`);
     },
     single: function (username) {
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, a.DateExpired, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
+        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, a.DateExpired, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount, a.IsGoogle
         FROM ${TBL_ACCOUNTS} a, information i 
         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}'`);
+    },
+    singleGoogle: function (username) {
+        return db.load(`SELECT a.Id, a.Username, a.IsGoogle, a.TypeAccount, a.DateExpired, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
+        FROM ${TBL_ACCOUNTS} a, information i 
+        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}' and a.IsGoogle = 1`);
     },
     singUsername_Expired: function (username) {
         return db.load(`select a.Id, a.Username, i.Name, i.Sex, i.DOB, i.Email, i.Phone, i.Avatar, a.TypeAccount, a.DateRegister, a.DateExpired, i.Nickname
@@ -41,19 +46,22 @@ module.exports = {
         return db.load(`select a.Id, i.Name from ${TBL_ACCOUNTS} a, information i where a.Id = i.IdAccount and a.Username = '${username}' and a.IsDelete = 0`);
     },
     singleId_info_editAccount: function (id) {
-        return db.load(`select Id from information where IdAccount = ${id}`);
+        return db.load(`select Id, Avatar from information where IdAccount = ${id}`);
     },
-
-    
+    singleGoogle_check: function(username){
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsGoogle = 1 and IsDelete = 0`);
+    },
     singleEmail: function(email){
         return db.load(`select IdAccount from information where Email = '${email}'`);
+    },
+    singleEmail_US: function(email, username){
+        return db.load(`select IdAccount from information i, ${TBL_ACCOUNTS} a where a.Username != '${username}' and a.Id = i.IdAccount and i.Email = '${email}'`);
     },
     add: function (entity) {
         return db.add(TBL_ACCOUNTS, entity);
     },
     addInfor: function(entity){
-        db.add('information', entity);
-        return 1;
+        return db.add('information', entity);
     },
     patch: function (entity) {
         const condition = {

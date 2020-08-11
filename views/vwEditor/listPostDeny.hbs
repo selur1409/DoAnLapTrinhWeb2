@@ -1,3 +1,20 @@
+{{#if err}}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+      {{err}}
+  </div>
+  {{/if}}
+
+  {{#if success}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{success}}
+  </div>
+  {{/if}}
 <div class="d-flex justify-content-center">
   {{#each this.listCate}}
   <a href="/editor/denied/?cate={{IdCategories}}" type="button"
@@ -39,45 +56,45 @@
         <td class="text-center">{{statusName}}</td>
         <td class="text-center">{{Note}}</td>
         <td class="text-right">
-          {{!-- <a class="btn btn-outline-danger btn-sm" href="/editor/deletedeny/?cate={{cateId}}&catesub={{IdCategories}}&id={{Id}}" role="button" title="
+          <a class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to Remove?');" href="/editor/deletedeny/?cate={{cateId}}&catesub={{IdCategories}}&id={{Id}}" role="button" title="
 Remove from the list of rejected posts">
           <i class="far fa-trash-alt"></i>
           </a>
           <a class="btn btn-outline-warning btn-sm" href="/editor/editdeny/{{Id}}" role="button" title="Modify the reason for the decline">
           <i class="fas fa-pen"></i>
-          </a> --}}
+          </a>
         </td>
       </tr>
       {{/each}}
     </tbody>
   </table>
   <nav aria-label="...">
-      <ul class="pagination">
-        <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-          <a class="page-link" href="?page={{prev_value}}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
-        {{#each this.page_items}}
-        {{#if isActive}}
-        <li class="page-item active" aria-current="page">
-          <span class="page-link">
-            {{value}}
-            <span class="sr-only">(current)</span>
-          </span>
-        </li>
-        {{else}}
-        <li class="page-item {{#if isDisabled}}disabled{{/if}}">
-          <a class="page-link" href="?page={{value}}">{{value}}</a>
-        </li>
-        {{/if}}
-        {{/each}}
-        <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-          <a class="page-link" href="?page={{next_value}}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+    <ul class="pagination">
+      <li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{prev_value}}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {{#each this.page_items}}
+      {{#if isActive}}
+      <li class="page-item active" aria-current="page">
+        <span class="page-link">
+          {{value}}
+          <span class="sr-only">(current)</span>
+        </span>
+      </li>
+      {{else}}
+      <li class="page-item {{#if isDisabled}}disabled{{/if}}">
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{value}}">{{value}}</a>
+      </li>
+      {{/if}}
+      {{/each}}
+      <li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+        <a class="page-link" href="?cate={{cate}}&catesub={{catesub}}&page={{next_value}}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
   {{/if}}
 </div>

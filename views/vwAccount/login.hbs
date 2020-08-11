@@ -4,8 +4,9 @@
 <head>
   <title>SelurProjectWeb2 | Login</title>
   <meta charset="utf-8">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">  
+  <link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     body,
     html {
@@ -45,56 +46,59 @@
           {{err}}
         </div>
         {{/if}}
-
-        <form method="POST">
+        <a class="btn btn-lg btn-light btn-block" href="/" role="button">
+          <i class="fa fa-home" aria-hidden="true"></i>
+        </a>
+        <br>
+        <form method="POST" id="frmLoginAccount">
           <div class="form-group">
             <div class="input-group">
-              <input class="form-control form-control-lg border-right-0 border" placeholder="Username" type="text"
-                name="Username" autofocus required>
+              <input class="form-control form-control-lg border-right-0 border" id="txtUsername" placeholder="Tên đăng nhập" type="text"
+                name="Username" autofocus>
               <span class="input-group-append">
                 <div class="input-group-text bg-white">
                   <i class="fa fa-user" aria-hidden="true"></i>
                 </div>
               </span>
             </div>
+            <small id="rsUsername"></small>
           </div>
           <div class="form-group">
             <div class="input-group">
-              <input class="form-control form-control-lg border-right-0 border" placeholder="Password" type="password"
-                name="Password" required>
+              <input class="form-control form-control-lg border-right-0 border" placeholder="Mật khẩu" type="password"
+                name="Password" id="txtPassword">
               <span class="input-group-append">
                 <div class="input-group-text bg-white">
                   <i class="fa fa-key" aria-hidden="true"></i>
                 </div>
               </span>
             </div>
+            <small id="rsPassword"></small>
           </div>
           <div class="form-group d-flex">
-            <div>
-              <a class="btn btn-lg btn-outline-info btn-block" href="/" role="button">
-                <i class="fa fa-home" aria-hidden="true"></i>
-                Home
-              </a>
-            </div>
+
             <div class="flex-fill ml-1">
               <button class="btn btn-info btn-lg btn-block" type="submit">
                 <i class="fa fa-sign-in" aria-hidden="true"></i>
-                Sign In
+                Đăng nhập
               </button>
             </div>
-
+            <div class="flex-fill ml-1">
+              <a class="btn btn-outline-primary btn-lg btn-block" href="/account/register">
+                <i class="fas fa-user-plus"></i>
+                Tạo tài khoản
+              </a>
+            </div>
           </div>
         </form>
           <div class="flex-fill ml-1">
-            <a href="/auth/facebook">
-              <button class="btn btn-info btn-lg btn-block" type="submit">
-                <i class="fa fa-facebook-square" aria-hidden="true"></i>
-                Đăng nhập với Facebook
-            </button>
+              <a class="btn btn-outline-danger btn-lg btn-block" href="/auth/google">
+                <i class="fab fa-google-plus"></i>
+                Đăng nhập với Google+
             </a>
           </div>
           <div class="flex-fill ml-1">
-            <a href="/account/ForgotPW"><i>Forgot Password.</i></a>
+            <a href="/account/ForgotPW"><i>Quên mật khẩu.</i></a>
           </div>
       </div>
     </div>
@@ -103,6 +107,83 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <script>
+  $('#frmLoginAccount').on('submit', function (e) {
+    // alert('submit called');
+    e.preventDefault();
+    // if (validate())
+    //   $('#frmLoginAccount').off('submit').submit();
+    validate();
+  })
+
+function validate() {
+  // ... các lệnh validate khác
+  if (!validateUsername() || !validatePassword()){
+    return alert('Thông tin nhập không chính xác hoặc không đầy đủ.'); 
+  }
+  return $('#frmLoginAccount').off('submit').submit();    
+}
+
+function validateRegexUsername(username) {
+    const re = /^(([a-z]){1}([a-z0-9_\.]){3,31})$/;
+    return re.test(username);
+}
+
+function validateUsername() {
+  const $result = $("#rsUsername");
+  const username = $("#txtUsername").val();
+  $result.text("");
+  
+  if (validateRegexUsername(username)) {
+    return true;
+  }
+  if (username === "")
+  {
+      $result.text("Mục bắt buộc phải điền.");
+      $result.css("color", "red");
+      return false;
+  }
+  $result.text("Chứa ít nhất 4 kí tự, trong đó 1 kí tự ở đầu câu, và chỉ có kí tự thường không dấu hoặc số.");
+  $result.css("color", "red");
+  return false;
+}
+
+function validateRegexPassword(pw) {
+    const re = /^(?=.{5,})(?=.*[a-z]+)(?=.*\d+)(?=.*[A-Z]+)[ -~]+$/;
+    return re.test(pw);
+}
+function validatePassword() {
+  const $result = $("#rsPassword");
+  const pw = $("#txtPassword").val();
+  $result.text("");
+
+  if (validateRegexPassword(pw)) 
+  {
+    return true;
+  }
+  if (pw === "")
+  {
+    $result.text("Mục bắt buộc phải điền.");
+    $result.css("color", "red");
+    return false;
+  }
+  $result.text("Có ít nhất 5 kí tự, gồm chữ thường, hoa và số");
+  $result.css("color", "red");
+  return false;
+}
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+  $("#txtUsername").change(function(){
+    validateUsername();
+  });
+  $("#txtPassword").change(function(){
+    validatePassword();
+  });
+});
+</script>
 </body>
 
 </html>
