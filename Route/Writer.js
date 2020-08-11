@@ -779,7 +779,6 @@ router.get('/FeedBack_Read/:idPost/:id', restrict, Authories, async (req,res, ne
         const IdPost = +req.params.idPost;
         const IsDelete = 0;
         const [Result, Total] = await Promise.all([db.LoadFB(IdPost), CountFB(IdPost, IsDelete)]);
-     
         res.render('vwWriter/feedback_read', {
             layout:'homewriter',
             IsActiveFB:true,
@@ -808,9 +807,9 @@ router.get('/FeedBack_Inbox/:id/:page',  restrict, Authories, async (req,res, ne
     try{
         const page = +req.params.page || 1;
         const offset = (page - 1) * config.pagination.limit;
-        const IdPost = req.params.id;
+        const IdPost = +req.params.id;
         const IsDelete = 0;
-        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset, IsDelete), db.CountFB(IdPost, IsDelete)]);
+        const [Result, Total] = await Promise.all([db.LoadInboxFB(IdPost, config.pagination.limit, offset, IsDelete), db.CountFB(IdPost, IsDelete)]);   
         const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
         let PageEnd = offset + config.pagination.limit;
         if(PageEnd > Total[0].Number)
