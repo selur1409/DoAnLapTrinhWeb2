@@ -1,3 +1,63 @@
+{{#section 'css'}}
+<link rel="stylesheet" href="../../public/css/comment.css">
+{{/section}}
+{{#section 'js'}}
+<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+<script language="javascript">
+    function load_ajax() {
+        $.ajax({
+            url: "/post/comment/load",
+            type: "post",
+            dataType: "text",
+            data: {
+                number: $('#Number').val(),
+                url: $('#Url').val()
+            },
+            success: function (result) {
+                loadSuccess(result);
+            }
+        });
+    }
+    function loadSuccess(data) {
+		console.log(data);
+        const dt = JSON.parse(data);
+        console.log(dt);
+        var rs = $('#media-list');
+        $('#Number').val(`${dt.number}`);
+        if (dt.more === false){
+            $('#more').hide();
+        }
+        for (d of dt.listComment) {
+            var avt = d.Avatar;
+            if (avt === null){
+                avt = "NoAvatar.png";
+            }
+            rs.append(`
+            <li class="media">
+                <a class="pull-left" href="#">
+                    <img class="media-object img-circle"
+                        src="/public/img/Avatar/${avt}"
+                        alt="Profile">
+                </a>
+                <div class="media-body">
+                    <div class="well well-lg">
+                        <h4 class="media-heading text-uppercase reviews">${d.Name}</h4>
+                        <span class="media-date text-uppercase reviews list-inline">
+                            Lúc ${d.DatetimeComment} 
+                        </span>
+                        <p class="media-comment">
+                            ${d.Content}
+                        </p>                      
+                        <br>
+                    </div>
+                </div>
+            </li>
+            `);
+        }
+    }
+</script>
+{{/section}}
+
 	<div class="page_content">
 		<div class="container">
 			<div class="row row-lg-eq-height">
@@ -82,8 +142,11 @@
 								{{/if}}
 							</div>
 
-							{{!-- bình luận bài viết --}}
-							<div class="container">
+									
+						</div>
+					</div>
+					{{!-- bình luận bài viết --}}
+							<div class="container" id="cmt">
 								<div class="row">
 									<div class="col-sm-10 col-sm-offset-1" id="logout">
 										<div class="page-header">
@@ -134,12 +197,9 @@
 													<input type="hidden" id="Number" value="1">
 													<input type="hidden" id="Url" value="{{post.Url}}">
 													{{#if more}}													
-													<button class="load_more" id="more" onclick="load_ajax()">
-														<div id="load_more" class="load_more_button text-center trans_200">Load More</div>
-													</button>
-													{{!-- <button class="btn btn-primary btn-sm btn-block" id="more" onclick="load_ajax()"><i
+													<button class="btn btn-primary btn-sm btn-block" id="more" onclick="load_ajax()"><i
 															class="fas fa-sync"></i>
-														Old Comment</button> --}}
+														Old Comment</button>
 													{{/if}}
 													{{/unless}}
 												</div>
@@ -174,9 +234,7 @@
 							{{!-- /bình luận bài viết --}}
 							<br>
 							<br>
-							<hr>						
-						</div>
-					</div>
+							<hr>				
 				</div>
 
 				<!-- Sidebar -->

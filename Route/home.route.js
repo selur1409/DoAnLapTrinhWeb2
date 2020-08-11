@@ -11,6 +11,7 @@ const {getTime_Minutes} = require('../js/betweendate');
 const {addMinutes}= require('../config/default.json');
 const accountModel = require('../models/account.model');
 const router = express.Router();
+const querystring = require('querystring');
 
 // Trang index
 router.get('/',async function (req, res) {
@@ -375,14 +376,24 @@ router.get('/detail/:Url', async function(req, res){
     const url = req.params.Url;
     const rows = await postModel.single(url);
 
+    const posts_cmt = await postModel.single_url_posts(url);
+    if (posts_cmt.length === 0){
+        req.flash('error', 'Bài viết không tồn tại.');
+        return res.redirect('/');
+    }
+    if (posts_cmt[0].IdStatus !== 2){
+        req.flash('error', 'Bài viết chưa được xuất bản.');
+        return res.redirect('/');
+    }
+
     const post = rows[0];
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
     const listTag = await tagModel.tagByIdPost(post.Id);
-    const listComment = await commentModel.commentByIdPost(post.Id);
+    // const listComment = await commentModel.commentByIdPost(post.Id);
 
     const listPostTags = await postModel.postTags();
-    const countComment = listComment.length;
+    // const countComment = listComment.length;
 
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
@@ -400,13 +411,32 @@ router.get('/detail/:Url', async function(req, res){
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
 
+    // Bình luận bài viét
+
+
+    const offset = (+req.body.number || 0) * config.pagination.limit;
+    
+    const pcmt = posts_cmt[0];
+    const listComment = await commentModel.commentByIdPost_admin(pcmt.Id, offset, config.pagination.limit);
+
+    for (l of listComment){
+        l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+        l.Url = url;
+    }
+    const empty = await commentModel.countCommentByIdPost_admin(pcmt.Id);
+
     res.render('vwPost/detailPost', {
         layout: 'detailpost',
         post,
         listTag,
         postRandom,
-        listComment,
-        countComment,
+        // listComment,
+        // countComment,
+        
+        listComment: listComment,
+        empty: empty[0].Count,
+        more: empty[0].Count > config.pagination.limit,
+
         emptyPostRandom: postRandom.length === 0,
         listPostTags,
         listRandomSidebar,
@@ -479,9 +509,73 @@ router.get('/detail/:Url', async function(req, res){
 });
 
 
+router.post('/post/comment/load', async function(req, res){
+    console.log(1);
+    const url = req.body.url || "empty";
+        const posts = await postModel.single_url_posts(url);
+        if (posts.length === 0){
+            req.flash('error', 'Bài viết không tồn tại.');
+            return res.redirect('/admin/posts');
+        }
+        if (posts[0].IdStatus !== 2){
+            req.flash('error', 'Bài viết chưa được xuất bản.');
+            return res.redirect('/admin/posts');
+        }
 
+        const offset = (+req.body.number || 1) * config.pagination.limit;
 
+        const post = posts[0];
+        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, config.pagination.limit);
 
+        for (l of listComment){
+            l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+            l.Url = url;
+        }
+        
+        const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+        var more = true;
+        if (offset + config.pagination.limit >= empty[0].Count){
+            more = false;
+        }
+        
+        const number = +req.body.number + 1;
+
+        const data = {
+            listComment: listComment,
+            number: number,
+            more: more
+        }
+        return res.json(data);
+})
+
+router.post('/post/comment/add', async function(req, res){
+    const Url = req.body.Url;
+    if (!res.locals.lcIsAuthenticated)
+    {
+        const url = querystring.escape(`/detail/${Url}#cmt`);
+        return res.redirect(`/account/login?retUrl=${url}`);
+    }
+    // {"IdPost":"10","Url":"gioi-thieu-ve-iostream-cout-cin-va-endl-1596752895575","Content":""}
+    const IdPost = req.body.IdPost;
+    const Content = req.body.Content;
+    if (!Content){
+        req.flash('error', 'Nội dung bình luận không thể để trống ');
+        return res.redirect(`/admin/posts/comment?url=${Url}`);
+    }
+
+    const DatetimeComment = moment().format('YYYY-MM-DD HH:mm:ss');
+
+    const entity = {
+        IdPost,
+        Content,
+        DatetimeComment,
+        IsDelete: 0,
+        IdAccount: res.locals.lcAuthUser.Id
+    }
+    await commentModel.add(entity);
+
+    return res.redirect(`/detail/${Url}#cmt`);
+})
 
 
 

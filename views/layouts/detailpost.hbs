@@ -7,14 +7,20 @@
 	<meta name="description" content="Demo project">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" type="text/css" href="/public/styles/bootstrap4/bootstrap.min.css">
-	<link href="/public/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
-	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
-	<link rel="stylesheet" type="text/css" href="/public/plugins/OwlCarousel2-2.2.1/animate.css">
-	<link rel="stylesheet" type="text/css" href="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
-	<link rel="stylesheet" type="text/css" href="/public/styles/post.css">
-	<link rel="stylesheet" type="text/css" href="/public/styles/post_responsive.css">
-	<link rel="stylesheet" href="/public/styles/menu.css">
+	<link href="../../public/plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="../../public/plugins/OwlCarousel2-2.2.1/owl.carousel.css">
+	<link rel="stylesheet" type="text/css" href="../../public/plugins/OwlCarousel2-2.2.1/owl.theme.default.css">
+	<link rel="stylesheet" type="text/css" href="../../public/plugins/OwlCarousel2-2.2.1/animate.css">
+	<link rel="stylesheet" type="text/css" href="../../public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.css">
+	<link rel="stylesheet" type="text/css" href="../../public/styles/post.css">
+	<link rel="stylesheet" type="text/css" href="../../public/styles/post_responsive.css">
+	<link rel="stylesheet" href="../../public/styles/menu.css">
+	{{{_sections.css}}}
+	<style>
+		.bg-black-oct-4{
+			background-color: rgba(0, 0, 0, 0.685);
+		}
+	</style>
 </head>
 
 <body>
@@ -67,15 +73,7 @@
 						{{!-- register_login --}}
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
-							<ul>
-							{{#if lcIsSubscriber}}
-							<li>		
-								<a class="nav-link" href="/subcriber" role="button"
-								aria-haspopup="true" aria-expanded="false">
-								<b>SUBSCRIBER</b>
-								</a>	
-							</li>
-							{{/if}}								
+							<ul>								
 							{{#if lcIsWriter}}
 							<li>		
 								<a class="nav-link" href="/write/Writer" role="button"
@@ -110,15 +108,10 @@
 								<div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
 								<a class="dropdown-item bg-info" href="/account/profile">
 									<i class="fa fa-user" aria-hidden="true"></i>
-									Account Profil
+									Account Profile
 								</a>
 								<div class="dropdown-divider"></div>
-								{{#if lcIsSubscriber}}
-									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>SUBSCRIBER</b>
-									</a>
-								{{/if}}
-								{{#if lcIsWriter}}
+								{{!-- {{#if lcIsWriter}}
 									<a class="nav-link" href="/writer/Writer" role="button" aria-haspopup="true" aria-expanded="false">
 										<b>WRITER</b>
 									</a>
@@ -133,7 +126,7 @@
 										<b>ADMINISTRATOR</b>
 									</a>
 								{{/if}}
-								<div class="dropdown-divider"></div>
+								<div class="dropdown-divider"></div> --}}
 								<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
 									<i class="fa fa-sign-out" aria-hidden="true"></i>
 									Logout
@@ -199,7 +192,7 @@
 
 	<div class="home">
 		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="{{post.Avatar}}" data-speed="0.8"></div>
-		<div class="home_content">
+		<div class="home_content bg-black-oct-4 p-3">
 			<div class="post_title">{{this.post.Title}}</div>
 		</div>
 	</div>
@@ -257,14 +250,15 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</footer>
 </div>
 
-<script src="/public/js/jquery-3.2.1.min.js"></script>
-<script src="/public/styles/bootstrap4/popper.js"></script>
-<script src="/public/styles/bootstrap4/bootstrap.min.js"></script>
-<script src="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
-<script src="/public/plugins/easing/easing.js"></script>
-<script src="/public/plugins/masonry/masonry.js"></script>
-<script src="/public/plugins/parallax-js-master/parallax.min.js"></script>
-<script src="/public/js/post.js"></script>
+<script src="../../public/js/jquery-3.2.1.min.js"></script>
+<script src="../../public/styles/bootstrap4/popper.js"></script>
+<script src="../../public/styles/bootstrap4/bootstrap.min.js"></script>
+<script src="../../public/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
+<script src="../../public/plugins/easing/easing.js"></script>
+<script src="../../public/plugins/masonry/masonry.js"></script>
+<script src="../../public/plugins/parallax-js-master/parallax.min.js"></script>
+<script src="../../public/js/post.js"></script>
+{{{_sections.js}}}
 </body>
 </html>
 
