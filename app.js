@@ -20,6 +20,7 @@ require('./passport-setup');
 app.use(flash());
 
 // Trang chủ Home
+//sửa require của / và /index.html ((require('./route/home.route') -> (require('./Route/home.route'))
 app.use('/', require('./Route/home.route'));
 app.use('/index.html', require('./Route/home.route'));
 

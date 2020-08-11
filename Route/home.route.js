@@ -1,5 +1,6 @@
 const config = require('../config/default.json');
 const express = require('express');
+//sửa require postModel (require('../models/post.model') -> require('../Models/post.model'))
 const postModel = require('../Models/post.model');
 const tagModel = require('../Models/tag.model');
 const commentModel = require('../Models/comment.model');
@@ -7,7 +8,8 @@ const moment = require('moment');
 const querystring = require('querystring');
 const puppeteer = require('puppeteer');
 const { restrict } = require('../middlewares/auth.mdw');
-const categoriesModel = require('../models/category.model');
+//sửa require categoriesModel (require('../models/category.model') -> require('../Models/category.model'))
+const categoriesModel = require('../Models/category.model');
 const {getTimeBetweenDate} = require('../js/betweendate');
 const {getTime_Minutes} = require('../js/betweendate');
 const {addMinutes}= require('../config/default.json');
