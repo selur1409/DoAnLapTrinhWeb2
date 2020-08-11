@@ -51,18 +51,20 @@ module.exports = {
                 WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
                     AND p.IsDelete=0 AND p.IsDelete=0 AND p.IdStatus=${postStatus} AND p.IdStatus=st.Id  AND fb.IdPost=p.Id AND fb.IsDelete=0`);
     },
-
-    LoadSinglePost: (idPost) => {
-        return db.load(`SELECT Id, Title, Content_Full, Content_Summary, DatePost, IdCategories 
+    LoadIdPostByUrl:(url)=>{
+        return db.load(`SELECT Id FROM ${TBL_POSTS} 
+        WHERE Url='${url}' AND IsDelete=0 `);
+    },
+    LoadSinglePost: (url) => {
+        return db.load(`SELECT Id, Title, Avatar, Url, Content_Full, Content_Summary, DatePost, IdCategories 
             FROM ${TBL_POSTS} 
-                WHERE Id=${idPost} AND IsDelete=0`);
+                WHERE Url='${url}' AND IsDelete=0`);
     },
 
-    LoadCateById: (idCateSub) => {
-        return db.load(`SELECT cate.Name as 'CateName', p.Id as 'idPost', cate.Id as 'idCategories' 
-            FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} catesub 
-                WHERE catesub.Id=p.IdCategories and p.IdCategories=${idCateSub} and 
-                    cate.Id=catesub.IdCategoriesMain AND p.IsDelete=0 AND cate.IsDelete=0 AND catesub.IsDelete=0`);
+    LoadCateByIdCateSub: (idCateSub) => {
+        return db.load(`SELECT cate.Id, cate.Name 
+            FROM ${TBL_CATEGORIES_SUB} catesub, ${TBL_CATEGORIES} cate 
+                WHERE catesub.Id=${idCateSub} AND cate.Id=catesub.IdCategoriesMain AND cate.IsDelete=0 AND catesub.IsDelete=0`);
     },
 
     LoadInforPost: (idPost) => {
@@ -78,12 +80,16 @@ module.exports = {
         return db.patch(TBL_POSTS, entity, condition);
     },
     InsertFeedbackPost: (value) => {
-        return db.insert(`INSERT INTO feedback(??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)`, value);
+        return db.insert(`INSERT INTO ${TBL_FEED_BACK}(??, ??, ??, ??, ??) VALUES (?, ?, ?, ?, ?)`, value);
     },
     LoadCateSub: (idCategories) => {
         return db.load(`SELECT Name, Id 
             from ${TBL_CATEGORIES_SUB} 
-                WHERE IdCategoriesMain=${idCategories} AND IsDelete=0`)
+                WHERE IdCategoriesMain=${idCategories} AND IsDelete=0`);
+    },
+    LoadCateSubById:(idCateSub)=>{
+        return db.load(`SELECT Id, Name FROM ${TBL_CATEGORIES_SUB} WHERE Id=${idCateSub}`);
+
     },
     LoadPostPending_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {
         return db.load(`SELECT (ROW_NUMBER() OVER (ORDER BY p.Id)) as 'Stt', p.Id, p.Url, 
@@ -102,7 +108,7 @@ module.exports = {
         st.Name as'statusName' 
             FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
                 WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
-                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=${postStatus} OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub}
+                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=${postStatus} OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub} ORDER BY DatetimePost DESC
                     limit ${limit} offset ${offset}`);
     },
     LoadPostDeny_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {
@@ -121,6 +127,12 @@ module.exports = {
             FROM posts p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
                 WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
                     AND p.IsDelete=0 AND p.IsDelete=0 AND p.IdStatus=${postStatus} AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub}`)
+    },
+    CountPostAccept: (idCategories, idCategoriesSub) => {
+        return db.load(`SELECT count(*) as'SoLuong' 
+            FROM posts p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
+                WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
+                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=1 OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub}`)
     },
     DeleteTagsOfPost: (id) => {
         const condition = {

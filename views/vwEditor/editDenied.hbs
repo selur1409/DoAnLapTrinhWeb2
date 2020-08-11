@@ -5,15 +5,15 @@
     <b><i class="fa fa-check-circle" aria-hidden="true"></i> EDIT DENIED POSTS</b>
   </div>
 
-  <form action="/editor/denyPost" method="POST" onsubmit="return validateForm">
+  <form action="/editor/editdeny" method="POST" onsubmit="return validateForm">
   <div class="form-group">
     <label for="exampleInputTitle1">Tilte</label>
     <input type="text" class="form-control" value="{{this.denyPost.Title}}" readonly>
     <label for="exampleInputAuthor1">Author: </label>
     <input type="text" class="form-control"  value="{{this.denyPost.Nickname}}" readonly>
     <label for="exampleInputAuthor1">Categories: </label>
-    <input type="text" class="form-control"  value="{{this.categories.CateName}}" readonly>
-    <label for="exampleInputAuthor1">Summary: </label>
+    <input type="text" class="form-control"  value="{{this.categories.Name}}" readonly>
+    <label for="exampleInputAuthor1">Content Summary: </label>
     <input type="text" class="form-control" value="{{this.denyPost.Content_Summary}}" readonly>
 
     <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">

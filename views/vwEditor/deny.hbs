@@ -1,6 +1,6 @@
 <div class="card pl-2 pr-2">
   <div class="card-header text-primary bg-danger d-flex justify-content-between mt-2 pb-2">
-    <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i></i>
+    <button class="btn btn-info btn-sm" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i></i>
       Back</button>
     <b><i class="fa fa-check-circle" aria-hidden="true"></i> DENY POST</b>
   </div>
@@ -12,7 +12,7 @@
       <label for="exampleInputAuthor1">Author: </label>
       <input type="text" class="form-control col-4" value="{{this.denyPost.Nickname}}" readonly>
       <label for="exampleInputAuthor1">Categories: </label>
-      <input type="text" class="form-control col-4" value="{{this.categories.CateName}}" readonly>
+      <input type="text" class="form-control col-4" value="{{this.categories.Name}}" readonly>
       <label for="exampleInputAuthor1">Categories Sub: </label>
       <input type="text" class="form-control col-4" value="{{this.cateSub.Name}}" readonly>
       <label for="exampleInputAuthor1">Summary: </label>
@@ -20,16 +20,16 @@
         readonly>{{this.denyPost.Content_Summary}}</textarea>
 
       <input type="hidden" id="idPost" name="idPost" value="{{this.denyPost.Id}}">
-      <input type="hidden" id="idCate" name="idCate" value="{{this.categories.idCategories}}">
+      <input type="hidden" id="idCate" name="idCate" value="{{this.categories.Id}}">
       <input type="hidden" id="idCateSub" name="idCateSub" value="{{this.cateSub.Id}}" </div>
       <div class="form-group">
-        <label for="exampleFormControlTextarea1">Reason for the rejection</label>
+        <label for="exampleFormControlTextarea1">Reason for the rejection: </label>
         <textarea class="form-control" name="reasonDeny" id="exampleFormControlTextarea1" rows="3" required
           pattern="\S+.*"></textarea>
       </div>
       <div class="text-center mt-3">
-        <a type="button" href="#" class="btn btn-danger mr-3">Back</a>
-        <button type="submit" class="btn btn-primary">Send</button>
+        <a type="button" href="#" class="btn btn-danger mr-3"><i class="fas fa-ban"></i> Cancel</a>
+        <button type="submit" class="btn btn-primary"><i class="fab fa-telegram-plane"></i> Send</button>
       </div>
   </form>
 
@@ -43,3 +43,8 @@
       return true;
     }
   </script>
+  <script>
+  function goBack() {
+    window.history.back();
+  }
+</script>

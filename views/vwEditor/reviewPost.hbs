@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between">
-        <button class="btn btn-info" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
+        <button class="btn btn-info btn-sm" onclick="goBack()"><i class="fa fa-chevron-left" aria-hidden="true"></i>
             Back</button>
         <h5 class="card-title text-primary mt-2">
             <i class="fa fa-eye" aria-hidden="true"></i>
@@ -8,6 +8,13 @@
         </h5>
     </div>
     <div class="card-body">
+        <div>
+            {{#if this.reviewPost.Avatar}}
+            <img src="{{this.reviewPost.Avatar}}" class="rounded mx-auto d-block" height="200" height="200">
+            {{else}}
+            Chưa có Avatar cho bài viết.
+            {{/if}}
+        </div>
         <div class="text-center">
             <h2>{{this.reviewPost.Title}}</h2>
         </div>
@@ -36,9 +43,9 @@
             {{/each}}
         </div>
         <div class="text-center mt-5">
-            <a type="button" class="btn btn-success mr-3" href="/editor/accept/{{this.reviewPost.Id}}"><i
+            <a type="button" class="btn btn-success mr-3" href="/editor/accept/{{this.reviewPost.Url}}"><i
                     class="far fa-check-circle"></i> Accept</a>
-            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Id}}"> <i
+            <a type="button" class="btn btn-danger" href="/editor/deny/{{this.reviewPost.Url}}"> <i
                     class="fas fa-ban"></i> Deny</a>
         </div>
     </div>

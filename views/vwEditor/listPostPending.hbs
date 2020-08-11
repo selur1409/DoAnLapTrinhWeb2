@@ -11,10 +11,10 @@
   {{/each}}
 </div>
 
- {{#if this.empty}}
-    <div class="text-center">No data</div>
-  {{else}}
-  
+{{#if this.empty}}
+<div class="text-center">No data</div>
+{{else}}
+
 <div class="list-group">
   <table class="table">
     <thead class="bg-primary">
@@ -38,7 +38,7 @@
         <td class="text-center">{{DatePost}}</td>
         <td class="text-center">{{statusName}}</td>
         <td class="text-right">
-          <a class="btn btn-outline-primary btn-sm" href="/editor/reviewPost/{{Id}}" role="button" title="Review Post">
+          <a class="btn btn-outline-primary btn-sm" href="/editor/reviewPost/{{Url}}" role="button" title="Review Post">
             Review
             <i class="fa fa-eye" aria-hidden="true"></i>
           </a>
