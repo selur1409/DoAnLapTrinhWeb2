@@ -2,6 +2,7 @@ const categoriesModel = require('../models/category.model');
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
+
     if (req.session.isAuthenticated === null) {
       req.session.isAuthenticated = false;
     }
@@ -13,7 +14,7 @@ module.exports = function (app) {
     res.locals.lcIsWriter = req.session.isWriter;
     res.locals.lcIsEditor = req.session.isEditor;
     res.locals.lcIsAdmin = req.session.isAdmin;
-
+    
     next();
   })
 

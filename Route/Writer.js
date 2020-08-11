@@ -213,7 +213,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
         //get tagImg in full content
         const tagsImg = getTagImg(FullContent);
-        const fullSrcImg = getFullSrcImg(FullContent)
+        const fullSrcImg = getFullSrcImg(FullContent);
         const directoryPath = path.join(__dirname, '../public/img/ImagePost/temp');
         
         if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
@@ -445,7 +445,7 @@ router.get('/ViewPost/', restrict, Authories, async (req, res)=>{
 });
 
 router.get('/DetailPost/', restrict, Authories, async (req, res)=>{
-    const IdPost = req.query.id;
+    const IdPost = +req.query.id;
     const Post = await db.LoadSinglePost(IdPost);
     const Status = await db.LoadStatusById(Post[0].IdStatus);
     const Categories = await db.LoadCategoriesById(Post[0].IdCategories);

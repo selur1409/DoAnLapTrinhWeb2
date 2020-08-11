@@ -67,6 +67,7 @@ router.get('/',async function (req, res) {
 
         listRandomSidebar, 
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers: {
             load_Post1: function(context, options)
             {
@@ -191,6 +192,7 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers:{
             load_list_tags: function(context, Id, options)
             {
@@ -302,6 +304,7 @@ router.get('/detail/:Url', async function(req, res){
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
+        emptyFutureEvent: listFutureEvent.length === 0,
         helpers:{
             load_list_tags: function(context, Id, options)
             {

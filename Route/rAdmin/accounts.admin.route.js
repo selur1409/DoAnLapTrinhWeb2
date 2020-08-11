@@ -6,7 +6,6 @@ const config = require('../../config/default.json');
 const {getTimeBetweenDate} = require('../../js/betweendate');
 const {getTime_Minutes} = require('../../js/betweendate');
 const {addMinutes}= require('../../config/default.json');
-const flash = require('express-flash');
 
 const multer = require('multer');
 const fs = require('fs-extra');
@@ -160,7 +159,6 @@ module.exports = (router) =>{
         if (!isNaN(Date.parse(req.body.DOB))){
             dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
         }
-        console.log(dob);
     
         //Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
         if (dt_now <= dob)

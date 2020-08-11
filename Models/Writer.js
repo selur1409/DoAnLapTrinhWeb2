@@ -149,8 +149,13 @@ module.exports = {
     /*Feedback*/
 
     /*Profile*/
+    // LoadProfile:(value)=>{
+    //     return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount, ta.Name AS 'Type' 
+    //     FROM accounts a, information i, typeaccount ta 
+    //     WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
+    // },
     LoadProfile:(value)=>{
-        return db.load(`SELECT a.Id, a.Username, a.Password_hash, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount, ta.Name AS 'Type' 
+        return db.load(`SELECT a.Id, a.Username, a.TypeAccount, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount, ta.Name AS 'Type' 
         FROM accounts a, information i, typeaccount ta 
         WHERE a.Id = i.IdAccount AND ta.Id = a.TypeAccount AND a.IsDelete = 0 AND i.IdAccount = '${value}'`);
     },
