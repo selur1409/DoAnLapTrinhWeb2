@@ -38,11 +38,8 @@
     "nodemon": "^2.0.4",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
-<<<<<<< HEAD
-    "puppeteer": "^5.2.1",
-=======
     "passport-google-oauth20": "^2.0.0",
->>>>>>> 68ef4c1912a0b0ca29c0a1ed3b6e7ca31540263c
+    "puppeteer": "^5.2.1",
     "querystring": "^0.2.0"
   }
 }
