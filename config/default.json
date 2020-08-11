@@ -28,7 +28,8 @@
     "addMinutes": 10080,
     "pagination": {
       "limit": 4,
-      "limitPaginationLinks":5
+      "limitPaginationLinks":5,
+      "limitPostPage": 3
     },
     "filesize": 1048576
 }
