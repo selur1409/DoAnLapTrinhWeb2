@@ -65,7 +65,7 @@ app.use(function (err, req, res, next) {
   res.status(500).render('500', { layout: false });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
