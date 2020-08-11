@@ -29,7 +29,7 @@ module.exports = {
     },
 
     LoadCategoriesOfEditor: (IdAccount) => {
-        return db.load(`SELECT edtacc.IdCategories, cate.Name 
+        return db.load(`SELECT edtacc.IdCategories, cate.Name , cate.Id
             FROM ${TBL_EDITOR_ACCOUNT} edtacc, ${TBL_CATEGORIES} cate 
                 WHERE IdAccount =${IdAccount} and edtacc.IsDelete=0 AND cate.Id=edtacc.IdCategories ORDER BY edtacc.IdCategories ASC`);
     },
@@ -177,5 +177,8 @@ module.exports = {
     },
     LoadPostPremium:(idPost)=>{
         return db.load(`SELECT * FROM ${TBL_POST_DETAILS} WHERE IdPost=${idPost} AND IsPremium=1`)
+    },
+    CountPostByCate: (idCate)=>{
+        return db.load(`SELECT COUNT(*) as 'total' FROM posts p, categories_sub catesub, categories cate WHERE cate.Id=${idCate} AND catesub.IdCategoriesMain=cate.id and catesub.Id=p.IdCategories and p.IdStatus=4 and p.IsDelete=0 AND cate.IsDelete=0 and catesub.IsDelete=0`)
     }
 }
