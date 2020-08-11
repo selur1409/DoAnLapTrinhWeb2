@@ -21,7 +21,7 @@ app.use(flash());
 
 // Trang chủ Home
 app.use('/', require('./Route/home.route'));
-app.use('/index.html', require('./route/home.route'));
+app.use('/index.html', require('./Route/home.route'));
 
 
 const {exposeTemplates} = require('./public/js/exposeTemplate');
