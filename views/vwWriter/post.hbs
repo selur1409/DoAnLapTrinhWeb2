@@ -206,7 +206,10 @@ tinymce.init({
                     {
                       document.getElementById("alert").innerHTML = Handlebars.templates.Success({success:dataParsed.success});
                       $("#Success").modal("show");
-                      document.getElementsByTagName('textarea').value = '';
+                      $("textarea").val("");
+                      $("#IdCategories").val($("#target option:first").val());
+                      $('.btnTag').removeClass('active');
+                      tinymce.get('IdFullCont').setContent('');
                     }
                     if(dataParsed.hasOwnProperty('fail'))
                     {

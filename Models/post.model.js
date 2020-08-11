@@ -6,23 +6,45 @@ module.exports = {
     all: function () {
         return db.load(`select * from ${TBL_POSTS}`);
     },
-    dislayList: function () {
+    dislayList_lo: function (limit, offset) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
                         s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
         from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
         where p.IsDelete = 0 and s.Id = p.IdStatus
-        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories
+        limit ${limit} offset ${offset}`);
     },
-    dislayList_activate: function () {
+    dislayList_activate: function (limit, offset) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
                         s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
         from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
         where p.IsDelete = 1 and s.Id = p.IdStatus
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories
+        limit ${limit} offset ${offset}`);
+    },
+    countDislayList: function () {
+        return db.load(`select count(*) as 'SoLuong'
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IsDelete = 0 and s.Id = p.IdStatus
         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
-    dislayList_Status: function (idStatus) {
+    countDislayList_activate: function () {
+        return db.load(`select count(*) as 'SoLuong'
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IsDelete = 1 and s.Id = p.IdStatus
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
+    },
+    dislayList_Status: function (idStatus, limit, offset) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
         s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
+        from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
+        where p.IdStatus = ${idStatus}
+        and s.Id = p.IdStatus and p.IsDelete = 0
+        and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories
+        limit ${limit} offset ${offset}`);
+    },
+    countDislayList_Status: function (idStatus) {
+        return db.load(`select count(*) as 'SoLuong' 
         from ${TBL_POSTS} p, status_posts s, postdetails pd, information i, categories_sub cs 
         where p.IdStatus = ${idStatus}
         and s.Id = p.IdStatus and p.IsDelete = 0

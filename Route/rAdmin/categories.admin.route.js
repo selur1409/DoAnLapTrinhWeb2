@@ -4,14 +4,14 @@ const editoraccountModel = require('../../models/editoraccount.model');
 const accountModel = require('../../models/account.model');
 const check = require('../../js/check');
 const config = require('../../config/default.json');
-const pageination = require('../../js/pagination');
+const pagination_js = require('../../js/pagination');
 const {restrict} = require('../../middlewares/auth.mdw');
 const {isAdmin} = require('../../middlewares/auth.mdw');
 
 module.exports = (router) => {
     //Xem tất cả theo từng chuyên mục
     router.get('/categories', restrict, isAdmin, async function(req, res){
-        try{
+       try{
             for (const c of res.locals.lcManage) {
                 if (c.link === 'categories') {
                   c.isActive = true;
@@ -38,17 +38,14 @@ module.exports = (router) => {
                 }
             }
          
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong); 
-    
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+
             return res.render('vwAdmin/vwCategories/listCategory', {
                 layout: 'homeadmin',
                 empty: list.length == 0,
                 categories: list,
                 page_items,
-                prev_value: page - 1,
-                next_value: page + 1,
-                can_go_prev: page > 1,
-                can_go_next: page < nPages,
+                entity,
                 err: req.flash('error'),
                 success: req.flash('success')
             });
@@ -75,17 +72,14 @@ module.exports = (router) => {
                 categoryModel.countAll()
             ]);
             
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
-         
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+            
             return res.render('vwAdmin/vwCategories/viewAllCategories', {
                 layout: 'homeadmin',
                 empty: list.length == 0,
                 categories: list,
                 page_items,
-                prev_value: page - 1,
-                next_value: page + 1,
-                can_go_prev: page > 1,
-                can_go_next: page < nPages
+                entity
             })
             
         } catch (error) {
@@ -343,17 +337,14 @@ module.exports = (router) => {
                     c.Manage = "Chưa có quản lý";
                 }
             }
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
                
             return res.render('vwAdmin/vwCategories/activateCategoryLv1', {
                 layout: 'homeadmin',
                 empty: list.length == 0,
                 categories: list,
                 page_items,
-                prev_value: page - 1,
-                next_value: page + 1,
-                can_go_prev: page > 1,
-                can_go_next: page < nPages,
+                entity,
                 err: req.flash('error'),
                 success: req.flash('success')
             })
@@ -442,7 +433,7 @@ module.exports = (router) => {
                 l.NameMain = nameMain[0].Name;
                 l.UrlMain = cat.Url;
             }
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
                
             return res.render('vwAdmin/vwCategories/viewCategorySub',{
                 layout: 'homeAdmin',
@@ -452,10 +443,7 @@ module.exports = (router) => {
                 categories: list,
                 empty: list.length === 0,
                 page_items,
-                prev_value: page - 1,
-                next_value: page + 1,
-                can_go_prev: page > 1,
-                can_go_next: page < nPages
+                entity
             })
         }
         catch(error){
@@ -730,7 +718,7 @@ module.exports = (router) => {
                 l.NameMain = nameMain[0].Name;
                 l.UrlMain = cat.Url;
             }
-            const [nPages, page_items] = pageination.page(page, total[0].SoLuong);
+            const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
 
             return res.render('vwAdmin/vwCategories/activateCategoryLv2',{
                 layout: 'homeAdmin',
@@ -740,10 +728,7 @@ module.exports = (router) => {
                 categories: list,
                 empty: list.length === 0,
                 page_items,
-                prev_value: page - 1,
-                next_value: page + 1,
-                can_go_prev: page > 1,
-                can_go_next: page < nPages,
+                entity,
                 err: req.flash('error'),
                 success: req.flash('success')
             })

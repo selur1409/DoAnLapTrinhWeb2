@@ -2,13 +2,18 @@ const db = require('../utils/db');
 const TBL_ACCOUNTS = 'accounts';
 
 module.exports = {
-    loadFull_select: function (select) {
+    loadFull_select: function (select, limit, offset) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', 
             a.Id, a.Username, i.Name, i.Nickname, i.Sex, i.DOB, a.TypeAccount, a.IsDelete, a.DateRegister, a.DateExpired
         from ${TBL_ACCOUNTS} a, information i, typeaccount t
+        where a.Id = i.IdAccount and a.TypeAccount = t.Id and a.typeAccount = ${select}
+        limit ${limit} offset ${offset}`);
+    },
+    countFull_Select: function (select) {
+        return db.load(`select count(*) as 'SoLuong'
+        from ${TBL_ACCOUNTS} a, information i, typeaccount t
         where a.Id = i.IdAccount and a.TypeAccount = t.Id and a.typeAccount = ${select}`);
     },
-
     all: function () {
         return db.load(`select * from ${TBL_ACCOUNTS} where IsDelete = 0`);
     },
@@ -41,6 +46,13 @@ module.exports = {
     // Dùng trong route admin/accounts
     singleId_editAccount: function (username) {
         return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0`);
+    },
+    singleId_editAccount_lo: function (username, limit, offset) {
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0
+        limit ${limit} offset ${offset}`);
+    },
+    countSingleId_editAccount: function (username) {
+        return db.load(`select count(Id) as 'SoLuong' from ${TBL_ACCOUNTS} where Username = '${username}' and IsDelete = 0`);
     },
     singleId_MCAccount: function (username) {
         return db.load(`select a.Id, i.Name from ${TBL_ACCOUNTS} a, information i where a.Id = i.IdAccount and a.Username = '${username}' and a.IsDelete = 0`);
