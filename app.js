@@ -20,7 +20,7 @@ require('./passport-setup');
 app.use(flash());
 
 // Trang chủ Home
-app.use('/', require('./route/home.route'));
+app.use('/', require('./Route/home.route'));
 app.use('/index.html', require('./route/home.route'));
 
 
