@@ -4,7 +4,7 @@
       "port": 3306,
       "user": "root",
       "password": "",
-      "database": "news",
+      "database": "testnews",
       "connectionLimit": 10,
       "multipleStatements": true
     },
@@ -28,7 +28,8 @@
     "addMinutes": 10080,
     "pagination": {
       "limit": 4,
-      "limitPaginationLinks":5
+      "limitPaginationLinks":5,
+      "limitPostPage": 3
     },
     "filesize": 1048576
 }

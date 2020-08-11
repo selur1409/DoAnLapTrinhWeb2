@@ -2,7 +2,7 @@ const express = require('express');
 const postModel = require('../models/post.model');
 const tagModel = require('../Models/tag.model');
 const moment = require('moment');
-
+const config = require('../config/default.json');
 
 const router = express.Router();
 
@@ -80,8 +80,49 @@ router.get('/',async function (req, res) {
 
 router.get('/:TagName',async function(req, res){
     
-    const tagName = req.params.TagName;
-    const listPost = await postModel.postByTag(tagName);
+    const ValueSearch = req.params.TagName;
+    const page = +req.query.page || 1;
+    const offset = (page - 1) * config.pagination.limitPostPage;
+
+
+
+    const [listPost, Total] = await Promise.all([postModel.postByTag(config.pagination.limitPostPage, offset, ValueSearch), postModel.CountPostByTag(ValueSearch)]);
+    const nPages = Math.ceil(Total[0].Number / config.pagination.limitPostPage);
+
+    const page_items = [];
+    let count = 0;
+    let lengthPagination = 0;
+    let temp = page;
+    
+
+    while (true) {
+        if (temp - config.pagination.limitPaginationLinks > 0) {
+            count++;
+            temp = temp - config.pagination.limitPaginationLinks;
+        }
+        else {
+            break;
+        }
+    }
+    if ((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages) {
+        lengthPagination = nPages;
+    }
+    else {
+        lengthPagination = (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+    }
+    for (let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++) {
+        const item = {
+            value: i,
+            isActive: i === page,
+        }
+        page_items.push(item);
+    }
+
+
+
+
+
+
     const listPostTags = await postModel.postTags();
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
@@ -95,6 +136,7 @@ router.get('/:TagName',async function(req, res){
     {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
+
     for(let i = 0; i < listPost.length; i++)
     {
         listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
@@ -104,11 +146,9 @@ router.get('/:TagName',async function(req, res){
         layout: 'listCategoryTag',
         listPost,
         emptyPost: listPost.length === 0,
-        tagName,
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
-        emptyFutureEvent: listFutureEvent.length === 0,
         helpers:{
             load_list_tags: function(context, Id, options)
             {
@@ -171,7 +211,15 @@ router.get('/:TagName',async function(req, res){
                 else if(value == 12) return "Dec";
                 else return "?";
             }
-        }
+        },
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages,
+        last: nPages,
+        SearchNotEmpty:ValueSearch.length !== 0,
+        TagName:ValueSearch,
     })
 });
 

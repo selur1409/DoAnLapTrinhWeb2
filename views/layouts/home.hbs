@@ -62,7 +62,7 @@
 								<div class="temperature">+10°</div>
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
-							<form action="/search" method="POST">
+							<form action="/search" method="POST" id='frmSearch1'>
 								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
@@ -179,8 +179,8 @@
 		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
 		<div class="search">
-			<form action="/search" method="POST">
-				<input type="search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
+			<form action="/search" method="POST" id='frmSearch2'>
+				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
@@ -531,10 +531,18 @@ function reset() {
    }
 }
 
+
+
 document.addEventListener('mouseover', function() {
    mousein = true
    reset()
 })
+
+window.onload = ()=>
+{
+	Search();
+}
 </script>
+{{{_sections.js}}}
 </body>
 </html>

@@ -3,6 +3,7 @@ const postModel = require('../models/post.model');
 const categoryModel = require('../Models/category.model');
 const moment = require('moment');
 const tagModel = require('../Models/tag.model');
+const config = require('../config/default.json');
 
 const router = express.Router();
 
@@ -21,8 +22,6 @@ router.get('/',async function (req, res) {
     {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
-    //console.log(listCat);
-    //console.log(post);
 
     res.render('vwCategory/listCategory', {
         layout: 'listCategoryTag',
@@ -83,10 +82,51 @@ router.get('/',async function (req, res) {
 }) 
 
 router.get('/:Url',async function(req, res){
-    const url = req.params.Url;
-    const listPost = await postModel.postByCategory(url);
-    const listPostTags = await postModel.postTags();
 
+    const ValueSearch = req.params.Url;
+    const page = +req.query.page || 1;
+    const offset = (page - 1) * config.pagination.limitPostPage;
+
+
+
+    const [listPost, Total] = await Promise.all([postModel.postByCategory(config.pagination.limitPostPage, offset, ValueSearch), postModel.CountPostByCategory(ValueSearch)]);
+    const nPages = Math.ceil(Total[0].Number / config.pagination.limitPostPage);
+
+    const page_items = [];
+    let count = 0;
+    let lengthPagination = 0;
+    let temp = page;
+    
+
+    while (true) {
+        if (temp - config.pagination.limitPaginationLinks > 0) {
+            count++;
+            temp = temp - config.pagination.limitPaginationLinks;
+        }
+        else {
+            break;
+        }
+    }
+    if ((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages) {
+        lengthPagination = nPages;
+    }
+    else {
+        lengthPagination = (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+    }
+    for (let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++) {
+        const item = {
+            value: i,
+            isActive: i === page,
+        }
+        page_items.push(item);
+    }
+
+
+
+
+
+
+    const listPostTags = await postModel.postTags();
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
 
@@ -99,20 +139,19 @@ router.get('/:Url',async function(req, res){
     {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
+
     for(let i = 0; i < listPost.length; i++)
     {
         listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-
-    //console.log(listPostTags);
-
+    
     res.render('vwCategory/postByCategory', {
         layout: 'listCategoryTag',
         listPost,
+        emptyPost: listPost.length === 0,
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
-        emptyPost: listPost.length === 0,
         helpers:{
             load_list_tags: function(context, Id, options)
             {
@@ -175,7 +214,15 @@ router.get('/:Url',async function(req, res){
                 else if(value == 12) return "Dec";
                 else return "?";
             }
-        }
+        },
+        page_items,
+        prev_value: page - 1,
+        next_value: page + 1,
+        can_go_prev: page > 1,
+        can_go_next: page < nPages,
+        last: nPages,
+        SearchNotEmpty:ValueSearch.length !== 0,
+        Url:ValueSearch,
     })
 });
 
