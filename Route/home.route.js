@@ -1,6 +1,6 @@
 const config = require('../config/default.json');
 const express = require('express');
-const postModel = require('../models/post.model');
+const postModel = require('../Models/post.model');
 const tagModel = require('../Models/tag.model');
 const commentModel = require('../Models/comment.model');
 const moment = require('moment');
