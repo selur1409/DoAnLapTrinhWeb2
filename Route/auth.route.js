@@ -73,6 +73,10 @@ router.get('/good', isLoggedIn, async function(req, res){
       acc.avtGoogle = true;
   }
   
+  acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+  acc.DOB = moment(acc.DOB, 'YYYY-MM-DD').format('DD-MM-YYYY');
+
+  
   req.session.isAuthenticated = true;
   req.session.authAccount = acc;
   req.session.isSubscriber = true;

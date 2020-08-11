@@ -108,7 +108,7 @@ module.exports = {
         st.Name as'statusName' 
             FROM ${TBL_POSTS} p, ${TBL_CATEGORIES} cate, ${TBL_CATEGORIES_SUB} cateSub, ${TBL_STATUS_POSTS} st 
                 WHERE p.IdCategories=cateSub.Id AND cateSub.IdCategoriesMain=cate.Id AND cate.Id=${idCategories}
-                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=${postStatus} OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub} ORDER BY DatetimePost DESC
+                    AND p.IsDelete=0 AND p.IsDelete=0 AND (p.IdStatus=${postStatus} OR p.IdStatus=2) AND p.IdStatus=st.Id AND catesub.Id=${idCategoriesSub} ORDER BY p.DatetimePost DESC
                     limit ${limit} offset ${offset}`);
     },
     LoadPostDeny_Limit: (postStatus, idCategories, idCategoriesSub, limit, offset) => {
@@ -174,5 +174,8 @@ module.exports = {
         }
         delete entity.Id;
         return db.patch(TBL_POST_DETAILS, entity, condition);
+    },
+    LoadPostPremium:(idPost)=>{
+        return db.load(`SELECT * FROM ${TBL_POST_DETAILS} WHERE IdPost=${idPost} AND IsPremium=1`)
     }
 }

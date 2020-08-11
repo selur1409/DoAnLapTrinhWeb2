@@ -9,7 +9,7 @@
     <b><i class="fa fa-check-circle" aria-hidden="true"></i>EDIT ACCEPT POST</b>
   </div>
 
-  <form action="/editor/editacceptPost" method="POST">
+  <form action="/editor/editaccept" method="POST">
     <class class="form-group pl-2">
       <div class="mb-4">
         <label for="exampleInputTitle1"><i class="fas fa-bookmark"></i> <u>Tilte: </u> </label>
@@ -63,7 +63,7 @@
       </div>
       <div class="mb-4">
         <b><i class="fas fa-dollar-sign"></i> <u>Is premium post: </u><input type="checkbox"
-            aria-label="Checkbox for following text input" name="isPremium"></b>
+            aria-label="Checkbox for following text input" name="isPremium" {{#if isPremium}}checked{{/if}}></b>
       </div>
 
       <div class="d-flex justify-content-center">
@@ -89,7 +89,6 @@
 <script>
   $(function () {
     $.datetimepicker.setLocale('vi');
-    $datepicker.datepicker('setDate', new Date());
     $('#datetimepicker').datetimepicker({
       mask: false,
       minDate: 0,

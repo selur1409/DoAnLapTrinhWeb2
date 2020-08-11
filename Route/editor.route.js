@@ -20,9 +20,10 @@ function Authories(req, res, next) {
 
 router.get('/', restrict, Authories, async function (req, res) {
   const list = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-
   res.render('vwEditor/index', {
     list,
+    err: req.flash('error'),
+    success: req.flash('success'),
     layout: 'homeeditor'
   });
 });
@@ -30,6 +31,11 @@ router.get('/', restrict, Authories, async function (req, res) {
 
 router.get('/pending', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
+  if(listCate.length===0)
+  {
+    req.flash('error', `Error. You do not have permission to do this yet.`);
+    return res.redirect('/editor');
+  }
   const idCate = +req.query.cate || listCate[0].IdCategories;
   const listCateSub = await editorModel.LoadCateSub(idCate);
   const idCateSub = +req.query.catesub || listCateSub[0].Id;
@@ -73,6 +79,8 @@ router.get('/pending', restrict, Authories, async function (req, res) {
     listCate,
     idCate,
     listCateSub,
+    err: req.flash('error'),
+    success: req.flash('success'),
     empty: list.length === 0,
     layout: 'homeeditor'
   });
@@ -80,6 +88,11 @@ router.get('/pending', restrict, Authories, async function (req, res) {
 
 router.get('/accepted', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
+  if(listCate.length===0)
+  {
+    req.flash('error', `Error. You do not have permission to do this yet.`);
+    return res.redirect('/editor');
+  }
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
   const listCateSub = await editorModel.LoadCateSub(idCate);
@@ -130,6 +143,8 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
     listCate,
     idCate,
     listCateSub,
+    err: req.flash('error'),
+    success: req.flash('success'),
     empty: list.length === 0,
     layout: 'homeeditor'
   });
@@ -137,6 +152,11 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
 
 router.get('/denied', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
+  if(listCate.length===0)
+  {
+    req.flash('error', `Error. You do not have permission to do this yet.`);
+    return res.redirect('/editor');
+  }
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
   const listCateSub = await editorModel.LoadCateSub(idCate);
@@ -183,6 +203,8 @@ router.get('/denied', restrict, Authories, async function (req, res) {
     next_value: page + 1,
     can_go_prev: page > 1,
     can_go_next: page < nPages,
+    err: req.flash('error'),
+    success: req.flash('success'),
     empty: list.length === 0,
     layout: 'homeeditor'
   });
@@ -279,6 +301,12 @@ router.get('/editaccept/:Url', restrict, Authories, async function (req, res) {
   var listCategoriesSub = await editorModel.LoadCateSub(cate[0].IdCategoriesMain);
   const inforOfPost = await editorModel.LoadSinglePost(url);
   const author = await editorModel.LoadInforPost(IdPost[0].Id);
+  const Premium= await editorModel.LoadPostPremium(IdPost[0].Id);
+  var isPremium=true;
+  if (Premium.length===0)
+  {
+    isPremium=false;
+  }
   for (c of listCategoriesSub) {
     if (c.Id == cate[0].IdCategories) {
       c.isActiveCategories = true;
@@ -300,6 +328,7 @@ router.get('/editaccept/:Url', restrict, Authories, async function (req, res) {
   }
   res.render('vwEditor/editAccept', {
     cate: cate[0],
+    isPremium,
     IsActiveAccepted: true,
     listCategoriesSub,
     templistTags,
@@ -328,7 +357,7 @@ router.post('/denyPost', restrict, Authories, async function (req, res) {
       IdStatus: IdPostDenied
     }
     await editorModel.UpdateStatusPost(entity);
-
+    req.flash('success', `Success. The reason for rejection has been noted`)
     res.redirect('/editor/pending/?cate=' + categoriesPost + '&catesub=' + cateSub);
   }
   catch (err) {
@@ -344,19 +373,66 @@ router.post('/editdeny', restrict, Authories, async function (req, res) {
     const cate = req.body.idCate;
     const catesub = req.body.idCateSub;
     const fb = await editorModel.LoadFeedBackOfPosts(IdPost);
+    if(fb.length===0)
+    {
+      req.flash('err', `Error. The post is being processed. You cannot do this.`);
+      res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
+    }
     const entity = {
       Id: fb[0].Id,
       Note: note,
       DatetimeApproval: dt_now
     }
     const update_fb = await editorModel.UpdateFeedBackOfPosts(entity);
-
+    req.flash('success', `Success. Your changes have been saved.`);
     res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
   }
   catch (err) {
     console.log(err);
   }
 
+});
+
+router.post('/editaccept', restrict, Authories, async function (req, res) {
+  try {
+    var IdStatus = 1;
+    const newListTags = req.body.tags;
+    const cate = req.body.cate;
+    const IdPost = req.body.IdPost;
+    const catesub = req.body.subCate;
+    const ScheduleTime = req.body.Schedule;
+    const dt_post = new Date(moment(ScheduleTime, 'YYYY-MM-DD HH:mm:ss'));
+    const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+    if (dt_post <= dt_now) {
+      IdStatus = 2;
+    }
+    var isPre = req.body.isPremium;
+    if (typeof isPre != "undefined") {
+      isPre=0;
+    }
+    const entity = {
+      Id: IdPost,
+      DatetimePost: ScheduleTime,
+      IdCategories: catesub,
+      IdStatus: IdStatus
+    }
+    await editorModel.DeleteTagsOfPost(IdPost);
+    const premium_entity = {
+      Id: IdPost,
+      isPremium: isPre
+    }
+    await editorModel.UpdateIsPremium(premium_entity);
+    for (t of newListTags) {
+      const value = ['IdTag', 'IdPost', `${t}`, `${IdPost}`];
+      await editorModel.InsertTagsPost(value);
+    }
+    await editorModel.UpdateStatusPost(entity);
+    req.flash('success', `Success. Acceptance has been recorded.`);
+    res.redirect('/editor/accepted/?cate=' + cate + '&catesub=' + catesub);
+  }
+  catch (err) {
+    console.log(err);
+  }
 });
 
 router.post('/acceptPost', restrict, Authories, async function (req, res) {
@@ -392,8 +468,8 @@ router.post('/acceptPost', restrict, Authories, async function (req, res) {
       const value = ['IdTag', 'IdPost', `${t}`, `${IdPost}`];
       await editorModel.InsertTagsPost(value);
     }
-
     await editorModel.UpdateStatusPost(entity);
+    req.flash('success', `Success. Acceptance has been recorded.`);
     res.redirect('/editor/pending/?cate=' + cate + '&catesub=' + catesub);
   }
   catch (err) {
@@ -418,6 +494,7 @@ router.get('/deleteaccept', restrict, Authories, async function (req, res) {
   }
   await editorModel.UpdateIsPremium(premium_entity);
   await editorModel.UpdateStatusPost(entity);
+  req.flash('success', `Success. The article has moved to the review pending list.`);
   res.redirect('/editor/accepted/?cate=' + cate + '&catesub=' + catesub);
 
 });
@@ -433,11 +510,14 @@ router.get('/deletedeny', restrict, Authories, async function (req, res) {
   }
   await editorModel.UpdateStatusPost(entity);
   const fb = await editorModel.LoadFeedBackOfPosts(idPost);
-  if (fb.length != 0) {
-    for (i of fb) {
-      await editorModel.DeleteFeedBackOfPosts(i.Id);
-    }
+  if (fb.length === 0) {
+    req.flash('err', `Error. The post is being processed. You cannot do this.`);
+    res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
   }
+  for (i of fb) {
+    await editorModel.DeleteFeedBackOfPosts(i.Id);
+  }
+  req.flash('success', `Success. The article has moved to the review pending list.`);
   res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
 
 });

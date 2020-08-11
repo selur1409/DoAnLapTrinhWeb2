@@ -1,3 +1,20 @@
+{{#if err}}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+      {{err}}
+  </div>
+  {{/if}}
+
+  {{#if success}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{success}}
+  </div>
+  {{/if}}
 <div class="d-flex justify-content-center">
   {{#each this.listCate}}
   <a href="/editor/accepted/?cate={{IdCategories}}" type="button"
