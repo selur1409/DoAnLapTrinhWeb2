@@ -20,8 +20,22 @@ function Authories(req, res, next) {
 
 router.get('/', restrict, Authories, async function (req, res) {
   const list = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
+  var empty=false;
+  if(list.length===0)
+  {
+    empty=true;
+  }
+  var countAll=0;
+  var temp=0;
+  for(c of list)
+  {
+    temp=await editorModel.CountPostByCate(c.Id);
+    countAll+=temp[0].total;
+  }
   res.render('vwEditor/index', {
     list,
+    countAll,
+    empty,
     err: req.flash('error'),
     success: req.flash('success'),
     layout: 'homeeditor'
@@ -31,10 +45,16 @@ router.get('/', restrict, Authories, async function (req, res) {
 
 router.get('/pending', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-  if(listCate.length===0)
-  {
+  if (listCate.length === 0) {
     req.flash('error', `Error. You do not have permission to do this yet.`);
     return res.redirect('/editor');
+  }
+  var countAll=0;
+  var temp=0;
+  for(c of listCate)
+  {
+    temp=await editorModel.CountPostByCate(c.Id);
+    countAll+=temp[0].total;
   }
   const idCate = +req.query.cate || listCate[0].IdCategories;
   const listCateSub = await editorModel.LoadCateSub(idCate);
@@ -70,6 +90,7 @@ router.get('/pending', restrict, Authories, async function (req, res) {
   }
   res.render('vwEditor/listPostPending', {
     page_items,
+    countAll,
     IsActivePending: true,
     listPost: list,
     prev_value: page - 1,
@@ -88,8 +109,7 @@ router.get('/pending', restrict, Authories, async function (req, res) {
 
 router.get('/accepted', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-  if(listCate.length===0)
-  {
+  if (listCate.length === 0) {
     req.flash('error', `Error. You do not have permission to do this yet.`);
     return res.redirect('/editor');
   }
@@ -121,11 +141,11 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
   for (d of list) {
     d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
     d.DatetimePost = moment(d.DatetimePost).format('Do MMMM YYYY, HH:mm:ss');
-    if(d.IdStatus==2){
-      d.canEdit=false;
+    if (d.IdStatus == 2) {
+      d.canEdit = false;
     }
-    else{
-      d.canEdit=true;
+    else {
+      d.canEdit = true;
     }
   }
   for (p of page_items) {
@@ -152,8 +172,7 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
 
 router.get('/denied', restrict, Authories, async function (req, res) {
   const listCate = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-  if(listCate.length===0)
-  {
+  if (listCate.length === 0) {
     req.flash('error', `Error. You do not have permission to do this yet.`);
     return res.redirect('/editor');
   }
@@ -212,10 +231,9 @@ router.get('/denied', restrict, Authories, async function (req, res) {
 
 
 router.get('/deny/:Url', restrict, Authories, async function (req, res) {
-  const url=req.params.Url;
-  const IdPost=await editorModel.LoadIdPostByUrl(url);
-  if(IdPost.length===0)
-  {
+  const url = req.params.Url;
+  const IdPost = await editorModel.LoadIdPostByUrl(url);
+  if (IdPost.length === 0) {
     res.redirect('/editor/pending');
   }
   const list = await editorModel.LoadInforPost(IdPost[0].Id);
@@ -249,9 +267,8 @@ router.get('/editdeny/:Id', restrict, Authories, async function (req, res) {
 
 router.get('/accept/:Url', restrict, Authories, async function (req, res) {
   const url = req.params.Url;
-  const IdPost= await editorModel.LoadIdPostByUrl(url);
-  if(IdPost.length===0)
-  {
+  const IdPost = await editorModel.LoadIdPostByUrl(url);
+  if (IdPost.length === 0) {
     res.redirect('/editor/pending');
   }
   const cate = await editorModel.LoadCateSubOfPost(IdPost[0].Id);
@@ -292,20 +309,18 @@ router.get('/accept/:Url', restrict, Authories, async function (req, res) {
 
 router.get('/editaccept/:Url', restrict, Authories, async function (req, res) {
   const url = req.params.Url;
-  const IdPost= await editorModel.LoadIdPostByUrl(url);
-  if(IdPost.length===0)
-  {
+  const IdPost = await editorModel.LoadIdPostByUrl(url);
+  if (IdPost.length === 0) {
     res.redirect('/editor/accepted');
   }
   const cate = await editorModel.LoadCateSubOfPost(IdPost[0].Id);
   var listCategoriesSub = await editorModel.LoadCateSub(cate[0].IdCategoriesMain);
   const inforOfPost = await editorModel.LoadSinglePost(url);
   const author = await editorModel.LoadInforPost(IdPost[0].Id);
-  const Premium= await editorModel.LoadPostPremium(IdPost[0].Id);
-  var isPremium=true;
-  if (Premium.length===0)
-  {
-    isPremium=false;
+  const Premium = await editorModel.LoadPostPremium(IdPost[0].Id);
+  var isPremium = true;
+  if (Premium.length === 0) {
+    isPremium = false;
   }
   for (c of listCategoriesSub) {
     if (c.Id == cate[0].IdCategories) {
@@ -373,8 +388,7 @@ router.post('/editdeny', restrict, Authories, async function (req, res) {
     const cate = req.body.idCate;
     const catesub = req.body.idCateSub;
     const fb = await editorModel.LoadFeedBackOfPosts(IdPost);
-    if(fb.length===0)
-    {
+    if (fb.length === 0) {
       req.flash('err', `Error. The post is being processed. You cannot do this.`);
       res.redirect('/editor/denied/?cate=' + cate + '&catesub=' + catesub);
     }
@@ -408,7 +422,7 @@ router.post('/editaccept', restrict, Authories, async function (req, res) {
     }
     var isPre = req.body.isPremium;
     if (typeof isPre != "undefined") {
-      isPre=0;
+      isPre = 0;
     }
     const entity = {
       Id: IdPost,
@@ -524,7 +538,7 @@ router.get('/deletedeny', restrict, Authories, async function (req, res) {
 
 
 router.get('/reviewPost/:Url', restrict, Authories, async function (req, res) {
-  try{
+  try {
     const url = req.params.Url;
     const list = await editorModel.LoadSinglePost(url);
     for (d of list) {
@@ -543,11 +557,11 @@ router.get('/reviewPost/:Url', restrict, Authories, async function (req, res) {
       reviewPost: list[0],
       empty: list.length === 0,
       layout: 'homeeditor'
-    });}
-    catch(err)
-    {
-      console.log(err);
-    }
-  
+    });
+  }
+  catch (err) {
+    console.log(err);
+  }
+
 });
 module.exports = router;

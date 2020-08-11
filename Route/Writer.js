@@ -306,9 +306,9 @@ router.post('/ViewPost/', restrict, Authories, async (req, res)=>{
         const page = +req.query.page || 1;
         const IdStatus = +req.query.id;
         const Opt = +req.query.opt || 0;
-        const ValueSearch = req.query.Search || '';
+        const ValueSearch = req.body.Search || '';
         const IdAccount = res.locals.lcAuthUser.Id;
-
+      
         const offset = (page - 1) * config.pagination.limit;
         let [Result, Total, NumberOfPost] = [];
 
@@ -325,7 +325,7 @@ router.post('/ViewPost/', restrict, Authories, async (req, res)=>{
             [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-01-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-01-01'), db.CountNumberPost(IdAccount)]);
         }
         else {
-            if(req.query.Search === undefined)
+            if(req.body.Search === undefined)
             {
                 [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
             }

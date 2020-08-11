@@ -3,12 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>News</title>
+    <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="/public/plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/public/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
-<body>
+<body class="container">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="/" class="nav-link">
+            <i class="fa fa-home" aria-hidden="true"></i>
+            <b>HOME</b>
+          </a>
+        </li>
+      </ul>
+      <form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
+      <nav class="navbar">
+        <ul class="nav navbar-light bg-light">
+          {{#if lcIsAuthenticated}}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              <i class="fa fa-user" aria-hidden="true"></i>
+              Welcome, <b>{{lcAuthUser.Name}}</b>!
+            </a>
+            <div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item bg-info" href="/account/profile/4">
+                <i class="fa fa-user" aria-hidden="true"></i>
+                Account Profile
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item bg-info" href="/">
+                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                Change To Home
+              </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+          {{/if}}
+        </ul>
+      </nav>
+    </nav>
+
     <div class="card">
-  <div class="card-header">
-    <h4>Gia hạn tài khoản vip</h4>
+  <div class="card-header bg-primary">
+    <h2 class="text-center">Get Premium</h2>
   </div>
   <div class="card-body">
     {{#if err}}
@@ -40,31 +91,26 @@
     </div>
     <h3>Thông tin người dùng</h3>
     <ul class="text-left">
-        <li>Name: {{this.account.Name}}</li>
-        <li>DOB: {{this.account.DOB}}</li>
-        <li>Email: {{this.account.Email}}</li>
-        <li>Phone: {{this.account.Phone}}</li>
-        <li>Sex: {{#if this.account.Sex}} Nữ {{else}} Nam {{/if}}</li>
+        <li>Name: {{lcAuthUser.Name}}</li>
+        <li>DOB: {{lcAuthUser.DOB}}</li>
+        <li>Email:{{#if lcAuthUser.Email}}{{lcAuthUser.Email}}{{else}}Chưa có{{/if}}</li>
+        <li>Phone: {{#if lcAuthUser.Phone}}{{lcAuthUser.Phone}}{{else}}Chưa có{{/if}}</li>
+        <li>Sex: {{#if lcAuthUser.Sex}} Nữ {{else}} Nam {{/if}}</li>
         <li><i class="fab fa-vuejs"></i>Thời hạn VIP: 
-        {{#if this.account.premium}}
-            {{#if this.account.premium.Notvalue}}
+        {{#if this.Premium}}
+            {{#if this.Premium.Notvalue}}
             Hết hạn
             {{else}}             
-            Còn: {{this.account.premium.days}} ngày {{this.account.premium.hours}} giờ {{this.account.premium.minutes}} phút
+            Còn: {{this.Premium.days}} ngày {{this.Premium.hours}} giờ {{this.Premium.minutes}} phút
             {{/if}}
         {{else}}
-            {{!-- Dành cho admin, editor, writer --}}
-            {{#if this.account.premiumForever}} 
-            Vĩnh viễn
-            {{else}}
             Chưa đăng kí
-            {{/if}}
         {{/if}}
         </li>
     </ul>
-    <form method="POST">
+    <form method="POST" action="/premium/register">
         {{!-- <input type="text" name="Id" value="{{this.account.Id}}"> --}}
-        <input type="hidden" name="Username" value="{{this.account.Username}}">
+        <input type="hidden" name="Username" value="{{lcAuthUser.Username}}">
         {{!-- <input type="text" name="TypeAccount" value="{{this.account.TypeAccount}}"> --}}
         <div class="form-group required">
         <h3>Gói VIP</h3>
@@ -80,12 +126,18 @@
           </div>
         </div>
         <hr>
-        <button type="submit" class="btn btn-warning btn-lg" title="Thanh toán" formaction="/admin/accounts/premium-plus">
-            <i class="fas fa-check-double"></i> Thanh toán
+        <button type="submit" class="btn btn-warning btn-lg" title="Thanh toán">
+            <i class="fas fa-check-double"></i> Pay
         </button>
     </form>
   </div>
 </div>
+<script src="/public/plugins/jquery/jquery.min.js"></script>
+  <!-- Bootstrap 4 -->
+  <script src="/public/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- AdminLTE App -->
+  <script src="/public/js/adminlte.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
 </body>
 </html>
 
