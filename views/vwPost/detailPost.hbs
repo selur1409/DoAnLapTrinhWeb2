@@ -82,60 +82,100 @@
 								{{/if}}
 							</div>
 
-
-							<!-- Post Comment -->
-							<div class="post_comment">
-								<div class="post_comment_title">Post Comment</div>
+							{{!-- bình luận bài viết --}}
+							<div class="container">
 								<div class="row">
-									<div class="col-xl-8">
-										<div class="post_comment_form_container">
-											<form action="/detail/{{this.post.Url}}/comment" method="POST">
-												{{!-- <input type="text" class="comment_input comment_input_name" placeholder="Your Name" required="required"> --}}
-												{{!-- <input type="email" class="comment_input comment_input_email" placeholder="Your Email" required="required"> --}}
-												<textarea class="comment_text" id="txtCommentPost" name="CommentPost" placeholder="Your Comment" required="required"></textarea>
-												<button type="submit" class="comment_button">Post Comment</button>
-											</form>
+									<div class="col-sm-10 col-sm-offset-1" id="logout">
+										<div class="page-header">
+											<h3 class="reviews">Recent Comments <span class="badge badge-danger">{{empty}}</span> </h3>
+										</div>
+										<div class="comment-tabs">
+											<ul class="nav nav-tabs" id="myTab" role="tablist">
+												<li class="nav-item" role="presentation">
+													<a class="nav-link active" href="#comments-list" role="tab" data-toggle="tab">
+														<h4 class="reviews text-capitalize">Comments</h4>
+													</a></li>
+												<li class="nav-item" role="presentation">
+													<a class="nav-link" href="#add-comment" role="tab" data-toggle="tab">
+														<h4 class="reviews text-capitalize">Add comment</h4>
+													</a>
+												</li>
+											</ul>
+											<div class="tab-content">
+												<div class="tab-pane active" id="comments-list">
+													{{#unless empty}}
+													Chưa có bình luận
+													{{else}}
+													<ul class="media-list" id="media-list">
+														{{#each listComment}}
+														<li class="media">
+															<a class="pull-left" href="#">
+																<img class="media-object img-circle" src="/public/img/Avatar/{{#if Avatar}}{{Avatar}}{{else}}NoAvatar.png{{/if}}"
+																	alt="profile">
+															</a>
+															<div class="media-body">
+																<div class="well well-lg">
+																	<h4 class="media-heading reviews">{{Name}}</h4>
+																	<span class="media-date text-uppercase reviews list-inline">
+																		Lúc {{DatetimeComment}}
+																	</span>
+																	<p class="media-comment">
+																		{{Content}}
+																	</p>
+																	{{#if Img}}
+																	<img class="media-comment" src="/public/img/comment/{{Img}}" alt="Images">
+																	{{/if}}
+																	<br>
+																</div>
+															</div>
+														</li>
+														{{/each}}
+													</ul>
+													<input type="hidden" id="Number" value="1">
+													<input type="hidden" id="Url" value="{{post.Url}}">
+													{{#if more}}													
+													<button class="load_more" id="more" onclick="load_ajax()">
+														<div id="load_more" class="load_more_button text-center trans_200">Load More</div>
+													</button>
+													{{!-- <button class="btn btn-primary btn-sm btn-block" id="more" onclick="load_ajax()"><i
+															class="fas fa-sync"></i>
+														Old Comment</button> --}}
+													{{/if}}
+													{{/unless}}
+												</div>
+												<div class="tab-pane avtive" id="add-comment">
+													<form method="post" class="form-horizontal" id="commentForm" role="form">
+														<input type="hidden" name="IdPost" value="{{post.Id}}">
+														<input type="hidden" name="Url" value="{{post.Url}}">
+
+														<div class="form-group">
+															<label for="email" class="col-sm-2 control-label">Comment</label>
+															<div class="col-sm-10">
+																<textarea class="form-control" name="Content" id="addComment"
+																	rows="5"></textarea>
+															</div>
+														</div>
+														<div class="form-group">
+															<div class="col-sm-offset-2 col-sm-10">
+																<button class="btn btn-success btn-circle text-uppercase" type="submit" 
+																	formaction="/post/comment/add"
+																	id="submitComment"><span class="glyphicon glyphicon-send"></span> Summit
+																	comment
+																</button>
+															</div>
+														</div>
+													</form>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
 							</div>
-
-							<!-- Comments -->
-							<div class="comments">
-								<div class="comments_title">Comments <span>({{this.countComment}})</span></div>
-								<div class="row">
-									<div class="col-xl-8">
-										<div class="comments_container">
-											<ul class="comment_list">
-
-												{{#each this.listComment}}
-													<li class="comment">
-														<div class="comment_body">
-															<div class="comment_panel d-flex flex-row align-items-center justify-content-start">
-																<div class="comment_author_image"><div><img src="../../public/img/avatar/{{Avatar}}" alt=""></div></div>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimeComment}}</span></small>
-																{{!-- <button type="button" class="reply_button ml-auto">Reply</button> --}}
-															</div>
-															<div class="comment_content">
-																<p>{{Content}}</p>
-															</div>
-														</div>
-
-														<!-- Reply -->
-														
-														
-													</li>
-												{{/each}}
-											</ul>
-
-										</div>
-									</div>
-								</div>	
-							</div>
+							{{!-- /bình luận bài viết --}}
+							<br>
+							<br>
+							<hr>						
 						</div>
-					</div>
-					<div class="load_more">
-						<div id="load_more" class="load_more_button text-center trans_200">Load More</div>
 					</div>
 				</div>
 
