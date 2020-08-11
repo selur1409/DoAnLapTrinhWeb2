@@ -4,7 +4,7 @@
       "port": 3306,
       "user": "root",
       "password": "",
-      "database": "testnews",
+      "database": "news",
       "connectionLimit": 10,
       "multipleStatements": true
     },

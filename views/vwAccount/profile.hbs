@@ -13,7 +13,7 @@
                             </div>
                             <div class="avatar-preview">
                                 <div>
-                                    <img id="imagePreview" class="profile-user-img img-fluid img-circle"  {{#if AvatarEmpty}} src="/public/img/avatar2.png" {{else}} src="/public/img/Avatar/{{Avatar}}" {{/if}} 
+                                    <img id="imagePreview" class="profile-user-img img-fluid img-circle" {{#if AvatarEmpty}} src="/public/img/Avatar/NoAvatar.png" {{else}} {{#if isGg}} src="{{Avatar}}" {{else}} src="/public/img/Avatar/{{Avatar}}" {{/if}} {{/if}} 
                                 alt="User profile picture">
                                 </div>
                             </div>
@@ -344,7 +344,7 @@
                                                                 <label for="inputUsername" class="col-sm-2 col-form-label">Username</label>
                                                                 <div class="col-sm-10">
                                                                     <input type="text" class="form-control" id="inputUsername" placeholder="Username" name="Username"
-                                                                        value="{{Username}}">
+                                                                        value="{{Username}}" readonly>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group row">
@@ -370,30 +370,30 @@
                                                             <div class="form-group row">
                                                                 <label for="inputEmail" class="col-sm-2 col-form-label">Email</label>
                                                                 <div class="col-sm-10">
-                                                                    <input type="email" class="form-control" id="inputEmail" placeholder="Phone Number"  name="Email" value="{{Email}}"  pattern="^[A-Za-z0-9_.]{4,32}@([a-zA-Z0-9]{2,12})(.[a-zA-Z]{2,12})+$" title="Must contain format example@example.com">
+                                                                    <input type="text" class="form-control" id="inputEmail" placeholder="Email"  name="Email" value="{{Email}}"  pattern="^[A-Za-z0-9_.]{4,32}@([a-zA-Z0-9]{2,12})(.[a-zA-Z]{2,12})+$" title="Must contain format example@example.com" required>
                                                                 </div>
                                                             </div>
                                                             <div class="form-group row">
                                                                 <label for="inputPhoneNumber" class="col-sm-2 col-form-label">Phone Number</label>
                                                                 <div class="col-sm-10">
-                                                                    <input type="tel" class="form-control" id="inputPhoneNumber" placeholder="Phone Number" name="Phone" value="{{Phone}}">
+                                                                    <input type="tel" class="form-control" id="inputPhoneNumber" placeholder="Phone Number" name="Phone" pattern="[0-9]{8,11}" value="{{Phone}}" required>
                                                                 </div>
                                                             </div>
-                                                            {{!-- <div class="form-group row required">
+                                                            <div class="form-group row required">
                                                                 <label class="col-sm-2 col-form-label" for="radioSex">Sex</label>
                                                                 <div class="col-sm-10 form-check pt-2">
                                                                     <div class="form-row">
                                                                         <div class="form-group col-sm-4">
-                                                                            <input type="radio" id="radioMale" class="form-check-input" name="Sex" required value="true">
+                                                                            <input type="radio" id="radioMale" class="form-check-input" name="Sex" required value="true"{{#if Male}}checked{{/if}}>
                                                                             <label for="myRadio1">Male</label>
                                                                         </div>
                                                                         <div class="form-group col-sm-4">
-                                                                            <input type="radio" id="radioFemale" class="form-check-input" name="Sex" required value="false">
+                                                                            <input type="radio" id="radioFemale" class="form-check-input" name="Sex" required value="false"{{#if Female}}checked{{/if}}>
                                                                             <label for="myRadio1">Female</label>
                                                                         </div>
                                                                     </div>
                                                                 </div>   
-                                                            </div> --}}
+                                                            </div>
                                                             <div class="form-group row">
                                                                 <div class="offset-sm-2 col-sm-10">
                                                                     <button type="submit"
@@ -504,7 +504,7 @@
         xhttp.send(FD);
     };
 
-    function validate() {
+    function validatePassword() {
             const Newpassword = document.getElementById("inputNewPassword");
             const ValidatePassword = new RegExp(`^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$`);
             if (ValidatePassword.test(Newpassword.value) === false) {
@@ -513,8 +513,23 @@
                 console.log(!ValidatePassword.test(Newpassword.value));
                 return false;
             }
+           
+            return true;
+    }
+
+    function validatePhone() {
+            const Phone = document.getElementById('inputPhoneNumber');
+            const ValidatePhone = new RegExp('[0-9]{7,11}');
+            if(ValidatePhone.test(Phone.value) === false)
+            {
+                Phone.setCustomValidity("Phone numbers include numbers only");
+                Phone.reportValidity();
+                console.log(!ValidatePhone.test(Phone.value));
+                return false;
+            }
             return true;
         }
+
 
     function PostData() {
             const form1 = document.getElementById("formChangeInfo");
@@ -522,10 +537,12 @@
             const btnSubmit1 = document.getElementById("btnSubmitformChangeInfo");
             const btnSubmit2 = document.getElementById("btnSubmit2");
             btnSubmit1.addEventListener("click", function () {
-                Submit(form1, 1);
+                if (validatePhone() === true) {
+                    Submit(form1, 1);
+                }
             }, true);
             btnSubmit2.addEventListener("click", function () {
-                if (validate() === true) {
+                if (validatePassword() === true) {
                     Submit(form2, 2);
                     console.log(2);
                 }

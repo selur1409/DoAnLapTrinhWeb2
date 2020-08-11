@@ -8,6 +8,10 @@ const querystring = require('querystring');
 const puppeteer = require('puppeteer');
 const { restrict } = require('../middlewares/auth.mdw');
 const categoriesModel = require('../models/category.model');
+const {getTimeBetweenDate} = require('../js/betweendate');
+const {getTime_Minutes} = require('../js/betweendate');
+const {addMinutes}= require('../config/default.json');
+const accountModel = require('../models/account.model');
 const router = express.Router();
 
 const printPdf = async(htmlPage)=>{
@@ -76,7 +80,36 @@ router.get('/',async function (req, res) {
     {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
+    // khởi tạo biến premium chưa được đăng kí
+    var premium = false;
+    // Khởi tạo isSubscriber là tài khoản độc giả
+    var isSubscriber = true;
 
+    // Kiểm tra đăng nhập
+    if (res.locals.lcIsAuthenticated === true){
+        // Kiểm tra tài khoản là độc giả
+        if (res.locals.lcAuthUser.TypeAccount === 1){
+            isSubscriber = true;
+            const user = res.locals.lcAuthUser.Username;
+            const list = await accountModel.singUsername_Expired(user);
+            const account = list[0];
+            delete account.Password_hash;
+
+                // Tính thời hạn đăng kí premium
+            
+            if (account.DateExpired)
+            {
+                const authU = res.locals.lcAuthUser;
+                const dt_exp = new Date(moment(account.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+                const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+
+                premium = getTimeBetweenDate(dt_now, dt_exp);
+            }
+        }
+        else{
+            isSubscriber = false;
+        }
+    }
 
     res.render('index', {
         Treding: listTreding,
@@ -97,6 +130,8 @@ router.get('/',async function (req, res) {
         listRandomSidebar, 
         listFutureEvent,
         emptyFutureEvent: listFutureEvent.length === 0,
+        isSubscriber: isSubscriber,
+        Premium: premium,
         helpers: {
             load_Post1: function(context, options)
             {
@@ -160,7 +195,79 @@ router.get('/',async function (req, res) {
 
     });
 
-}) 
+})
+
+router.get('/premium/register', restrict, function(req, res){
+    if(res.locals.lcAuthUser.TypeAccount!==1){
+        return res.redirect('/');
+    }
+    // khởi tạo biến premium chưa được đăng kí
+    var premium = false;
+    // Khởi tạo isSubscriber là tài khoản độc giả
+    var isSubscriber = true;
+
+    var time;
+    var minutes = addMinutes;
+ 
+    if (res.locals.lcAuthUser)
+    {
+        // Tính thời hạn đăng kí premium
+        if (res.locals.lcAuthUser.DateExpired)
+        {
+            const authU = res.locals.lcAuthUser;
+            const dt_exp = new Date(moment(res.locals.lcAuthUser.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+            const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+
+            premium = getTimeBetweenDate(dt_now, dt_exp);
+        }
+
+        time = getTime_Minutes(minutes);
+        time.value = +minutes || 1;
+    }
+    return res.render('vwPremium/register', {
+        layout: false,
+        time: time,
+        isSubscriber: isSubscriber,
+        Premium: premium,
+        err: req.flash('error'),
+        success: req.flash('success')
+    })
+})
+
+router.post('/premium/register', restrict,async function(req, res){
+    const username = req.body.Username;
+    const list = await accountModel.singUsername_Expired(username);
+        if (list.length === 0){
+            return res.redirect('/');
+        }
+        const user = list[0];
+
+        if (user.DateExpired)
+        {
+            const dt_exp = new Date(moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
+            const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+            user.premium = getTimeBetweenDate(dt_now, dt_exp);
+        }
+
+        var date_expired = moment().add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
+
+        if (user.premium)
+        {
+            if (!user.premium.Notvalue)
+            {
+                date_expired = moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss').add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
+            }
+        }   
+            
+        const entity = {
+            Id: user.Id,
+            DateExpired: date_expired
+        }
+
+     await accountModel.patch(entity);
+
+    return res.redirect('/');
+})
 
 
 router.get('/detail/premium/:Url', restrict, async function(req, res){

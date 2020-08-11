@@ -84,11 +84,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
           <div class="image">
-            <img src="{{#if Avatar}}/public/img/{{Avatar}}{{else}}/public/img/user2-160x160.jpg{{/if}}"
+            <img {{#if lcAuthUser.isGg}} src="{{lcAuthUser.Avatar}}" {{else}} {{#if lcAuthUser.Avatar}} src="/public/img/Avatar/{{lcAuthUser.Avatar}}" {{else}} src="/public/img/Avatar/NoAvatar.png" {{/if}} {{/if}}
               class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="/account/Profile/4" class="d-block">{{lcAuthUser.Name}}</a>
+            <a href="/account/Profile/3" class="d-block">{{lcAuthUser.Name}}</a>
             {{!-- Alexander Pierce --}}
           </div>
         </div>
@@ -111,21 +111,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     {{!-- <i class="fas fa-circle"></i> --}}
                     <i class="far fa-circle"></i>
                     <p>Posts Pending</p>
-                    <span class="badge badge-primary"></span>
+                    <span class="badge badge-danger">{{countAll}}</span>
+
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} bg-success {{/if}}">
                     <i class="far fa-check-circle"></i>
                     <p>Posts Accepted</p>
-                    <span class="badge badge-success"></span>
+                    
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="/editor/denied" class="nav-link  {{#if IsActiveDenied}} bg-danger {{/if}}">
                     <i class="far fa-times-circle"></i>
                     <p>Posts Denied</p>
-                    <span class="badge badge-danger"></span>
                   </a>
                 </li>
               </ul>
@@ -164,8 +164,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="/public/js/adminlte.min.js"></script>
   <script src="/public/plugins/sweetalert2/sweetalert2.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
   {{{_sections.js}}}
 
 </body>
 
 </html>
+<script>
+  (function () {
+    var revive = Handlebars.template,
+      templates = Handlebars.templates = Handlebars.templates || {};
+    {{#templates}}
+    templates['{{{name}}}'] = revive({{{ template }}});
+  {{/templates}}
+  } ());
+</script>

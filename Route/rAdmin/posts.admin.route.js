@@ -12,11 +12,12 @@ const path = require('path');
 const categoriesModel = require('../../models/category.model');
 const categoryModel = require('../../models/category.model');
 const tagModel = require('../../models/tag.model');
-const flash = require('express-flash');
 const editorModel = require('../../models/editor.model');
 const commentModel = require('../../models/comment.model');
 const { resolveSoa } = require('dns');
 const {pagination} = require('../../config/default.json');
+const pagination_js = require('../../js/pagination');
+const config = require('../../config/default.json');
 
 module.exports = (router) => {
     function getTagImg(value) {
@@ -25,6 +26,16 @@ module.exports = (router) => {
         const regex = RegExp(`<img.*?src="([^">]*\/([^">]*?))".*?>`, 'g');
         while ((result = regex.exec(value))) {
             res.push(result[2]);
+        }
+        return res;
+    }
+
+    function getFullSrcImg(value) {
+        let result;
+        let res = [];
+        const regex = RegExp(`<img.*?src="([^">]*\/([^">]*?))".*?>`, 'g');
+        while ((result = regex.exec(value))) {
+            res.push(result[1]);
         }
         return res;
     }
@@ -164,6 +175,7 @@ module.exports = (router) => {
 
             //get tagImg in full content
             const tagsImg = getTagImg(FullContent);
+            const fullSrcImg = getFullSrcImg(FullContent);
             const directoryPath = path.join(__dirname, '../../public/img/ImagePost/temp');
 
             if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
@@ -172,6 +184,7 @@ module.exports = (router) => {
             else {
 
                 const Check = await db.CheckTitleIsExistsInPost(Title, Url, IdPost);
+
                 if (Check.length !== 0) {
                     res.json({ fail: 'The title of article is already exists.' });
                 }
@@ -197,9 +210,25 @@ module.exports = (router) => {
 
                     //Update src for img tag in Full Content 
                     const NewTagImg = '/public/img/ImagePost/' + Result.insertId;
+                    const regexTest =  RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
                     const regex = RegExp(`(<img.*?src=")([^">]*)(\/[^">]*?")(.*?>)`, 'g');
-                    let NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
-                    let NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                    let NewFullContent;
+                    let NewAvatar;
+
+                    if (FullContent.match(regexTest)) {
+                        NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
+                        if (tagsImg[0].match(regexTest)) {
+                            NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                        }
+                        else {
+                            NewAvatar = fullSrcImg.length > 0 ? fullSrcImg[0] : null;
+                        }
+                    }
+                    else {
+                        NewFullContent = FullContent;
+                        NewAvatar = fullSrcImg.length > 0 ? fullSrcImg[0] : null;
+                    }
+
 
                     await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
@@ -367,9 +396,17 @@ module.exports = (router) => {
                 }
                 else
                 {
-                    let content = FullContent + BriefContent;
-                    let TagsImg = getTagImg(content);
-                    Avatar = '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0];
+
+                    let TagsImg = getTagImg(FullContent);
+                    let FullSrcImg = getFullSrcImg(FullContent)
+                    const regexTest = RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
+                    if (TagsImg[0].match(regexTest)) {
+                        Avatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0] : null;
+                    }
+                    else {
+                        Avatar = FullSrcImg.length > 0 ? FullSrcImg[0] : null;
+                    }
+
                     const ValueOfPost = [`${Title}`, `${Url}`, `${BriefContent}`, `${FullContent}`, `${DatePost}`, `${Avatar}`, `${View}`, `${DateTimePost}`, `${IdCategories}`, `${IdStatus}`, `${IsDelete}`, `${IdPost}`];
                     const Result = await db.UpdatePostOfWriter(ValueOfPost);
                     await db.DeleteTagPost(IdPost);
@@ -424,14 +461,28 @@ module.exports = (router) => {
             const number = await postModel.countStatus(l.Id);
             l.number_of_status = number[0].Number;
         }
-
+        
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+       
         var list= [];
+        var total = [];
 
         if (status !== 0){
-            list = await postModel.dislayList_Status(status);
+            [list, total] = await Promise.all([
+                postModel.dislayList_Status(status, config.pagination.limit, offset),
+                postModel.countDislayList_Status(status)
+            ]);
         }
         else{
-            list = await postModel.dislayList();
+            [list, total] = await Promise.all([
+                postModel.dislayList_lo(config.pagination.limit, offset),
+                postModel.countDislayList()
+            ]);
+            for(l of list){
+                delete l.Content_Full;
+            }
         }
         
         for (i = 0; i < list.length; i++){
@@ -486,11 +537,19 @@ module.exports = (router) => {
             }
         }
 
+        const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+        for (p of page_items){
+            p.select = status;
+        }
+
         return res.render('vwAdmin/vwPosts/listPost', {
             layout: 'homeadmin',
             posts: list,
             empty: list.length === 0,
             status: listStatus,
+            page_items,
+            entity,
+            select: status,
             err: req.flash('error'),
             success: req.flash('success')
         });
@@ -887,7 +946,14 @@ module.exports = (router) => {
             }
         }
 
-        const list = await postModel.dislayList_activate();
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+
+        const [list, total] = await Promise.all([
+            postModel.dislayList_activate(config.pagination.limit, offset),
+            postModel.countDislayList_activate()
+        ]);
 
         for (i = 0; i < list.length; i++){
             if (list[i].IdStatus === 4)
@@ -915,11 +981,15 @@ module.exports = (router) => {
                 }
             }
         }
+        const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+        
 
         return res.render('vwAdmin/vwPosts/activatePost', {
             layout: 'homeadmin',
             posts: list,
             empty: list.length === 0,
+            page_items,
+            entity,
             err: req.flash('error'),
             success: req.flash('success')
         });

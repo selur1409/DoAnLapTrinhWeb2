@@ -5,11 +5,22 @@ module.exports = {
     all: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0`);
     },
+    all_lo: function (limit, offset) {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0
+        limit ${limit} offset ${offset}`);
+    },
+    countAll: function () {
+        return db.load(`select count(*) as 'SoLuong' from ${TBL_TAGS} t where t.IsDelete = 0`);
+    },
     all_Posts: function () {
         return db.load(`select t.Id, t.Name, t.TagName from ${TBL_TAGS} t where t.IsDelete = 0`);
     },
-    allActivate: function () {
-        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 1`);
+    allActivate: function (limit, offset) {
+        return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 1
+        limit ${limit} offset ${offset}`);
+    },
+    countAllActivate: function () {
+        return db.load(`select count(*) as 'SoLuong' from ${TBL_TAGS} t where t.IsDelete = 1`);
     },
     listTagHome: function () {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY t.Name)) as 'Stt', t.* from ${TBL_TAGS} t where t.IsDelete = 0 LIMIT 10`);

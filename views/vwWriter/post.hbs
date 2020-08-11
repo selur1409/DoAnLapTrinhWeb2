@@ -6,19 +6,19 @@
     </div>
     <div class="card-body">
         <div class="form-group">
-            <label for="IdTitle">Title</label>
+            <h5><label for="IdTitle">Title</label></h5>
             <textarea name="Title" id="IdTitle" class="form-control" cols="30" rows="1" form="formPost"></textarea>
         </div>
         <div class="form-group">
-            <label for="IdBriefCont">Summary Content</label>
+            <h5><label for="IdBriefCont">Summary Content</label></h5>
             <textarea name="BriefCont" id="IdBriefCont" class="form-control" cols="30" rows="5"  form="formPost"></textarea>
         </div>
         <div class="form-group">
-            <label for="IdFullCont">Content</label>
+            <h5><label for="IdFullCont">Content</label></h5>
             <textarea name="FullCont" id="IdFullCont" class="form-control" cols="30" rows="10"  form="formPost"></textarea>
         </div>
         <div class="form-group">
-          <label for="">Categories</label>
+          <h5><label for="">Categories</label></h5>
           <select class="custom-select custom-select-lg mb-3" name="Categories">
             <option value="" selected="selected">Select an option...</option>
             {{#each this.ListCat }}
@@ -31,7 +31,7 @@
           </select>
         </div>
         <div class="form-group">
-          <label for="">Tags</label>
+          <h5><label for="">Tags</label></h5>
           <div class="row">
             {{#each this.ListTag}}
               {{!-- <div class="col">
@@ -67,6 +67,7 @@
       })
   });
 
+
 tinymce.init({
   selector: '#IdFullCont',
   plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
@@ -81,7 +82,7 @@ tinymce.init({
   autosave_retention: "2m",
   image_advtab: true,
   content_css: '//www.tiny.cloud/css/codepen.min.css',
-  content_css_cors: true,
+  content_css_cors:true,
   importcss_append: true,
   file_picker_callback: function (cb, value, meta) {
     var input = document.createElement('input');
@@ -164,6 +165,7 @@ tinymce.init({
   contextmenu: "link image imagetools table",
 
 });
+
 
   function active(){
     const btnTag = document.getElementsByClassName('btnTag');

@@ -6,7 +6,6 @@ const config = require('../../config/default.json');
 const {getTimeBetweenDate} = require('../../js/betweendate');
 const {getTime_Minutes} = require('../../js/betweendate');
 const {addMinutes}= require('../../config/default.json');
-const flash = require('express-flash');
 
 const multer = require('multer');
 const fs = require('fs-extra');
@@ -17,6 +16,7 @@ const {filesize} = require('../../config/default.json');
 const categoryModel = require('../../models/category.model');
 const editoraccountModel = require('../../models/editoraccount.model');
 const { resolveSoa } = require('dns');
+const pagination_js = require('../../js/pagination');
 const {restrict} = require('../../middlewares/auth.mdw');
 const {isAdmin} = require('../../middlewares/auth.mdw');
 module.exports = (router) =>{
@@ -28,18 +28,28 @@ module.exports = (router) =>{
         }
 
         const select = req.query.select || 'subscriber';
-        var list= [];
+        var list = [];
+        var total = [];
         var IsActiveWriter = false;
         var IsActiveEditor = false;
         var IsActiveGuest = false;
         var IsActiveSubscriber = false;
+        
+
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
 
         if (select === 'subscriber'){
-            list = await accountModel.loadFull_select(1);
+            [list, total] = await Promise.all([
+                accountModel.loadFull_select(1, config.pagination.limit, offset),
+                accountModel.countFull_Select(1)
+            ]);
             IsActiveSubscriber = true;
             for (i = 0; i < list.length; i++){
                 if (list[i].DateExpired)
                 {
+                    console.log(list[i].DateExpired);
                     const dt_exp = new Date(moment(list[i].DateExpired, 'YYYY/MM/DD HH:mm:ss'));
                     const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
                     // if (dt_exp <= dt_now){
@@ -50,14 +60,20 @@ module.exports = (router) =>{
             }
         }
         else if (select === 'writer'){
-            list = await accountModel.loadFull_select(2);
+            [list, total] = await Promise.all([
+                accountModel.loadFull_select(2, config.pagination.limit, offset),
+                accountModel.countFull_Select(2)
+            ]);
             IsActiveWriter = true;
             for (i =0; i< list.length; i++){
                 list[i].premiumForever = true;
             }
         }
         else if (select === 'editor'){
-            list = await accountModel.loadFull_select(3);
+            [list, total] = await Promise.all([
+                accountModel.loadFull_select(3, config.pagination.limit, offset),
+                accountModel.countFull_Select(3)
+            ]);
             IsActiveEditor = true;
             for (i =0; i< list.length; i++){
                 list[i].premiumForever = true;
@@ -81,6 +97,12 @@ module.exports = (router) =>{
             }
         }
 
+        const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);        
+        
+        for (p of page_items){
+            p.select = select;
+        }
+
         return res.render('vwAdmin/vwAccount/listAccount', {
             layout: 'homeadmin',
             empty: list.length === 0,
@@ -89,6 +111,8 @@ module.exports = (router) =>{
             IsActiveEditor,
             IsActiveGuest,
             IsActiveSubscriber,
+            page_items,
+            entity,
             err: req.flash('error'),
             success: req.flash('success')
         });
@@ -160,7 +184,6 @@ module.exports = (router) =>{
         if (!isNaN(Date.parse(req.body.DOB))){
             dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
         }
-        console.log(dob);
     
         //Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
         if (dt_now <= dob)
@@ -225,13 +248,21 @@ module.exports = (router) =>{
         else if (account.TypeAccount === 3){
             select = 'editor';
         }
+
+        var isGg = false;
+        if (account.Avatar){
+            if (account.Avatar.indexOf("https://") !== -1){
+                isGg = true;
+            }
+        }
         
         return res.render('vwAdmin/vwAccount/editAccount', {
             layout: 'homeadmin',
             err: req.flash('error'),
             success: req.flash('success'),
             account: account,
-            select: select
+            select: select,
+            isGg
         });
     });
 
@@ -240,6 +271,14 @@ module.exports = (router) =>{
             const list = await accountModel.singleId_editAccount(req.query.username);
             if (list.length !== 0)
             {
+                return res.json(false);
+            }
+            return res.json(true);
+        }
+        if (req.query.email && req.query.us){
+            // Kiểm tra mail không được trùng
+            const mail = await accountModel.singleEmail_US(req.body.Email, req.body.us);
+            if(mail.length > 0){
                 return res.json(false);
             }
             return res.json(true);
@@ -293,6 +332,9 @@ module.exports = (router) =>{
         const rows = await accountModel.singleId(username);
     
         if (rows.length === 0){
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
             req.flash('error', 'Tài khoản không tồn tại.');
             return res.redirect(`/admin/accounts`);
         }
@@ -308,26 +350,70 @@ module.exports = (router) =>{
         // Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
         if (dt_now <= dob)
         {
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
             req.flash('error', 'Ngày sinh phải nhỏ hơn ngày hiện tại');
             return res.redirect(`/admin/accounts/edit/${username}`);
         }
 
-        var file = undefined;
-        if (req.file)
-        {
-            // lớn hơn 20 MB
-            if (req.file.size/filesize > 20)
-            {
+        // Kiểm tra mail không được trùng
+        const mail = await accountModel.singleEmail_US(req.body.Email, username);
+        if(mail.length > 0){
+            if (req.file){
                 fs.unlinkSync(req.file.path);
-                req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
-                return res.redirect('/admin/tags/add');
             }
-
-            file = req.file.filename;
+            req.flash('error', 'Email đã tồn tại.');
+            return res.redirect(`/admin/accounts/edit/${username}`);
         }
-    
+
+
+  
         const registered = await accountModel.singleId_editAccount(username);
         const singleInfo = await accountModel.singleId_info_editAccount(registered[0].Id);
+
+        if (singleInfo.length === 0){
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
+            req.flash('error', 'Không tìm thấy tài khoản.');
+            return res.redirect(`/admin/accounts/edit/${username}`);
+        }
+
+        var file = undefined;
+
+        if (singleInfo[0].Avatar){
+            if (req.file)
+            {
+                // lớn hơn 20 MB
+                if (req.file.size/filesize > 20)
+                {
+                    fs.unlinkSync(req.file.path);
+                    req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
+                    return res.redirect('/admin/tags/add');
+                }
+    
+                file = req.file.filename;
+            }
+            else{
+                file = singleInfo[0].Avatar;
+            }
+        }
+        else{
+            if (req.file)
+            {
+                // lớn hơn 20 MB
+                if (req.file.size/filesize > 20)
+                {
+                    fs.unlinkSync(req.file.path);
+                    req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
+                    return res.redirect('/admin/tags/add');
+                }
+    
+                file = req.file.filename;
+            }
+        }
+
         var itemSex = 0;
         
         if (req.body.Sex === "true"){
@@ -600,7 +686,16 @@ module.exports = (router) =>{
             }
         }
         const username = req.params.username;
-        const list = await accountModel.singleId_editAccount(username);
+
+        const page = +req.query.page || 1;
+        if (page < 0) page = 1;
+        const offset = (page - 1) * config.pagination.limit;
+
+        const [list, total] = await Promise.all([
+            accountModel.singleId_editAccount_lo(username, config.pagination.limit, offset),
+            accountModel.countSingleId_editAccount()
+        ]);
+
         if (list.length === 0){
             return res.redirect('/admin/accounts?select=editor');
         }
@@ -609,12 +704,16 @@ module.exports = (router) =>{
 
         const mc = await categoryModel.allMain_EditorManage(id);
 
+        const [page_items, entity] = pagination_js.pageLinks(page, total[0].SoLuong);
+
         return res.render('vwAdmin/vwAccount/mcAccount', {
             layout: 'homeadmin',
             err: req.flash('error'),
             success: req.flash('success'),
             empty: mc.length === 0,
             categories: mc,
+            page_items,
+            entity,
             username
         })
     })
@@ -664,18 +763,28 @@ module.exports = (router) =>{
 
         if (array.length !== 0){
             const manage = req.body.Manage;
-            const sosanh = (a) => {
-                for (m of manage){
-                    if (+m === a.Id)
-                    return false;
+            if (!manage){
+                for (d of array){
+                    const rows = await editoraccountModel.singleId(d.Id);
+                    if (rows.length !== 0){
+                        await editoraccountModel.del_notsafe(rows[0].Id);
+                    }
                 }
-                return true;
             }
-            const delCat = array.filter(sosanh);
-            for (d of delCat){
-                const rows = await editoraccountModel.singleId(d.Id);
-                if (rows.length !== 0){
-                    await editoraccountModel.del_notsafe(rows[0].Id);
+            else{
+                const sosanh = (a) => {
+                    for (m of manage){
+                        if (+m === a.Id)
+                        return false;
+                    }
+                    return true;
+                }
+                const delCat = array.filter(sosanh);
+                for (d of delCat){
+                    const rows = await editoraccountModel.singleId(d.Id);
+                    if (rows.length !== 0){
+                        await editoraccountModel.del_notsafe(rows[0].Id);
+                    }
                 }
             }
         }

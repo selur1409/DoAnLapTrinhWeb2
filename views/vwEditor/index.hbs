@@ -1,15 +1,43 @@
+{{#if err}}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+      {{err}}
+  </div>
+  {{/if}}
+
+  {{#if success}}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    {{success}}
+  </div>
+  {{/if}}
 <div class="card">
   <div class="card-header">
     <h4><b>
-      Hi
-    </b></h4>
+      Hi, {{lcAuthUser.Name}} </h4>
+    </b> {{#if empty}}
+<b class="bg-warning">You have not been assigned any category manager. Please wait or contact Admin to apply for permission.</b>
+    {{else}}
+    
+You are authorized to manage the following categories: 
+    {{#each this.list}}
+    <li class="text-danger">{{Name}}</li>
+    {{/each}}
+    {{/if}}
+   
   </div>
   <ul class="list-group list-group-flush">
-    <li class="list-group-item"><b>Pending:</b> Bao gồm các bài viết đang chờ phê duyệt. Bạn có thể chấp nhận hoặc từ
-      chối bài viết. Nếu bài viết được chấp nhận bạn cần chọn chuyên mục category, nhãn tag của bài viết, đồng thời xác
-      định thời điểm bài viết sẽ được xuất bản lên hệ thống. Nếu từ chối bài viết bạn cần ghi chú rõ lý do để phóng viên
-      có thể hiệu chỉnh lại bài viết cho phù hợp </li>
-    <li class="list-group-item"><b>Accepted: </b>Bao gồm các bài viết đã được duyệt</li>
-    <li class="list-group-item"><b>Denied: </b>Bao gồm các bài viết bị từ chối</li>
+    <li class="list-group-item "><b>Pending:</b> 
+Include articles awaiting approval. You can <b class="text-success">accept </b> or
+<b class="text-danger">deny</b> post. If the post is accepted you need to select the <b class="text-warning">category sub</b>, the article's <b class="text-warning">tag</b> and specify
+      <b class="text-warning">time</b> the article will be published to the system. If you refuse the article, you need to <b class="text-warning">note clearly the reason </b> for the reporter
+      can edit the article accordingly </li>
+    <li class="list-group-item"><b>Accepted: </b>
+Includes approved articles. You can edit or delete articles in this list when they are not published. <u class="text-danger">But be careful as it can cause unexpected errors. </u></li>
+    <li class="list-group-item"><b>Denied: </b>Include disapproved posts. You can edit the disapproval reason or remove articles from this list as long as they have not been processed.<u class="text-danger"> But be careful as it can cause unexpected errors. </u></li>
   </ul>
 </div>

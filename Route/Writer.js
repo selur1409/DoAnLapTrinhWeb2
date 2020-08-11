@@ -213,7 +213,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
         //get tagImg in full content
         const tagsImg = getTagImg(FullContent);
-        const fullSrcImg = getFullSrcImg(FullContent)
+        const fullSrcImg = getFullSrcImg(FullContent);
         const directoryPath = path.join(__dirname, '../public/img/ImagePost/temp');
         
         if (checkbox.length === 0 || IdCategories === '' || FullContent === '' || BriefContent === '' || Title === '') {
@@ -273,6 +273,9 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
 
                 await db.UpdateFullContent(NewFullContent, NewAvatar, Result.insertId);
 
+                console.log(tagsImg);
+                console.log(NewAvatar);
+
                 // Rename folder containt image of post by post's Id
                 const NewDirName = path.join(__dirname, '../public/img/ImagePost/' + Result.insertId);
                 if (fs.existsSync(directoryPath)) {
@@ -284,6 +287,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
                     });
                 }
 
+                
                 if (result !== null) {
                     res.json({ success: 'This article has been sent successfully!' });
                 }
@@ -295,6 +299,150 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         console.log(e);
     }
 }); 
+
+router.post('/ViewPost/', restrict, Authories, async (req, res)=>{
+    try{
+
+        const page = +req.query.page || 1;
+        const IdStatus = +req.query.id;
+        const Opt = +req.query.opt || 0;
+        const ValueSearch = req.body.Search || '';
+        const IdAccount = res.locals.lcAuthUser.Id;
+      
+        const offset = (page - 1) * config.pagination.limit;
+        let [Result, Total, NumberOfPost] = [];
+
+        if (Opt === 1) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-%m-%d'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-%m-%d'), db.CountNumberPost(IdAccount)]);
+        }
+        else if (Opt === 2) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisWeek(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriterThisWeek(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
+        }
+        else if (Opt === 3) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-%m-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-%m-01'), db.CountNumberPost(IdAccount)]);
+        }
+        else if (Opt === 4) {
+            [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, config.pagination.limit, offset, '%Y-01-01'), db.CountPostOfWriterThisDayOrThisMonthOrThisYear(IdStatus, IdAccount, '%Y-01-01'), db.CountNumberPost(IdAccount)]);
+        }
+        else {
+            if(req.body.Search === undefined)
+            {
+                [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriter(IdStatus, IdAccount, config.pagination.limit, offset), db.CountPostOfWriter(IdStatus, IdAccount), db.CountNumberPost(IdAccount)]);
+            }
+            else
+            {
+                [Result, Total, NumberOfPost] = await Promise.all([db.LoadPostOfWriterBySearch(IdAccount, config.pagination.limit, offset, ValueSearch), db.CountPostSearch(IdAccount, config.pagination.limit, offset, ValueSearch), db.CountNumberPost(IdAccount)]);
+            }
+        }
+        const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+        const page_items = [];
+        let count = 0;
+        let lengthPagination = 0;
+        let temp = page;
+
+        while (true) {
+            if (temp - config.pagination.limitPaginationLinks > 0) {
+                count++;
+                temp = temp - config.pagination.limitPaginationLinks;
+            }
+            else {
+                break;
+            }
+        }
+        if ((count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks >= nPages) {
+            lengthPagination = nPages;
+        }
+        else {
+            lengthPagination = (count * config.pagination.limitPaginationLinks) + config.pagination.limitPaginationLinks;
+        }
+        for (let i = (count * config.pagination.limitPaginationLinks) + 1; i <= lengthPagination; i++) {
+            const item = {
+                value: i,
+                isActive: i === page,
+                IdStatus,
+                Opt
+            }
+            page_items.push(item);
+        }
+
+        res.render('vwWriter/PostOfWriter', {
+            layout: 'homewriter',
+            empty: Result.length === 0,
+            IsActive: true,
+            Name: res.locals.lcAuthUser.Username,
+            Avatar: res.locals.lcAuthUser.Avatar,
+            Search: ValueSearch,
+            SearchNotEmpty: ValueSearch.length !== 0,
+            IdStatus,
+            IsActive1: IdStatus === 1,
+            IsActive2: IdStatus === 2,
+            IsActive3: IdStatus === 3,
+            IsActive4: IdStatus === 4,
+            ListPosts: Result,
+            helpers: {
+                format_datetime: function (value) {
+                    const date = moment(value).format("DD-MM-YYYY");
+                    return date;
+                },
+
+                AvatarPost: function (value){
+                    if(value !== null)
+                    {
+                        return '/public/img/Avatar/' + value;
+                    }
+                    return 'https://img.favpng.com/25/7/23/computer-icons-user-profile-avatar-image-png-favpng-LFqDyLRhe3PBXM0sx2LufsGFU.jpg';
+                },
+
+                Update: function (value, id, options) {
+                    if (4 === value || 3 === value) {
+                        let ret = "";
+                        for (let i = 0; i < Result.length; i++) {
+                            if (Result[i].Id === id) {
+                                ret = ret + options.fn(Result[i]);
+                            }
+                        }
+                        return ret;
+                    }
+                    return null;
+                },
+
+                FeedBack: function (value, id, options) {
+                    if (3 === value) {
+                        let ret = "";
+                        for (let i = 0; i < Result.length; i++) {
+                            if (Result[i].Id === id) {
+                                ret = ret + options.fn(Result[i]);
+                            }
+                        }
+                        return ret;
+                    }
+                    return null;
+                },
+
+                NumberOfPost: function (Id) {
+                    for (let i = 0; i < NumberOfPost.length; i++) {
+                        if (NumberOfPost[i].Id === Id) {
+                            return NumberOfPost[i].Number;
+                        }
+                    }
+                }
+
+            },
+
+            page_items,
+            prev_value: page - 1,
+            next_value: page + 1,
+            can_go_prev: page > 1,
+            can_go_next: page < nPages,
+            last: nPages,
+            Opt
+        });
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+});
 
 router.get('/ViewPost/', restrict, Authories, async (req, res)=>{
     try{
@@ -441,7 +589,7 @@ router.get('/ViewPost/', restrict, Authories, async (req, res)=>{
 });
 
 router.get('/DetailPost/', restrict, Authories, async (req, res)=>{
-    const IdPost = req.query.id;
+    const IdPost = +req.query.id;
     const Post = await db.LoadSinglePost(IdPost);
     const Status = await db.LoadStatusById(Post[0].IdStatus);
     const Categories = await db.LoadCategoriesById(Post[0].IdCategories);
