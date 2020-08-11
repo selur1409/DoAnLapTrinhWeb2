@@ -1,5 +1,4 @@
-const categoriesModel = require('../models/category.model');
-
+const categoriesModel = require('../Models/category.model');
 module.exports = function (app) {
   app.use(function (req, res, next) {
 
