@@ -93,18 +93,18 @@ function validateEmail() {
   const $result = $("#rsEmail");
   const email = $("#txtEmail").val();
   $result.text("");
+  const username = $("#txtUsername").val();
   
   if (validateRegexEmail(email)) {
-    return true;
-    // return $.getJSON(`/admin/accounts/is-available?email=${email}`, function (data) {
-    //    if (data === true) {
-    //        return true;
-    //    } else {
-    //        $result.text(email + " đã tồn tại.");
-    //        $result.css("color", "red");
-    //        return false;
-    //    }
-    //}) --}}
+    return $.getJSON(`/admin/accounts/is-available?email=${email}&us=${username}`, function (data) {
+        if (data === true) {
+            return true;
+        } else {
+            $result.text(email + " đã tồn tại.");
+            $result.css("color", "red");
+            return false;
+        }
+    })
   }
   if (email === "")
   {
@@ -203,7 +203,7 @@ $(document).ready(function(){
                     </div>
                     <div class="avatar-preview">
                         <div>
-                            <img id="imagePreview" class="profile-user-img img-fluid img-circle" {{#if account.Avatar}} src="/public/img/Avatar/{{account.Avatar}}" {{else}} {{#if account.Sex}} src="/public/img/Avatar/avatar2.png" {{else}} src="/public/img/Avatar/avatar.png" {{/if}} {{/if}} 
+                            <img id="imagePreview" class="profile-user-img img-fluid img-circle" {{#if isGg}} src="{{account.Avatar}}" {{else}} {{#if account.Avatar}} src="/public/img/Avatar/{{account.Avatar}}" {{else}} src="/public/img/Avatar/NoAvatar.png" {{/if}} {{/if}}
                                 alt="image: {{account.Avatar}}">
                         </div>
                     </div>
@@ -257,7 +257,7 @@ $(document).ready(function(){
         <i class="fa fa-check" aria-hidden="true"></i>
         Hủy bỏ
       </a>
-      <input type="hidden" name="Username" value="{{account.Username}}">
+      <input type="hidden" id="txtUsername" name="Username" value="{{account.Username}}">
       <input type="hidden" name="Select" value="{{select}}">
       <button type="submit" class="btn btn-primary">
         <i class="fa fa-check" aria-hidden="true"></i>

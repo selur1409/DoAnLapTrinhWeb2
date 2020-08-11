@@ -43,9 +43,11 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
         const [AccountProfile, NumberOfPost]  = await Promise.all([db.LoadProfile(IdAccount), db.CountAllPost(IdAccount)]);
         req.session.authAccount = AccountProfile[0];
 
-        var avtGoogle = false;
-        if (AccountProfile[0].Avatar.indexOf('lh3.googleusercontent.com/')){
-            avtGoogle = true;
+        var isGg = false;
+        if (AccountProfile[0].Avatar){
+            if (AccountProfile[0].Avatar.indexOf("https://") !== -1){
+                isGg = true;
+            }
         }
 
         res.render('vwAccount/profile',{
@@ -64,7 +66,7 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
             IsNotUser:TypeAccount !== 1,
             IsWriter:TypeAccount === 2,
             TypeAccount:AccountProfile[0].Type,
-            AvtGoogle: avtGoogle
+            isGg: isGg
         });
     }
     catch(e){

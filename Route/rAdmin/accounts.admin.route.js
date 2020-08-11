@@ -224,13 +224,21 @@ module.exports = (router) =>{
         else if (account.TypeAccount === 3){
             select = 'editor';
         }
+
+        var isGg = false;
+        if (account.Avatar){
+            if (account.Avatar.indexOf("https://") !== -1){
+                isGg = true;
+            }
+        }
         
         return res.render('vwAdmin/vwAccount/editAccount', {
             layout: 'homeadmin',
             err: req.flash('error'),
             success: req.flash('success'),
             account: account,
-            select: select
+            select: select,
+            isGg
         });
     });
 
@@ -239,6 +247,14 @@ module.exports = (router) =>{
             const list = await accountModel.singleId_editAccount(req.query.username);
             if (list.length !== 0)
             {
+                return res.json(false);
+            }
+            return res.json(true);
+        }
+        if (req.query.email && req.query.us){
+            // Kiểm tra mail không được trùng
+            const mail = await accountModel.singleEmail_US(req.body.Email, req.body.us);
+            if(mail.length > 0){
                 return res.json(false);
             }
             return res.json(true);
@@ -292,6 +308,9 @@ module.exports = (router) =>{
         const rows = await accountModel.singleId(username);
     
         if (rows.length === 0){
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
             req.flash('error', 'Tài khoản không tồn tại.');
             return res.redirect(`/admin/accounts`);
         }
@@ -307,26 +326,70 @@ module.exports = (router) =>{
         // Nếu ngày hiện tại <= ngày sinh thì thông báo lỗi
         if (dt_now <= dob)
         {
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
             req.flash('error', 'Ngày sinh phải nhỏ hơn ngày hiện tại');
             return res.redirect(`/admin/accounts/edit/${username}`);
         }
 
-        var file = undefined;
-        if (req.file)
-        {
-            // lớn hơn 20 MB
-            if (req.file.size/filesize > 20)
-            {
+        // Kiểm tra mail không được trùng
+        const mail = await accountModel.singleEmail_US(req.body.Email, username);
+        if(mail.length > 0){
+            if (req.file){
                 fs.unlinkSync(req.file.path);
-                req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
-                return res.redirect('/admin/tags/add');
             }
-
-            file = req.file.filename;
+            req.flash('error', 'Email đã tồn tại.');
+            return res.redirect(`/admin/accounts/edit/${username}`);
         }
-    
+
+
+  
         const registered = await accountModel.singleId_editAccount(username);
         const singleInfo = await accountModel.singleId_info_editAccount(registered[0].Id);
+
+        if (singleInfo.length === 0){
+            if (req.file){
+                fs.unlinkSync(req.file.path);
+            }
+            req.flash('error', 'Không tìm thấy tài khoản.');
+            return res.redirect(`/admin/accounts/edit/${username}`);
+        }
+
+        var file = undefined;
+
+        if (singleInfo[0].Avatar){
+            if (req.file)
+            {
+                // lớn hơn 20 MB
+                if (req.file.size/filesize > 20)
+                {
+                    fs.unlinkSync(req.file.path);
+                    req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
+                    return res.redirect('/admin/tags/add');
+                }
+    
+                file = req.file.filename;
+            }
+            else{
+                file = singleInfo[0].Avatar;
+            }
+        }
+        else{
+            if (req.file)
+            {
+                // lớn hơn 20 MB
+                if (req.file.size/filesize > 20)
+                {
+                    fs.unlinkSync(req.file.path);
+                    req.flash('error', `Ảnh đại diện phải nhỏ hơn hoặc bằng 2MB`);
+                    return res.redirect('/admin/tags/add');
+                }
+    
+                file = req.file.filename;
+            }
+        }
+
         var itemSex = 0;
         
         if (req.body.Sex === "true"){

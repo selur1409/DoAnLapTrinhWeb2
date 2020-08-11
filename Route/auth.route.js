@@ -69,13 +69,17 @@ router.get('/good', isLoggedIn, async function(req, res){
 
   const acc = rows[0];
 
-  if (acc.Avatar.indexOf('lh3.googleusercontent.com/')){
-      acc.avtGoogle = true;
+  if (acc.Avatar)
+  {
+    if (acc.Avatar.indexOf("https://") !== -1){
+      acc.isGg = true;
+    }
   }
   
-  acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+  if (acc.DateExpired){
+    acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+  }
   acc.DOB = moment(acc.DOB, 'YYYY-MM-DD').format('DD-MM-YYYY');
-
   
   req.session.isAuthenticated = true;
   req.session.authAccount = acc;

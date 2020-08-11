@@ -133,7 +133,15 @@ router.post('/login', async function (req, res) {
     }
 
     delete acc.Password_hash;
-    acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+    if (acc.Avatar)
+    {
+      if (acc.Avatar.indexOf("https://") !== -1){
+        acc.isGg = true;
+      }
+    }
+    if (acc.DateExpired){
+        acc.DateExpired = moment(acc.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
+    }
     acc.DOB = moment(acc.DOB, 'YYYY-MM-DD').format('DD-MM-YYYY');
 
     req.session.isAuthenticated = true;
