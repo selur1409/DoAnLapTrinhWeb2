@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../Models/account.model');
+const db = require('../models/account.model');
 const config = require('../config/default.json');
 const moment = require('moment');
 const nodemailer = require('nodemailer');

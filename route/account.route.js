@@ -1,5 +1,5 @@
 const express = require('express');
-const accountModel = require('../Models/account.model');
+const accountModel = require('../models/account.model');
 const bcrypt = require('bcryptjs');
 const config = require('../config/default.json');
 const moment = require('moment');

@@ -1,4 +1,4 @@
-const accountModel = require('../../Models/account.model');
+const accountModel = require('../../models/account.model');
 const typeModel = require('../../Models/typeaccount.model');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');

@@ -13,7 +13,7 @@ const categoriesModel = require('../Models/category.model');
 const {getTimeBetweenDate} = require('../js/betweendate');
 const {getTime_Minutes} = require('../js/betweendate');
 const {addMinutes}= require('../config/default.json');
-const accountModel = require('../Models/account.model');
+const accountModel = require('../models/account.model');
 const router = express.Router();
 
 const printPdf = async(htmlPage)=>{
