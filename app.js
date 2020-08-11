@@ -1,6 +1,6 @@
 const express = require('express');
 const passport = require('passport');
-const db = require('./Models/account.model');
+const db = require('./models/account.model');
 const cors = require('cors')
 // Phần của Khương mới thêm
 const flash = require('express-flash');
