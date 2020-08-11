@@ -29,7 +29,8 @@ const {exposeTemplates} = require('./public/js/exposeTemplate');
 
 
 // route tag
-app.use('/tag', require('./route/tag.route'));
+//sửa require của '/tag' ((require('./route/tag.route') -> require('./Route/tag.route'))
+app.use('/tag', require('./Route/tag.route'));
 
 // route tag
 app.use('/category', require('./route/category.route'));
