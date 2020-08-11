@@ -37,7 +37,7 @@ app.use('/tag', require('./Route/tag.route'));
 app.use('/category', require('./Route/category.route'));
 
 // route account
-const accountRoute = require('./Route/account.route');
+const accountRoute = require('./route/account.route');
 app.use('/account', accountRoute);
 // passport
 app.use('/auth', require('./Route/auth.route'));
