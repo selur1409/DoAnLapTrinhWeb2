@@ -61,7 +61,7 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
             Male:AccountProfile[0].Sex === 0,
             Female:AccountProfile[0].Sex === 1,
             Avatar:AccountProfile[0].Avatar,
-            AvatarEmpty:AccountProfile[0].Avatar === null,
+            AvatarEmpty:AccountProfile[0].Avatar === 'null',
             NumberOfPost:NumberOfPost[0].Number,
             IsActiveProfile:true,
             IsNotUser:TypeAccount !== 1,
