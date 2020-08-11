@@ -111,6 +111,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     {{!-- <i class="fas fa-circle"></i> --}}
                     <i class="far fa-circle"></i>
                     <p>Posts Pending</p>
+                    <span class="badge badge-danger">{{countAll}}</span>
 
                   </a>
                 </li>
@@ -118,14 +119,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <a href="/editor/accepted" class="nav-link {{#if IsActiveAccepted}} bg-success {{/if}}">
                     <i class="far fa-check-circle"></i>
                     <p>Posts Accepted</p>
-                    <span class="badge badge-success"></span>
+                    
                   </a>
                 </li>
                 <li class="nav-item">
                   <a href="/editor/denied" class="nav-link  {{#if IsActiveDenied}} bg-danger {{/if}}">
                     <i class="far fa-times-circle"></i>
                     <p>Posts Denied</p>
-                    <span class="badge badge-danger"></span>
                   </a>
                 </li>
               </ul>
