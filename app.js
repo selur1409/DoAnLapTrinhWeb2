@@ -20,18 +20,21 @@ require('./passport-setup');
 app.use(flash());
 
 // Trang chủ Home
-app.use('/', require('./route/home.route'));
-app.use('/index.html', require('./route/home.route'));
+//sửa require của / và /index.html ((require('./route/home.route') -> (require('./Route/home.route'))
+app.use('/', require('./Route/home.route'));
+app.use('/index.html', require('./Route/home.route'));
 
 
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
 
 // route tag
-app.use('/tag', require('./route/tag.route'));
+//sửa require của '/tag' ((require('./route/tag.route') -> require('./Route/tag.route'))
+app.use('/tag', require('./Route/tag.route'));
 
 // route tag
-app.use('/category', require('./route/category.route'));
+//sửa require của '/category' (require('./route/category.route') -> require('./Route/category.route'))
+app.use('/category', require('./Route/category.route'));
 
 // route account
 const accountRoute = require('./route/account.route');
@@ -65,7 +68,7 @@ app.use(function (err, req, res, next) {
   res.status(500).render('500', { layout: false });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, function () {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
