@@ -1,5 +1,6 @@
 const express = require('express');
-const postModel = require('../models/post.model');
+//sửa require của postModel (require('../models/post.model') ->require('../Models/post.model'))
+const postModel = require('../Models/post.model');
 const categoryModel = require('../Models/category.model');
 const moment = require('moment');
 const tagModel = require('../Models/tag.model');
