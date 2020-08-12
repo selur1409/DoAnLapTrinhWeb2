@@ -44,6 +44,32 @@ const printPdf = async(htmlPage)=>{
 // Trang index
 router.get('/',async function (req, res) {
 
+
+
+    let IsLogin = false;
+    let IsAccountPremium = true;
+    if(!req.session.isAuthenticated)
+    {
+        IsLogin = false;
+        IsAccountPremium = false;
+    }
+    else {
+        IsLogin = true;
+
+
+        const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
+            && res.locals.lcAuthUser.TypeAccount === 1)
+                IsAccountPremium = false;
+        const dateEx =  moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+    
+    
+        if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
+                IsAccountPremium = false;
+        
+    }
+
+
     const listTreding = await postModel.trending();
     const listMostView = await postModel.mostview();
     const listPostNew = await postModel.postnew();
@@ -52,6 +78,8 @@ router.get('/',async function (req, res) {
 
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
+    const listSliderPost = await postModel.SliderPost();
+
 
 
     //console.log(listTreding);
@@ -127,11 +155,17 @@ router.get('/',async function (req, res) {
         listTag: listTag,
         emptyTag: listTag.length === 0,
 
+        listSliderPost,
+        emptySliderPost: listSliderPost.length === 0,
+        
+
         listRandomSidebar, 
         listFutureEvent,
         emptyFutureEvent: listFutureEvent.length === 0,
         isSubscriber: isSubscriber,
         Premium: premium,
+        IsLogin,
+        IsAccountPremium,
         helpers: {
             load_Post1: function(context, options)
             {
@@ -398,20 +432,67 @@ router.get('/detail/premium/:Url', restrict, async function(req, res){
 
 
 router.get('/detail/:Url', async function(req, res){
+
     const url = req.params.Url;
-    const rows = await postModel.single(url);
 
     const posts_cmt = await postModel.single_url_posts(url);
     if (posts_cmt.length === 0){
         req.flash('error', 'Bài viết không tồn tại.');
         return res.redirect('/');
     }
+
     if (posts_cmt[0].IdStatus !== 2){
         req.flash('error', 'Bài viết chưa được xuất bản.');
         return res.redirect('/');
     }
 
+    
+    const retURL = `/detail/${url}`;
+    if(posts_cmt[0].IsPremium === 1){
+        if (!req.session.isAuthenticated){
+            return res.redirect(`/account/login?retUrl=${retURL}`)
+        }
+        else
+        {
+            const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+            if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
+                && res.locals.lcAuthUser.TypeAccount === 1)
+                   {
+                       return res.redirect(`/premium/register?retUrl=${retURL}`);
+                   }
+            const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+        
+        
+            if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
+            {
+                return res.redirect(`/premium/register?retUrl=${retURL}`);
+            }
+                    
+        }
+    }
+
+
+
+
+    
+    const rows = await postModel.single(url);
     const post = rows[0];
+
+
+
+
+    //     const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+//     if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
+//         && res.locals.lcAuthUser.TypeAccount === 1)
+//         return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
+
+//     const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+
+
+//     if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
+//    
+
+    
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
     const listTag = await tagModel.tagByIdPost(post.Id);
@@ -447,6 +528,9 @@ router.get('/detail/:Url', async function(req, res){
         l.Url = url;
     }
     const empty = await commentModel.countCommentByIdPost_admin(pcmt.Id);
+
+
+    
     let IsLogin = false;
     let IsAccountPremium = true;
     if(!req.session.isAuthenticated)
@@ -769,8 +853,6 @@ const page = +req.query.page || 1;
     // console.log(req.query.Search);
 });
 
-
-
 router.post('/search',async function(req, res){
 
 
@@ -915,7 +997,6 @@ router.post('/search',async function(req, res){
     })
     // console.log(req.query.Search);
 });
-
 
 router.get('/ExportPdf/', async function(req, res){
         const IdPost = +req.query.id;

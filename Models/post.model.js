@@ -6,6 +6,13 @@ module.exports = {
     all: function () {
         return db.load(`select * from ${TBL_POSTS}`);
     },
+    SliderPost: function () {
+        return db.load(`select p.Id, p.Title, p.Url, p.Avatar, pd.IsPremium, cb.Name, cb.Url as 'CatURL' 
+                        from posts p, information i, postdetails pd, categories_sub cb 
+                        where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
+                        AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2 AND pd.IsPremium = 0
+                        ORDER BY p.DatetimePost LIMIT 3`);
+    },
     dislayList_lo: function (limit, offset) {
         return db.load(`select (ROW_NUMBER() OVER (ORDER BY p.DatetimePost DESC)) as 'Stt', p.*, 
                         s.Name as 'NameStatus', i.IdAccount, i.Name as 'NameWriter', cs.Name as 'NameCategory' 
@@ -163,7 +170,7 @@ module.exports = {
         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);
     },
     single_url_posts: function (url) {
-        return db.load(`SELECT p.*, s.Name as 'NameStatus', i.IdAccount, i.Nickname as 'NameWriter', cs.Name as 'NameCategory'
+        return db.load(`SELECT p.*, s.Name as 'NameStatus', i.IdAccount, i.Nickname as 'NameWriter', cs.Name as 'NameCategory', pd.IsPremium
                         FROM posts p, status_posts s, postdetails pd, information i, categories_sub cs 
                         WHERE p.Url = '${url}' and p.IsDelete = 0 and s.Id = p.IdStatus
                         and p.Id = pd.IdPost and pd.IdAccount = i.IdAccount and cs.Id = p.IdCategories`);

@@ -36,7 +36,7 @@
 														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
 															<img class="card-img-top" src="{{Avatar}}" alt="">
 															<div class="card-body">
-																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp; <i class="fas fa-crown"></i></a></div>
+																<div class="card-title"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp; <i class="fas fa-crown"></i></a></div>
 																<p class="card-text">{{Content_Summary}}</p>
 																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
 																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
@@ -60,14 +60,15 @@
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.Treding}}
-
-
 												{{#if IsPremium}}
 													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
 														<img class="card-img-top" src="{{Avatar}}" alt="">
 														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
+															<div class="card-title card-title-small"><a href="/detail/{{Url}}">
+																<span style="color: red;">{{Title}}</span>  
+																&nbsp;<i class="fas fa-crown"></i></a>
+															</div>
 															<p class="card-text"></p>{{Content_Summary}}</p>
 															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
 															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>

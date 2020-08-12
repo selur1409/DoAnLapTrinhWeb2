@@ -799,8 +799,9 @@ section
 .home_slider_nav_container
 {
 	position: absolute;
-	bottom: 264px;
-	left: calc(((100vw - 1170px) / 2) + (1170px * 0.75) + 8px);
+	bottom: 0;
+	/* left: calc(((100vw - 1170px) / 2) + (1170px * 0.75) + 8px); */
+	left: 50%;
 }
 .custom_dots
 {
