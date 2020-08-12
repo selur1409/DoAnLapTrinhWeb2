@@ -162,7 +162,7 @@ module.exports = (router) => {
             const IdStatus = 4;
             const IdPost =  -1;
             const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
-            const DateTimePost = null;
+            const DateTimePost = '0000-00-00 00:00:00';
             const View = 0;
             const Avatar = null;
             const IdCategories = req.body.Categories;
@@ -373,7 +373,7 @@ module.exports = (router) => {
             const IsDelete = 0;
             const IdStatus = 4;
             const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
-            const DateTimePost = null;
+            const DateTimePost = '0000-00-00 00:00:00';
             const View = 0;
             let Avatar = null;
             const IdCategories = req.body.Categories;
