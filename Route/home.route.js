@@ -91,9 +91,11 @@ router.get('/',async function (req, res) {
         if (res.locals.lcAuthUser.TypeAccount === 1){
             isSubscriber = true;
             const user = res.locals.lcAuthUser.Username;
+
             const list = await accountModel.singUsername_Expired(user);
             const account = list[0];
             delete account.Password_hash;
+            
 
                 // Tính thời hạn đăng kí premium
             
@@ -106,7 +108,8 @@ router.get('/',async function (req, res) {
                 premium = getTimeBetweenDate(dt_now, dt_exp);
             }
         }
-        else{
+        else
+        {
             isSubscriber = false;
         }
     }
@@ -197,7 +200,7 @@ router.get('/',async function (req, res) {
 
 })
 
-router.get('/premium/register', restrict, function(req, res){
+router.get('/premium/register', restrict, async function(req, res){
     if(res.locals.lcAuthUser.TypeAccount!==1){
         return res.redirect('/');
     }
@@ -208,21 +211,18 @@ router.get('/premium/register', restrict, function(req, res){
 
     var time;
     var minutes = addMinutes;
- 
-    if (res.locals.lcAuthUser)
-    {
+    time = getTime_Minutes(minutes);
+    time.value = +minutes || 1;
+
+    const user = res.locals.lcAuthUser.Username;
+    const list = await accountModel.singUsername_Expired(user);
+    const account = list[0];
         // Tính thời hạn đăng kí premium
-        if (res.locals.lcAuthUser.DateExpired)
-        {
-            const authU = res.locals.lcAuthUser;
-            const dt_exp = new Date(moment(res.locals.lcAuthUser.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
-            const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-
-            premium = getTimeBetweenDate(dt_now, dt_exp);
-        }
-
-        time = getTime_Minutes(minutes);
-        time.value = +minutes || 1;
+    if (account.DateExpired)
+    {
+        const dt_exp = new Date(moment(account.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+        const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+        premium = getTimeBetweenDate(dt_now, dt_exp);
     }
     return res.render('vwPremium/register', {
         layout: false,
