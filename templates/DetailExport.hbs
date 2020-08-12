@@ -1,0 +1,37 @@
+<div class="post_panel post_panel_top d-flex flex-row align-items-center justify-content-start">
+						<div class="author_image">
+							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
+						</div>
+						<div class="post_meta"><a
+								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_share ml-sm-auto">
+							<span>share</span>
+							<ul class="post_share_list">
+								<li class="post_share_item"><a href="#"><i class="fa fa-facebook"
+											aria-hidden="true"></i></a></li>
+								<li class="post_share_item"><a href="#"><i class="fa fa-twitter"
+											aria-hidden="true"></i></a></li>
+								<li class="post_share_item"><a href="#"><i class="fa fa-google"
+											aria-hidden="true"></i></a></li>
+							</ul>
+						</div>
+					</div>
+
+					<!-- Post Body -->
+
+					<div class="post_body">
+						{{{this.post.Content_Full}}}
+						<!-- Post Tags -->
+						<div class="post_tags">
+							<ul>
+								{{#each this.listTag}}
+								<li class="post_tag"><a href="/tag/{{TagName}}">{{Name}}</a></li>
+								{{/each}}
+							</ul>
+						</div>
+
+						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+							data-value={{this.post.Id}} id="btnExport" href="">Export pdf
+						</a>
+					</div>
+</div>

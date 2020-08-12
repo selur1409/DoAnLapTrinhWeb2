@@ -1923,3 +1923,22 @@ section
 	background-color: black;
 	color: yellow;
 }
+
+.page-link {
+	position: relative;
+    display: block;
+    padding: .5rem .75rem;
+    margin-left: -1px;
+    line-height: 1.25;
+    color: #007bff;
+    background-color: #fff;
+	border: 1px solid #ddd;
+	width:10px;
+}
+
+.page-item.active .page-link {
+    z-index: 2;
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
+}

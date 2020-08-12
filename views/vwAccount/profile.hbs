@@ -493,6 +493,9 @@
                 if (dataParsed.hasOwnProperty('success')) {
                     document.getElementById("alert").innerHTML = Handlebars.templates.Success({ success: dataParsed.success });
                     $("#Success").modal("show");
+                    document.getElementById('inputNewPassword').value = '';
+                    document.getElementById('inputConfirmNewPassword').value = '';
+                    document.getElementById('inputOldPassword').value = '';
                 }
                 if (dataParsed.hasOwnProperty('fail')) {
                     document.getElementById("alert").innerHTML = Handlebars.templates.Warning({ warning: dataParsed.fail });
