@@ -26,7 +26,7 @@
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
-						<div class="logo"><a href="/">avision</a></div>
+						<div class="logo" style="margin-left: 20px;"><a href="/">avision</a></div>
 						<nav class="main_nav">
 							<menu>
 								<menuitem id="demo1">
@@ -58,10 +58,12 @@
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
 							<form action="/search" method="POST">
-								<input type="search" class="header_search_input" required="required" placeholder="Type to Search...">
+								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
-							</form>							
+							</form>					
 						</div>
+						
+						
 
 						{{!-- register_login --}}
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
@@ -174,7 +176,7 @@
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
 		<div class="search">
 			<form action="/search" method="POST">
-				<input type="search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
+				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>

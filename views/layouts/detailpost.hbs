@@ -33,7 +33,7 @@
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
-						<div class="logo"><a href="/">avision</a></div>
+						<div class="logo" style="margin-left: 20px;"><a href="/">avision</a></div>
 						<nav class="main_nav">
 							<menu>
 								<menuitem id="demo1">
@@ -65,9 +65,45 @@
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
 							<form action="/search" method="POST">
-								<input type="search" class="header_search_input" required="required" placeholder="Type to Search...">
+								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
-							</form>							
+							</form>				
+						</div>
+
+												{{!-- Đã đăng nhập hay chưa --}}
+						<div class="ml-5">
+							{{#if lcIsAuthenticated}}
+						{{!-- Kiểm tra xem có phải là độc giả hay không --}}
+						{{#if isSubscriber}}
+						{{!-- Kiểm tra xem độc giả còn hạn premium hay không --}}
+						{{#if Premium}} 
+						{{#if Premium.Notvalue}}
+						<a class="btn btn-warning btn-sm" href="premium/register" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+						Hết hạn
+						<i class="fas fa-plus-square"></i>
+						</a>
+						{{else}}
+						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+						<i class="fab fa-vuejs"></i>
+							Premium: {{Premium.days}}d {{Premium.hours}}h {{Premium.minutes}}m
+							{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
+						</a>
+						<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  
+						<i class="fas fa-plus"></i>
+						</a>
+						{{/if}}
+						{{else}}
+						{{!-- Chưa đăng kí premium lần nào --}}
+						<b>Experient premium?</b>
+						<a class="btn btn-warning btn-sm" href="premium/register" role="button" title="Premium">
+							<i class="fab fa-vuejs"></i>
+							Buy now
+							<i class="fas fa-plus-square"></i>
+						</a>
+						{{/if}}
+						{{/if}}
+						{{/if}}
 						</div>
 
 						{{!-- register_login --}}
@@ -168,7 +204,7 @@
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
 		<div class="search">
 			<form action="/search" method="POST">
-				<input type="search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
+				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
@@ -193,6 +229,7 @@
 	<div class="home">
 		<div class="home_background parallax-window" data-parallax="scroll" data-image-src="{{post.Avatar}}" data-speed="0.8"></div>
 		<div class="home_content bg-black-oct-4 p-3">
+			<div class="post_category trans_200"><a href="/category/{{post.CatURL}}" class="trans_200">{{post.Name}}</a></div>
 			<div class="post_title">{{this.post.Title}}</div>
 		</div>
 	</div>

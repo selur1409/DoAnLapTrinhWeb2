@@ -109,6 +109,8 @@
     <form method="POST" action="/premium/register">
         {{!-- <input type="text" name="Id" value="{{this.account.Id}}"> --}}
         <input type="hidden" name="Username" value="{{lcAuthUser.Username}}">
+
+        <input type="hidden" name="returnUrl" value="{{retUrl}}">
         {{!-- <input type="text" name="TypeAccount" value="{{this.account.TypeAccount}}"> --}}
         <div class="form-group required">
         <h3 class="text-left">Gói VIP</h3>

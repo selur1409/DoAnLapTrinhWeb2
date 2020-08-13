@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="/public/styles/menu_dropdown.css">
 <link rel="stylesheet" href="/public/styles/menu.css">
-
+<link rel="stylesheet" href="/public/styles/hamburger.css">
 
 </head>
 <body>
@@ -31,7 +31,26 @@
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
-						<div class="logo"><a href="/">avision</a></div>
+
+						{{!-- <div id="menu-bar">
+							<div id="menu" onclick="onClickMenu()">
+								<div id="bar1" class="bar"></div>
+								<div id="bar2" class="bar"></div>
+								<div id="bar3" class="bar"></div>
+							</div>
+							<ul class="nav" id="nav">
+								<li><a href="#">Home</a></li>
+								<li><a href="#">About</a></li>
+								<li><a href="#">Blog</a></li>
+								<li><a href="#">Gallery</a></li>
+								<li><a href="#">Contact</a></li>
+							</ul>
+						</div>
+						<div class="menu-bg" id="menu-bg"></div>
+						<script src="script.js"></script> --}}
+
+
+						<div class="logo" style="margin-left: 20px;"><a href="/">avision</a></div>
 						<nav class="main_nav">
 							<menu>
 								<menuitem id="demo1">
@@ -62,11 +81,12 @@
 								<div class="temperature">+10°</div>
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
-							<form action="/search" method="POST" id='frmSearch1'>
+							<form action="/search" method="POST">
 								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
 						</div>
+						
 						{{!-- Đã đăng nhập hay chưa --}}
 						<div class="ml-5">
 							{{#if lcIsAuthenticated}}
@@ -83,7 +103,7 @@
 						{{else}}
 						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
 						<i class="fab fa-vuejs"></i>
-							Premium: {{Premium.days}} d {{Premium.hours}} h {{Premium.minutes}} m
+							Premium: {{Premium.days}}d {{Premium.hours}}h {{Premium.minutes}}m
 							{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
 						</a>
 						<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  
@@ -101,8 +121,9 @@
 						{{/if}}
 						{{/if}}
 						{{/if}}
+						</div>
 
-							</div>
+						
     					{{!-- register_login --}}
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
@@ -184,7 +205,7 @@
 		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
 		<div class="search">
-			<form action="/search" method="POST" id='frmSearch2'>
+			<form action="/search" method="POST">
 				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
@@ -227,8 +248,8 @@
 								<div class="container">
 									<div class="row">
 										<div class="col">
-											<div class="home_slider_content">
-												<div class="home_slider_item_title">
+											<div class="home_slider_content" style="background-color: rgba(0, 0, 0, 0.685); padding: 20px;">
+												<div class="home_slider_item_title" >
 													<a href="/detail/{{Url}}">{{Title}}</a>
 												</div>
 												<div class="home_slider_item_link">
@@ -333,6 +354,13 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="/public/js/custom.js"></script>
 <script>
     // For the thumbnail demo! :]
+
+function onClickMenu(){
+	document.getElementById("menu").classList.toggle("change");
+	document.getElementById("nav").classList.toggle("change");
+	
+	document.getElementById("menu-bg").classList.toggle("change-bg");
+}
 
 var count = 1
 setTimeout(demo, 500)

@@ -17,7 +17,7 @@ const accountModel = require('../models/account.model');
 const router = express.Router();
 
 const printPdf = async(htmlPage)=>{
-    console.log('Starting: Generating PDF Process, Kindly wait ..');
+    // //.log('Starting: Generating PDF Process, Kindly wait ..');
 	/** Launch a headleass browser */
 	const browser = await puppeteer.launch();
 	/* 1- Ccreate a newPage() object. It is created in default browser context. */
@@ -37,16 +37,12 @@ const printPdf = async(htmlPage)=>{
 	});
 	/* 4- Cleanup: close browser. */
 	await browser.close();
-	console.log('Ending: Generating PDF Process');
+	// //.log('Ending: Generating PDF Process');
 	return pdf;
 }
 
-
-
 // Trang index
 router.get('/',async function (req, res) {
-
-
 
     let IsLogin = false;
     let IsAccountPremium = true;
@@ -83,8 +79,11 @@ router.get('/',async function (req, res) {
     const listSliderPost = await postModel.SliderPost();
 
 
+    
 
-    //console.log(listTreding);
+   
+
+
 
     for(let i = 0; i < listTreding.length; i++)
     {
@@ -260,177 +259,54 @@ router.get('/premium/register', restrict, async function(req, res){
         const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
         premium = getTimeBetweenDate(dt_now, dt_exp);
     }
+    
     return res.render('vwPremium/register', {
         layout: false,
         time: time,
         isSubscriber: isSubscriber,
         Premium: premium,
         err: req.flash('error'),
-        success: req.flash('success')
+        success: req.flash('success'),
+        retUrl: req.query.retUrl
     })
 })
 
 router.post('/premium/register', restrict,async function(req, res){
     const username = req.body.Username;
     const list = await accountModel.singUsername_Expired(username);
-        if (list.length === 0){
-            return res.redirect('/');
-        }
-        const user = list[0];
+    if (list.length === 0){
+        return res.redirect('/');
+    }
+    const user = list[0];
 
-        if (user.DateExpired)
+    if (user.DateExpired)
+    {
+        const dt_exp = new Date(moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
+        const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
+        user.premium = getTimeBetweenDate(dt_now, dt_exp);
+    }
+
+    var date_expired = moment().add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
+
+    if (user.premium)
+    {
+        if (!user.premium.Notvalue)
         {
-            const dt_exp = new Date(moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
-            const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
-            user.premium = getTimeBetweenDate(dt_now, dt_exp);
+            date_expired = moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss').add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
         }
+    }   
+    const entity = {
+        Id: user.Id,
+        DateExpired: date_expired
+    }
+    req.session.authAccount.DateExpired = date_expired;
 
-        var date_expired = moment().add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
+    await accountModel.patch(entity);
 
-        if (user.premium)
-        {
-            if (!user.premium.Notvalue)
-            {
-                date_expired = moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss').add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
-            }
-        }   
-            
-        const entity = {
-            Id: user.Id,
-            DateExpired: date_expired
-        }
-
-     await accountModel.patch(entity);
-
-    return res.redirect('/');
+    const returnURL = req.body.returnUrl || '/';
+    return res.redirect(returnURL);
 })
 
-
-router.get('/detail/premium/:Url', restrict, async function(req, res){
-
-
-    const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-    if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
-        && res.locals.lcAuthUser.TypeAccount === 1)
-        return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
-
-    const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-
-
-    if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-        return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
-
-
-
-    const url = req.params.Url;
-    const rows = await postModel.single(url);
-
-    const post = rows[0];
-    const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
-    const listRandomSidebar = await postModel.postRandomSideBar();
-    const listFutureEvent = await postModel.furuteEvents();
-    
-    const listPostTags = await postModel.postTags();
-    
-
-    const listTag = await tagModel.tagByIdPost(post.Id);
-    const listComment = await commentModel.commentByIdPost(post.Id);
-    const countComment = listComment.length;
-    for(let i = 0; i < postRandom.length; i++)
-    {
-        postRandom[i].DatetimePost = moment(postRandom[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
-    }
-    for(let i = 0; i < listRandomSidebar.length; i++)
-    {
-        listRandomSidebar[i].DatetimePost = moment(listRandomSidebar[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
-    }
-    for(let i = 0; i < listFutureEvent.length; i++)
-    {
-        listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
-    }
-
-    res.render('vwPost/detailPost', {
-        layout: 'detailpost',
-        post,
-        listTag,
-        postRandom,
-        listComment,
-        countComment,
-        emptyPostRandom: postRandom.length === 0,
-        listPostTags,
-        listRandomSidebar,
-        listFutureEvent,
-        IsLogin: true,
-        IsAccountPremium: true,
-        emptyFutureEvent: listFutureEvent.length === 0,
-        helpers:{
-            load_list_tags: function(context, Id, options)
-            {
-                let ret = "";
-                let count = 0;
-                for(let i = 0; i < context.length; i++)
-                {
-                    //console.log(context[i].Id);
-                    //console.log(context[i]);
-                    if(context[i].IdPost === Id && count < 3)
-                    {
-                        ret = ret + options.fn(context[i]);
-                        count++;
-                    }
-                }
-                return ret;
-            },
-            loadListRandomSideBar_1: function(context, options)
-            {
-                let ret = "";
-                for(let i = 0; i < 4; i++)
-                {
-                    ret = ret + options.fn(context[i]);
-                }
-                return ret;
-            }
-            ,
-            loadListRandomSideBar_2: function(context, options)
-            {
-                let ret = "";
-                for(let i = 4; i < 8; i++)
-                {
-                    ret = ret + options.fn(context[i]);
-                }
-                return ret;
-            }
-            ,
-            loadListRandomSideBar_3: function(context, options)
-            {
-                let ret = "";
-                for(let i = 8; i < 12; i++)
-                {
-                    ret = ret + options.fn(context[i]);
-                }
-                return ret;
-            },
-            convertMonth: function(value)
-            {
-                     if(value == 1) return "Jan";
-                else if(value == 2) return "Feb";
-                else if(value == 3) return "Mar";
-                else if(value == 4) return "Apr";
-                else if(value == 5) return "May";
-                else if(value == 6) return "Jun";
-                else if(value == 7) return "Jul";
-                else if(value == 8) return "Aug";
-                else if(value == 9) return "Sep";
-                else if(value == 10) return "Oct";
-                else if(value == 11) return "Nov";
-                else if(value == 12) return "Dec";
-                else return "?";
-            }
-        }
-    })
-
-
-
-});
 
 
 router.get('/detail/:Url', async function(req, res){
@@ -448,7 +324,7 @@ router.get('/detail/:Url', async function(req, res){
         return res.redirect('/');
     }
 
-    
+
     const retURL = `/detail/${url}`;
     if(posts_cmt[0].IsPremium === 1){
         if (!req.session.isAuthenticated){
@@ -457,13 +333,11 @@ router.get('/detail/:Url', async function(req, res){
         else
         {
             const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-            if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
-                && res.locals.lcAuthUser.TypeAccount === 1)
-                   {
-                       return res.redirect(`/premium/register?retUrl=${retURL}`);
-                   }
-            const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-        
+            if(!req.session.authAccount.DateExpired && res.locals.lcAuthUser.TypeAccount === 1)
+            {
+                return res.redirect(`/premium/register?retUrl=${retURL}`);
+            }
+            const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
         
             if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
             {
@@ -473,27 +347,8 @@ router.get('/detail/:Url', async function(req, res){
         }
     }
 
-
-
-
-    
     const rows = await postModel.single(url);
     const post = rows[0];
-
-
-
-
-    //     const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-//     if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
-//         && res.locals.lcAuthUser.TypeAccount === 1)
-//         return res.redirect(`/premium/register?retUrl=${req.originalUrl}`);
-
-//     const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-
-
-//     if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-//    
-
     
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
@@ -504,6 +359,10 @@ router.get('/detail/:Url', async function(req, res){
     // const countComment = listComment.length;
 
     const listRandomSidebar = await postModel.postRandomSideBar();
+
+
+    // //.log(listRandomSidebar);
+
     const listFutureEvent = await postModel.furuteEvents();
 
     for(let i = 0; i < postRandom.length; i++)
@@ -535,6 +394,9 @@ router.get('/detail/:Url', async function(req, res){
     
     let IsLogin = false;
     let IsAccountPremium = true;
+    
+    // console.log(req.session.authAccount.DateExpired);
+    
     if(!req.session.isAuthenticated)
     {
         IsLogin = false;
@@ -543,19 +405,31 @@ router.get('/detail/:Url', async function(req, res){
     else {
         IsLogin = true;
 
-
         const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
-            && res.locals.lcAuthUser.TypeAccount === 1)
-                IsAccountPremium = false;
-        const dateEx =  moment(req.session.authAccount.DateExpired, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-    
+        if (!req.session.authAccount.DateExpired && res.locals.lcAuthUser.TypeAccount === 1)
+        {
+            // console.log(2);
+            IsAccountPremium = false;
+        }
+        const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
     
         if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-                IsAccountPremium = false;
-        
-    }
+        {
+            console.log(3);
+            IsAccountPremium = false;
+        }
+    }   
 
+    const entityPost = {
+        Id: post.Id,
+        Views: post.Views + 1
+    }
+    
+    ////.log(post.Id + ":" + post.Views);
+
+
+    await postModel.patch(entityPost);
+    
     res.render('vwPost/detailPost', {
         layout: 'detailpost',
         post,
@@ -582,8 +456,8 @@ router.get('/detail/:Url', async function(req, res){
                 let count = 0;
                 for(let i = 0; i < context.length; i++)
                 {
-                    //console.log(context[i].Id);
-                    //console.log(context[i]);
+                    // //.log(context[i].Id);
+                    // //.log(context[i]);
                     if(context[i].IdPost === Id && count < 3)
                     {
                         ret = ret + options.fn(context[i]);
@@ -643,7 +517,7 @@ router.get('/detail/:Url', async function(req, res){
 
 
 router.post('/post/comment/load', async function(req, res){
-    console.log(1);
+    // //.log(1);
     const url = req.body.url || "empty";
         const posts = await postModel.single_url_posts(url);
         if (posts.length === 0){
@@ -710,6 +584,7 @@ router.post('/post/comment/add', async function(req, res){
     
     return res.redirect(`/detail/${Url}#cmt`);
 })
+
 router.get('/search',async function(req, res){
 const ValueSearch = req.body.searchPost || req.query.Search;
 const page = +req.query.page || 1;
@@ -787,8 +662,7 @@ const page = +req.query.page || 1;
                 let count = 0;
                 for(let i = 0; i < context.length; i++)
                 {
-                    //console.log(context[i].Id);
-                    //console.log(context[i]);
+                   
                     if(context[i].IdPost === Id && count < 3)
                     {
                         ret = ret + options.fn(context[i]);
@@ -852,7 +726,6 @@ const page = +req.query.page || 1;
         SearchNotEmpty:ValueSearch.length !== 0,
         Search:ValueSearch,
     })
-    // console.log(req.query.Search);
 });
 
 router.post('/search',async function(req, res){
@@ -932,8 +805,6 @@ router.post('/search',async function(req, res){
                 let count = 0;
                 for(let i = 0; i < context.length; i++)
                 {
-                    //console.log(context[i].Id);
-                    //console.log(context[i]);
                     if(context[i].IdPost === Id && count < 3)
                     {
                         ret = ret + options.fn(context[i]);
@@ -997,12 +868,10 @@ router.post('/search',async function(req, res){
         SearchNotEmpty:ValueSearch.length !== 0,
         Search:ValueSearch,
     })
-    // console.log(req.query.Search);
 });
 
 router.get('/ExportPdf/', async function(req, res){
         const IdPost = +req.query.id;
-        // console.log(IdPost);
         const content = await postModel.singleById(IdPost);
         const PdfFile = await printPdf(content[0].Content_Full);
         res.setHeader('Content-disposition', 'attachment; filename=' + content[0].Url + '.pdf');

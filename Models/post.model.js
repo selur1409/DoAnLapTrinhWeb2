@@ -63,10 +63,11 @@ module.exports = {
         return db.load(`SELECT count(*) as 'Number' FROM ${TBL_POSTS} WHERE IsDelete = 0`)   
     },
     trending: function () {
-        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL' 
+        return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL'
                         from ${TBL_POSTS} p, information i, postdetails pd, categories_sub cb 
                         where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
-                        AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2
+                        AND p.DatetimePost <= NOW() AND DATE_ADD(p.DatetimePost, INTERVAL 7 DAY) >= NOW()  
+                        AND p.IsDelete = 0 AND p.IdStatus = 2
                         ORDER BY p.Views DESC LIMIT 4`);
     },
     mostview: function () {
@@ -96,9 +97,9 @@ module.exports = {
     },
     postRandomByCategories: function (idCat, idPost) {
                         return db.load(`select p.Id, p.Title, p.Url, i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL'   
-                        from ${TBL_POSTS} p, accounts a, information i, postdetails pd, categories_sub cb  
-                        where a.Id = i.IdAccount AND p.Id = pd.IdPost AND cb.Id = p.IdCategories
-                        AND pd.IdAccount = a.Id AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2 AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
+                        from ${TBL_POSTS} p, information i, postdetails pd, categories_sub cb  
+                        where p.Id = pd.IdPost AND cb.Id = p.IdCategories and pd.IdAccount = i.IdAccount
+                        AND p.DatetimePost <= NOW() AND p.IsDelete = 0  AND p.IdStatus = 2 AND p.IdCategories = ${idCat} AND p.Id != ${idPost}
                         ORDER BY RAND() LIMIT 5`);
     },
     postRandomSideBar: function () {
@@ -151,9 +152,9 @@ module.exports = {
                         `);
     },
     single: function (url) {
-        return db.load(`SELECT p.*, i.Nickname, i.Avatar AS 'AvatarWriter', i.IdAccount, pd.IsPremium
-                        FROM posts p, postdetails pd, information i
-                        WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount
+        return db.load(`SELECT p.*, i.Nickname, i.Avatar AS 'AvatarWriter', i.IdAccount, pd.IsPremium, cb.Name, cb.Url AS 'CatURL'
+                        FROM posts p, postdetails pd, information i, categories_sub cb
+                        WHERE p.Id = pd.IdPost AND pd.IdAccount = i.IdAccount AND cb.Id = p.IdCategories
                         AND p.Url =  '${url}'`);
     },
     singleById: function (id) {
@@ -196,7 +197,7 @@ module.exports = {
                         WHERE tp.IdPost = ${idPost} and tp.IdTag = t.Id`);
     },
     LoadPostBySearch:(Limit, Offset, Value)=>{
-        return db.load(`SELECT p.Id, p.Url, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar, p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Nickname, cb.Name, cb.Url as 'CatURL'
+        return db.load(`SELECT p.Id, p.Url, p.Title, p.Content_Summary, p.Content_Full, p.DatePost, p.Avatar, p.Views, p.DatetimePost, p.IdCategories, p.IdStatus, inf.Nickname, cb.Name, cb.Url as 'CatURL', pd.IsPremium
         FROM posts p, postdetails pd, information inf, categories_sub cb 
         WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = inf.IdAccount AND p.IdCategories = cb.Id AND p.IdStatus = 2
         LIMIT ${Limit} OFFSET ${Offset}`);

@@ -1,62 +1,5 @@
-{{#section 'css'}}
-<link rel="stylesheet" href="../../public/css/comment.css">
-{{/section}}
-{{#section 'js'}}
-<script src="https://code.jquery.com/jquery-3.5.0.js"></script>
-<script language="javascript">
-    function load_ajax() {
-        $.ajax({
-            url: "/post/comment/load",
-            type: "post",
-            dataType: "text",
-            data: {
-                number: $('#Number').val(),
-                url: $('#Url').val()
-            },
-            success: function (result) {
-                loadSuccess(result);
-            }
-        });
-    }
-    function loadSuccess(data) {
-		console.log(data);
-        const dt = JSON.parse(data);
-        console.log(dt);
-        var rs = $('#media-list');
-        $('#Number').val(`${dt.number}`);
-        if (dt.more === false){
-            $('#more').hide();
-        }
-        for (d of dt.listComment) {
-            var avt = d.Avatar;
-            if (avt === null){
-                avt = "NoAvatar.png";
-            }
-            rs.append(`
-            <li class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object img-circle"
-                        src="/public/img/Avatar/${avt}"
-                        alt="Profile">
-                </a>
-                <div class="media-body">
-                    <div class="well well-lg">
-                        <h4 class="media-heading text-uppercase reviews">${d.Name}</h4>
-                        <span class="media-date text-uppercase reviews list-inline">
-                            Lúc ${d.DatetimeComment} 
-                        </span>
-                        <p class="media-comment">
-                            ${d.Content}
-                        </p>                      
-                        <br>
-                    </div>
-                </div>
-            </li>
-            `);
-        }
-    }
-</script>
-{{/section}}
+
+
 
 <div class="page_content">
 	<div class="container">
@@ -72,8 +15,7 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a
-								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -93,34 +35,31 @@
 						{{{this.post.Content_Full}}}
 						<!-- Post Tags -->
 						<div class="post_tags">
-							<ul>
-								{{#each this.listTag}}
-								<li class="post_tag"><a href="/tag/{{TagName}}">{{Name}}</a></li>
-								{{/each}}
-							</ul>
+							<div>Tags:
+								<ul>
+									{{#each this.listTag}}
+									<li class="post_tag"><a href="/tag/{{TagName}}">{{Name}}</a></li>
+									{{/each}}
+								</ul>
+							</div>
 						</div>
 
-						{{#if this.post.IsPremium}}
-							<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-								data-value={{this.post.Id}} id="btnExport" href="">Export pdf
-							</a>
-						{{else}}  <!-- Post normal -->
-								{{#if IsLogin}}
-										{{#if IsAccountPremium}}
-											<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-												data-value={{this.post.Id}} id="btnExport" href="">Export pdf
-											</a>
-										{{else}}
-												<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-													href="/premium/register?retUrl=/detail/{{this.post.Url}}/">Export pdf
-												</a>
-										{{/if}}
-									
-								{{else}}
+						<div style="margin-top: 20px;">Download Post:</div>
+						{{#if IsLogin}}
+								{{#if IsAccountPremium}}
 									<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-										href="/account/login?retUrl=/detail/{{this.post.Url}}/">Export pdf
+										data-value={{this.post.Id}} id="btnExport" href="">Export pdf
 									</a>
+								{{else}}
+										<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+											href="/premium/register?retUrl=/detail/{{this.post.Url}}">Export pdf
+										</a>
 								{{/if}}
+							
+						{{else}}
+							<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+								href="/account/login?retUrl=/detail/{{this.post.Url}}">Export pdf
+							</a>
 						{{/if}}
 
 						
@@ -131,8 +70,7 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a
-								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -146,7 +84,7 @@
 						</div>
 					</div>
 
-					<!-- Similar Posts -->
+					<!-- Related Articles -->
 					<div class="similar_posts">
 						<div class="post_comment_title">Related Articles</div>
 						<div class="grid clearfix">
@@ -163,14 +101,22 @@
 							<div class="owl-item">
 								{{#each this.postRandom}}
 								<!-- Small Card With Image -->
-								<div class="card card_default card_small_with_image grid-item">
+
+								{{#if IsPremium}}
+									<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+								{{else}}
+									<div class="card card_default card_small_with_image grid-item">
+								{{/if}}
 									<img class="card-img-top" src="../..{{Avatar}}" alt="">
 									<div class="card-body">
-										<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a>
-										</div>
+
+										{{#if IsPremium}}
+										<div class="card-title card-title-small"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a></div>
+										{{else}}
+										<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+										{{/if}}
 										<p class="card-text"></p>{{Content_Summary}}</p>
-										<small class="post_meta"><a
-												href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+										<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
 										<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a
 												style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
 										{{#load_list_tags ../listPostTags Id}}
@@ -182,106 +128,14 @@
 								{{/each}}
 							</div>
 							{{/if}}
-						</div>
-
-									
-						</div>
+						</div>								
 					</div>
-					{{!-- bình luận bài viết --}}
-							<div class="container" id="cmt">
-								<div class="row">
-									<div class="col-sm-10 col-sm-offset-1" id="logout">
-										<div class="page-header">
-											<h3 class="reviews">Recent Comments <span class="badge badge-danger">{{empty}}</span> </h3>
-										</div>
-										<div class="comment-tabs">
-											<ul class="nav nav-tabs" id="myTab" role="tablist">
-												<li class="nav-item" role="presentation">
-													<a class="nav-link active" href="#comments-list" role="tab" data-toggle="tab">
-														<h4 class="reviews text-capitalize">Comments</h4>
-													</a></li>
-												<li class="nav-item" role="presentation">
-													<a class="nav-link" href="#add-comment" role="tab" data-toggle="tab">
-														<h4 class="reviews text-capitalize">Add comment</h4>
-													</a>
-												</li>
-											</ul>
-											<div class="tab-content">
-												<div class="tab-pane active" id="comments-list">
-													{{#unless empty}}
-													Chưa có bình luận
-													{{else}}
-													<ul class="media-list" id="media-list">
-														{{#each listComment}}
-														<li class="media">
-															<a class="pull-left" href="#">
-																<img class="media-object img-circle" src="/public/img/Avatar/{{#if Avatar}}{{Avatar}}{{else}}NoAvatar.png{{/if}}"
-																	alt="profile">
-															</a>
-															<div class="media-body">
-																<div class="well well-lg">
-																	<h4 class="media-heading reviews">{{Name}}</h4>
-																	<span class="media-date text-uppercase reviews list-inline">
-																		Lúc {{DatetimeComment}}
-																	</span>
-																	<p class="media-comment">
-																		{{Content}}
-																	</p>
-																	{{#if Img}}
-																	<img class="media-comment" src="/public/img/comment/{{Img}}" alt="Images">
-																	{{/if}}
-																	<br>
-																</div>
-															</div>
-														</li>
-														{{/each}}
-													</ul>
-													<input type="hidden" id="Number" value="1">
-													<input type="hidden" id="Url" value="{{post.Url}}">
-													{{#if more}}													
-													<button class="btn btn-primary btn-sm btn-block" id="more" onclick="load_ajax()"><i
-															class="fas fa-sync"></i>
-														Old Comment</button>
-													{{/if}}
-													{{/unless}}
-												</div>
-												<div class="tab-pane avtive" id="add-comment">
-													<form method="post" class="form-horizontal" id="commentForm" role="form">
-														<input type="hidden" name="IdPost" value="{{post.Id}}">
-														<input type="hidden" name="Url" value="{{post.Url}}">
+					
 
-														<div class="form-group">
-															<label for="email" class="col-sm-2 control-label">Comment</label>
-															<div class="col-sm-10">
-																<textarea class="form-control" name="Content" id="addComment"
-																	rows="5"></textarea>
-															</div>
-														</div>
-														<div class="form-group">
-															<div class="col-sm-offset-2 col-sm-10">
-																<button class="btn btn-success btn-circle text-uppercase" type="submit" 
-																	formaction="/post/comment/add"
-																	id="submitComment"><span class="glyphicon glyphicon-send"></span> Summit
-																	comment
-																</button>
-															</div>
-														</div>
-													</form>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-							{{!-- /bình luận bài viết --}}
-							<br>
-							<br>
-							<hr>				
-				</div>
-				<div class="load_more">
-					<div id="load_more" class="load_more_button text-center trans_200">Load More</div>
+					<br>		
 				</div>
 			</div>
+
 
 			<!-- Sidebar -->
 
@@ -331,123 +185,74 @@
 									<!-- Top Stories Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_1 this.listRandomSidebar}}
-										{{#if IsPremium}}
-										<div class="side_post">
-											<a href="/detail/premium/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<div class="side_post">
-											<a href="/detail/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_1}}
 									</div>
 
 									<!-- Top Stories Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_2 this.listRandomSidebar}}
-										{{#if IsPremium}}
-										<div class="side_post">
-											<a href="/detail/premium/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<div class="side_post">
-											<a href="/detail/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_2}}
 									</div>
 
 									<!-- Top Stories Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_3 this.listRandomSidebar}}
-										{{#if IsPremium}}
-										<div class="side_post">
-											<a href="/detail/premium/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<div class="side_post">
-											<a href="/detail/{{Url}}">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_image">
-														<div><img src="{{Avatar}}" alt=""></div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_3}}
 									</div>
-
 
 								</div>
 							</div>
@@ -512,148 +317,81 @@
 
 									{{else}}
 
+									<!-- Future Events Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_1 this.listFutureEvent}}
-										{{#if IsPremium}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_1}}
 									</div>
 
 									<!-- Future Events Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_2 this.listFutureEvent}}
-										{{#if IsPremium}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_2}}
 									</div>
 
 									<!-- Future Events Slider Item -->
 									<div class="owl-item">
 										{{#loadListRandomSideBar_3 this.listFutureEvent}}
-										{{#if IsPremium}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
 													</div>
-													<div class="side_post_content">
-														<div class="side_post_title"><span
-																style="color: red;">{{Title}}</span></div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{else}}
-										<!-- Future Events Post -->
-										<div class="side_post">
-											<a href="/">
-												<div
-													class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div
-														class="event_date d-flex flex-column align-items-center justify-content-center">
-														<div class="event_day">{{dayEvent}}</div>
-														<div class="event_month">
-															{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-													</div>
-													<div class="side_post_content">
-														<div class="side_post_title">{{Title}}</div>
-														<small
-															class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-													</div>
-												</div>
-											</a>
-										</div>
-										{{/if }}
+												</a>
+											</div>
 										{{/loadListRandomSideBar_3}}
 									</div>
+
 									{{/if}}
 
 								</div>
@@ -667,6 +405,7 @@
 		</div>
 	</div>
 </div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js">
 	import { saveAs } from 'file-saver';

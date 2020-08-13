@@ -294,7 +294,7 @@ section
 
 .main_nav
 {
-	margin-left: 46px;
+	margin-left: 30px;
 }
 .main_nav ul li
 {
@@ -916,7 +916,7 @@ section
 }
 .post_tag:not(:last-child)
 {
-	margin-right: 6px;
+	margin-right: 1px;
 }
 .post_tag a
 {

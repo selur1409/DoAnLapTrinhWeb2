@@ -7,87 +7,72 @@
 
 				<div class="col-lg-9">
 					<div class="main_content">
-
 						<!-- Blog Section - What's Treding -->
-
 						<div class="blog_section">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
 								<div class="section_title">What's Treding</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
-
-
 									{{#if this.emptyTreding}}
-										<div class="side_post">
-											<a href="/">
-												<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-													<div class="side_post_title">Non Post</div>
-												</div>
-											</a>
-										</div>
+									<div class="side_post">
+										<a href="/">
+											<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+												<div class="side_post_title">Non Post</div>
+											</div>
+										</a>
+									</div>
 									{{else}}
 										<div class="owl-item">
 											{{#load_Post1 this.Treding}}
 
 												<!-- Largest Card With Image -->
-												
 												{{#if IsPremium}}
 														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+												{{else}}
+														<div class="card card_largest_with_image grid-item">	
+												{{/if }}
 															<img class="card-img-top" src="{{Avatar}}" alt="">
 															<div class="card-body">
-																<div class="card-title"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp; <i class="fas fa-crown"></i></a></div>
+																<div class="card-title">
+																	{{#if IsPremium}}
+																		<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>  
+																			&nbsp; <i class="fas fa-crown"></i>
+																		</a>
+																	{{else}}
+																		<a href="/detail/{{Url}}">{{Title}}</a>
+																	{{/if }}
+																</div>	
 																<p class="card-text">{{Content_Summary}}</p>
 																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
 																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
 															</div>
 														</div>
-												{{else}}
-														<div class="card card_largest_with_image grid-item">
-															<img class="card-img-top" src="{{Avatar}}" alt="">
-															<div class="card-body">
-																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
-																<p class="card-text">{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>												
-															</div>
-														</div>
-												{{/if }}
-
-												
 											{{/load_Post1}}
 
-
-											<!-- Sidebar Post -->
+											<!-- Small Card With Image -->
 											{{#load_Post2 this.Treding}}
-												{{#if IsPremium}}
-													<!-- Small Card With Image -->
+													
+													{{#if IsPremium}}
 													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+													{{else}}
+													<div class="card card_default card_small_with_image grid-item">
+													{{/if }}
 														<img class="card-img-top" src="{{Avatar}}" alt="">
 														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/{{Url}}">
-																<span style="color: red;">{{Title}}</span>  
-																&nbsp;<i class="fas fa-crown"></i></a>
+															<div class="card-title card-title-small">
+																{{#if IsPremium}}
+																	<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>&nbsp;<i class="fas fa-crown"></i></a>
+																{{else}}
+																	<a href="/detail/{{Url}}">{{Title}}</a>
+																{{/if }}
 															</div>
 															<p class="card-text"></p>{{Content_Summary}}</p>
 															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
 															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>
 														</div>
 													</div>
-													{{else}}
-													<!-- Small Card With Image -->
-													<div class="card card_default card_small_with_image grid-item">
-														<img class="card-img-top" src="{{Avatar}}" alt="">
-														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-															<p class="card-text"></p>{{Content_Summary}}</p>
-															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>
-														</div>
-													</div>
-												{{/if }}
-
-												
+													
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -117,57 +102,50 @@
 									{{else}}
 										<div class="owl-item">
 											{{#load_Post1 this.MostView}}
-												<!-- Largest Card With Image -->	
+												<!-- Largest Card With Image -->
 												{{#if IsPremium}}
 														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-															<img class="card-img-top" src="{{Avatar}}" alt="">
-															<div class="card-body">
-																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-																<p class="card-text">{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>		
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>											
-															</div>
-														</div>
 												{{else}}
-														<div class="card card_largest_with_image grid-item">
+														<div class="card card_largest_with_image grid-item">	
+												{{/if }}
 															<img class="card-img-top" src="{{Avatar}}" alt="">
 															<div class="card-body">
-																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																<div class="card-title">
+																	{{#if IsPremium}}
+																		<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a>
+																	{{else}}
+																		<a href="/detail/{{Url}}">{{Title}}</a>
+																	{{/if }}
+																</div>
 																<p class="card-text">{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>		
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>											
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
+																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
 															</div>
 														</div>
-												{{/if }}
-
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.MostView}}
 												<!-- Small Card With Image -->
 												{{#if IsPremium}}
-													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-														<img class="card-img-top" src="{{Avatar}}" alt="">
-														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-															<p class="card-text"></p>{{Content_Summary}}</p>
-															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
-														</div>
-													</div>
 													{{else}}
-													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item">
+													{{/if }}
 														<img class="card-img-top" src="{{Avatar}}" alt="">
 														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<div class="card-title card-title-small">
+																{{#if IsPremium}}
+																	<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>&nbsp;<i class="fas fa-crown"></i></a>
+																{{else}}
+																	<a href="/detail/{{Url}}">{{Title}}</a>
+																{{/if }}
+															</div>
 															<p class="card-text"></p>{{Content_Summary}}</p>
 															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
+															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>
 														</div>
 													</div>
-												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -198,55 +176,50 @@
 										<div class="owl-item">
 											{{#load_Post1 this.PostNew}}
 												<!-- Largest Card With Image -->
-													{{#if IsPremium}}
-															<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-																<img class="card-img-top" src="{{Avatar}}" alt="">
-																<div class="card-body">
-																	<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-																	<p class="card-text">{{Content_Summary}}</p>
-																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>		
-																	<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>											
+													<!-- Largest Card With Image -->
+												{{#if IsPremium}}
+														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+												{{else}}
+														<div class="card card_largest_with_image grid-item">	
+												{{/if }}
+															<img class="card-img-top" src="{{Avatar}}" alt="">
+															<div class="card-body">
+																<div class="card-title">
+																	{{#if IsPremium}}
+																		<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a>
+																	{{else}}
+																		<a href="/detail/{{Url}}">{{Title}}</a>
+																	{{/if }}
 																</div>
+																<p class="card-text">{{Content_Summary}}</p>
+																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
+																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
 															</div>
-													{{else}}
-															<div class="card card_largest_with_image grid-item">
-																<img class="card-img-top" src="{{Avatar}}" alt="">
-																<div class="card-body">
-																	<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
-																	<p class="card-text">{{Content_Summary}}</p>
-																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
-																	<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>												
-																</div>
-															</div>
-													{{/if }}
+														</div>
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.PostNew}}
 												<!-- Small Card With Image -->
-												{{#if IsPremium}}
-													<!-- Small Card With Image -->
+													{{#if IsPremium}}
 													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-														<img class="card-img-top" src="{{Avatar}}" alt="">
-														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-															<p class="card-text"></p>{{Content_Summary}}</p>
-															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
-														</div>
-													</div>
 													{{else}}
-													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item">
+													{{/if }}
 														<img class="card-img-top" src="{{Avatar}}" alt="">
 														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<div class="card-title card-title-small">
+																{{#if IsPremium}}
+																	<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>&nbsp;<i class="fas fa-crown"></i></a>
+																{{else}}
+																	<a href="/detail/{{Url}}">{{Title}}</a>
+																{{/if }}
+															</div>
 															<p class="card-text"></p>{{Content_Summary}}</p>
 															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
+															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>
 														</div>
 													</div>
-												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -277,54 +250,49 @@
 										<div class="owl-item">
 											{{#load_Post1 this.CatPostNew}}
 												<!-- Largest Card With Image -->
+												<!-- Largest Card With Image -->
 												{{#if IsPremium}}
 														<div class="card card_largest_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-															<img class="card-img-top" src="{{Avatar}}" alt="">
-															<div class="card-body">
-																<div class="card-title"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-																<p class="card-text">{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>			
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>										
-															</div>
-														</div>
 												{{else}}
-														<div class="card card_largest_with_image grid-item">
+														<div class="card card_largest_with_image grid-item">	
+												{{/if }}
 															<img class="card-img-top" src="{{Avatar}}" alt="">
 															<div class="card-body">
-																<div class="card-title"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																<div class="card-title">
+																	{{#if IsPremium}}
+																		<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a>
+																	{{else}}
+																		<a href="/detail/{{Url}}">{{Title}}</a>
+																	{{/if }}
+																</div>
 																<p class="card-text">{{Content_Summary}}</p>
 																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>	
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>												
+																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
 															</div>
 														</div>
-												{{/if }}
 											{{/load_Post1}}
 
 											<!-- Sidebar Post -->
 											{{#load_Post2 this.CatPostNew}}
 												{{#if IsPremium}}
-													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-														<img class="card-img-top" src="{{Avatar}}" alt="">
-														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-															<p class="card-text"></p>{{Content_Summary}}</p>
-															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
-														</div>
-													</div>
 													{{else}}
-													<!-- Small Card With Image -->
 													<div class="card card_default card_small_with_image grid-item">
+													{{/if }}
 														<img class="card-img-top" src="{{Avatar}}" alt="">
 														<div class="card-body">
-															<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+															<div class="card-title card-title-small">
+																{{#if IsPremium}}
+																	<a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>&nbsp;<i class="fas fa-crown"></i></a>
+																{{else}}
+																	<a href="/detail/{{Url}}">{{Title}}</a>
+																{{/if }}
+															</div>
 															<p class="card-text"></p>{{Content_Summary}}</p>
 															<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>						
+															<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a href="/category/{{CatURL}}">{{Name}}</a></li>
 														</div>
 													</div>
-												{{/if }}
 											{{/load_Post2}}
 										</div>
 									{{/if}}
@@ -462,93 +430,75 @@
 								<div class="sidebar_slider_container">
 									<div class="owl-carousel owl-theme sidebar_slider_vid">
 
+										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_1 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start" >
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_1}}
 										</div>
 
+										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_2 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_2}}
 										</div>
 
+										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_3 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_3}}
 										</div>
 
@@ -606,125 +556,84 @@
 										<!-- Future Events Slider Item -->
 
 										{{#if emptyFutureEvent}}
-											<p>NOT FUTURE EVVENTS</p>
+											<p>NOT FUTURE EVENTS</p>
 
 										{{else}}
-
+											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_1 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_1}}
 											</div>
 
 											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_2 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_2}}
 											</div>
 
 											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_3 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_3}}
 											</div>
+
 										{{/if}}
 
 

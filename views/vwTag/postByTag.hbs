@@ -17,7 +17,7 @@
 								<div class="grid clearfix">
                                         {{#if this.emptyPost}}
                                             <div class="side_post">
-                                                <a href="post.html">
+                                                <a href="/">
                                                     <div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
                                                         <div class="side_post_title">Non Post</div>
                                                     </div>
@@ -26,33 +26,27 @@
                                         {{else}}
                                             <div class="owl-item">
                                                 {{#each this.listPost}}
+
                                                     {{#if IsPremium}}
 														<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-															<img class="card-img-top" src="../..{{Avatar}}" alt="">
-															<div class="card-body">
-																<div class="card-title card-title-small"><a href="/detail/premium/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
-																<p class="card-text"></p>{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
-																{{#load_list_tags ../listPostTags Id}}
-																	<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a href="/tag/{{TagName}}">{{Name}}</a></li>
-																{{/load_list_tags}}
-															</div>
-                                                    	</div>
-													{{else}}
+													{{else}}	
 														<div class="card card_default card_small_with_image grid-item">
+													{{/if }}	
 															<img class="card-img-top" src="../..{{Avatar}}" alt="">
 															<div class="card-body">
-																<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
-																<p class="card-text"></p>{{Content_Summary}}</p>
-																<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-																<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+																{{#if IsPremium}}
+																	<div class="card-title card-title-small"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
+																{{else}}	
+																	<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+																{{/if }}
+																	<p class="card-text"></p>{{Content_Summary}}</p>
+																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
+																	<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
 																{{#load_list_tags ../listPostTags Id}}
 																	<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a href="/tag/{{TagName}}">{{Name}}</a></li>
 																{{/load_list_tags}}
 															</div>
                                                     	</div>
-													{{/if }}
                                                 {{/each}}
                                             </div>
                                         {{/if}}
@@ -161,95 +155,75 @@
 										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_1 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start" >
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_1}}
 										</div>
 
 										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_2 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start" >
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_2}}
 										</div>
 
 										<!-- Top Stories Slider Item -->
 										<div class="owl-item">
 											{{#loadListRandomSideBar_3 this.listRandomSidebar}}
-												{{#if IsPremium}}
-													<div class="side_post">
-														<a href="/detail/premium/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start" >
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+												<div class="side_post">
+													<a href="/detail/{{Url}}">
+														<div
+															class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+															<div class="side_post_image">
+																<div><img src="{{Avatar}}" alt=""></div>
+															</div>
+															<div class="side_post_content">
+																{{#if IsPremium}}
 																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
-															</div>
-														</a>
-													</div>
-												{{else}}
-													<div class="side_post">
-														<a href="/detail/{{Url}}">
-															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																<div class="side_post_image"><div><img src="{{Avatar}}" alt=""></div></div>
-																<div class="side_post_content">
+																{{else}}
 																	<div class="side_post_title">{{Title}}</div>
-																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																</div>
+																{{/if }}
+																<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 															</div>
-														</a>
-													</div>
-												{{/if }}
+														</div>
+													</a>
+												</div>
 											{{/loadListRandomSideBar_3}}
 										</div>
+										
 									</div>
 								</div>
 							</div>
@@ -304,122 +278,81 @@
 											<p>NOT FUTURE EVVENTS</p>
 
 										{{else}}
-
+											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_1 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_1}}
 											</div>
 
 											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_2 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_2}}
 											</div>
 
 											<!-- Future Events Slider Item -->
 											<div class="owl-item">
 												{{#loadListRandomSideBar_3 this.listFutureEvent}}
-													{{#if IsPremium}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+													<!-- Future Events Post -->
+													<div class="side_post">
+														<a href="/">
+															<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+																<div class="event_date d-flex flex-column align-items-center justify-content-center">
+																	<div class="event_day">{{dayEvent}}</div>
+																	<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
 																</div>
-															</a>
-														</div>
-													{{else}}
-														<!-- Future Events Post -->
-														<div class="side_post">
-															<a href="/">
-																<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-																	<div class="event_date d-flex flex-column align-items-center justify-content-center">
-																		<div class="event_day">{{dayEvent}}</div>
-																		<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-																	</div>
-																	<div class="side_post_content">
-																		<div class="side_post_title">{{Title}}</div>
-																		<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-																	</div>
+																<div class="side_post_content">
+																	{{#if IsPremium}}
+																	<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+																	{{else}}
+																	<div class="side_post_title">{{Title}}</div>
+																	{{/if }}
+																	<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 																</div>
-															</a>
-														</div>
-													{{/if }}
+															</div>
+														</a>
+													</div>
 												{{/loadListRandomSideBar_3}}
 											</div>
+
 										{{/if}}
 
 									</div>
