@@ -1,5 +1,5 @@
 const accountModel = require('../../models/account.model');
-const typeModel = require('../../models/typeaccount.model');
+const typeModel = require('../../Models/typeaccount.model');
 const moment = require('moment');
 const bcrypt = require('bcryptjs');
 const config = require('../../config/default.json');
@@ -13,8 +13,8 @@ const mkdirp = require('mkdirp');
 const path = require('path');
 const check = require('../../js/check');
 const {filesize} = require('../../config/default.json');
-const categoryModel = require('../../models/category.model');
-const editoraccountModel = require('../../models/editoraccount.model');
+const categoryModel = require('../../Models/category.model');
+const editoraccountModel = require('../../Models/editoraccount.model');
 const { resolveSoa } = require('dns');
 const pagination_js = require('../../js/pagination');
 const {restrict} = require('../../middlewares/auth.mdw');

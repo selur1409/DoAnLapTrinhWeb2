@@ -1,5 +1,5 @@
 const express = require('express');
-const editorModel = require('../models/editor.model');
+const editorModel = require('../Models/editor.model');
 const moment = require('moment');
 const router = express.Router();
 const { restrict } = require('../middlewares/auth.mdw');

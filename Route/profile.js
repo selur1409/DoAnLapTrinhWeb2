@@ -7,7 +7,7 @@ let upload = multer();
 const moment = require('moment'); moment.locale("vi");
 const fs = require('fs');
 const path = require('path');
-const db = require('../models/Writer');
+const db = require('../Models/Writer');
 const account = require('../models/account.model');
 const {restrict, referer} = require('../middlewares/auth.mdw');
 
@@ -61,7 +61,7 @@ router.get('/Profile/:TypeAccount', Authories, async (req, res, next)=>{
             Male:AccountProfile[0].Sex === 0,
             Female:AccountProfile[0].Sex === 1,
             Avatar:AccountProfile[0].Avatar,
-            AvatarEmpty:AccountProfile[0].Avatar === 'null',
+            AvatarEmpty:AccountProfile[0].Avatar === 'null' || AccountProfile[0].Avatar === null,
             NumberOfPost:NumberOfPost[0].Number,
             IsActiveProfile:true,
             IsNotUser:TypeAccount !== 1,
@@ -121,7 +121,7 @@ router.post('/Profile/', Authories, async (req, res, next)=>{
                     Email = req.body.Email;
                     Phone = req.body.Phone; 
                     Nickname = req.body.Nickname;
-                    Sex = req.body.Sex === true ? 0 : 1;
+                    Sex = req.body.Sex === 'true' ? 0 : 1;
                     Avatar = req.file !== undefined ? IdAccount + path.extname(req.file.originalname) : res.locals.lcAuthUser.Avatar;   
                     const CheckMail = await db.CheckMailIsExists(IdAccount, Email);
                     const RegexEmail = new RegExp('^[A-Za-z0-9_.]{4,32}@([a-zA-Z0-9]{2,12})(.[a-zA-Z]{2,12})+$');

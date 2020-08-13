@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../models/Writer');
+const db = require('../Models/Writer');
 const flash = require('express-flash');
 const config = require('../config/default.json');
 const bcrypt = require('bcryptjs');
@@ -11,8 +11,8 @@ const fs = require('fs');
 const path = require('path');
 const account = require('../models/account.model');
 const {restrict, referer} = require('../middlewares/auth.mdw');
-const { route } = require('./account.route');
-const { CountFB } = require('../models/Writer');
+const { route } = require('../route/account.route');
+const { CountFB } = require('../Models/Writer');
 const { query } = require('express');
 const {mark_url} = require('../public/js/ConvertTitleToUrl');
 
@@ -160,7 +160,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
         const [Tags, Categories, Categories_sub] = await Promise.all([db.LoadTag(), db.LoadCategories(), db.LoadSubCategories()]);
         res.setHeader("Access-Control-Allow-Origin", "*");
         res.setHeader("Access-Control-Allow-Headers", "X-Requested-With");
-        res.render('vwWriter/Post', {
+        res.render('vwWriter/post', {
             layout: 'homewriter',
             ListTag: Tags,
             ListCat: Categories,
@@ -201,7 +201,7 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
         const IdStatus = 4;
         const IdPost = -1;
         const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
-        const DateTimePost = null;
+        const DateTimePost = '0000-00-00 00:00:00';
         const View = 0;
         const Avatar = null;
         const IdCategories = req.body.Categories;
@@ -710,7 +710,7 @@ router.post('/Update', restrict, Authories, upload.fields([]), async (req,res, n
         const IsDelete = 0;
         const IdStatus = 4;
         const DatePost = moment().format('YYYY-MM-DD HH:mm:ss');
-        const DateTimePost = null;
+        const DateTimePost = '0000-00-00 00:00:00';
         const View = 0;
         let Avatar = null;
         const IdCategories = req.body.Categories;
