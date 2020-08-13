@@ -121,7 +121,7 @@ router.post('/Profile/', Authories, async (req, res, next)=>{
                     Email = req.body.Email;
                     Phone = req.body.Phone; 
                     Nickname = req.body.Nickname;
-                    Sex = req.body.Sex === true ? 0 : 1;
+                    Sex = req.body.Sex === 'true' ? 0 : 1;
                     Avatar = req.file !== undefined ? IdAccount + path.extname(req.file.originalname) : res.locals.lcAuthUser.Avatar;   
                     const CheckMail = await db.CheckMailIsExists(IdAccount, Email);
                     const RegexEmail = new RegExp('^[A-Za-z0-9_.]{4,32}@([a-zA-Z0-9]{2,12})(.[a-zA-Z]{2,12})+$');
