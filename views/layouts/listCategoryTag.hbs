@@ -15,6 +15,16 @@
 	<link rel="stylesheet" type="text/css" href="/public/styles/category.css">
 	<link rel="stylesheet" type="text/css" href="/public/styles/category_responsive.css">
 	<link rel="stylesheet" href="/public/styles/menu.css">
+	<style>
+	.scroll{
+		display:block;
+		padding:5px;
+		margin-top:5px;
+		width:100%;
+		height:400px;
+		overflow:auto;
+	}
+	</style>
 </head>
 <body>
 
@@ -174,13 +184,100 @@
 	<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
 		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
+
+		{{!-- Phần login/register/logout/premium --}}
+		<div class="menu_lg">
+			{{!-- Đã đăng nhập hay chưa --}}
+			{{#if lcIsAuthenticated}}
+			{{!-- Kiểm tra xem có phải là độc giả hay không --}}
+			{{#if isSubscriber}}
+			{{!-- Kiểm tra xem độc giả còn hạn premium hay không --}}
+			{{#if Premium}} 
+			{{#if Premium.Notvalue}}
+			<a class="btn btn-warning btn-sm" href="premium/register" role="button" title="Premium">
+			<i class="fab fa-vuejs"></i>
+			Hết hạn
+			<i class="fas fa-plus-square"></i>
+			</a>
+			{{else}}
+			<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
+			<i class="fab fa-vuejs"></i>
+				Premium: {{Premium.days}}d {{Premium.hours}}h {{Premium.minutes}}m
+				{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
+			</a>
+			<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  
+			<i class="fas fa-plus"></i>
+			</a>
+			{{/if}}
+			{{else}}
+			{{!-- Chưa đăng kí premium lần nào --}}
+			<b>Experient premium?</b>
+			<a class="btn btn-warning btn-sm" href="premium/register" role="button" title="Premium">
+				<i class="fab fa-vuejs"></i>
+				Buy now
+				<i class="fas fa-plus-square"></i>
+			</a>
+			{{/if}}
+			{{/if}}
+			{{/if}}
+
+			{{!-- register_login --}}
+			<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
+			{{#if lcIsWriter}}
+			<a class="nav-link" href="/writer/Writer" role="button"
+			aria-haspopup="true" aria-expanded="false">
+			<b>WRITER</b>
+			</a>
+			{{/if}}
+			{{#if lcIsEditor}}
+			<a class="nav-link" href="/editor" role="button"
+			aria-haspopup="true" aria-expanded="false">
+			<b>EDITOR</b>
+			</a>	
+			{{/if}}								
+			{{#if lcIsAdmin}}	
+			<a class="nav-link" href="/admin" role="button"
+			aria-haspopup="true" aria-expanded="false">
+			<b>ADMINISTRATOR</b>
+			</a>	
+			{{/if}}
+			{{#if lcIsAuthenticated}}
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+				aria-haspopup="true" aria-expanded="false">
+				<i class="fa fa-user" aria-hidden="true"></i>
+				Welcome, <b>{{lcAuthUser.Name}}</b>!
+				</a>
+				<div class="dropdown-menu bg-info" aria-labelledby="navbarDropdown">
+				<a class="dropdown-item bg-info" href="/account/Profile/{{lcAuthUser.TypeAccount}}">
+					<i class="fa fa-user" aria-hidden="true"></i>
+					Account Profile
+				</a>							
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item bg-info" href="javascript: $('#frmLogout').submit()">
+					<i class="fa fa-sign-out" aria-hidden="true"></i>
+					Logout
+				</a>
+				</div>
+			{{else}}
+				<a class="nav-link" href="/account/login">
+				<i class="fa fa-sign-in" aria-hidden="true"></i>
+				Login
+				</a>
+				<a class="nav-link" href="/account/register">
+				<i class="fa fa-user-plus" aria-hidden="true"></i>
+				Register
+				</a>
+			{{/if}}
+			{{!-- /register_login --}}
+		</div>
+
 		<div class="search">
 			<form action="/search" method="POST">
 				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
-		<nav class="container-fluid">
+		<nav class="container-fluid scroll">
 			{{#each lcListMenu}}
 			<div class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
