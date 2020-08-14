@@ -1,5 +1,14 @@
 {
     "mysql": {
+      "host": "localhost",
+      "port": 3306,
+      "user": "root",
+      "password": "",
+      "database": "news",
+      "connectionLimit": 10,
+      "multipleStatements": true
+    },
+    "mysql_cloud": {
       "host": "bzs3goj1xfhxz2ygmedo-mysql.services.clever-cloud.com",
       "port": 3306,
       "user": "u9ah0l4ifjtunewo",
