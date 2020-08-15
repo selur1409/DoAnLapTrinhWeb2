@@ -7,11 +7,89 @@ const config = require('../config/default.json');
 
 const router = express.Router();
 
+
+// function complete text
+function completeTextTitle(listPost, endTitle)
+{
+    var tmpTitle = listPost[i].Title;
+    listPost[i].Title = listPost[i].Title.substring(0, endTitle);
+    for(k = endTitle; k < endTitle + 10; k++)
+    {
+        if(tmpTitle.charAt(k) != ' ')
+        {
+            listPost[i].Title = listPost[i].Title + tmpTitle.charAt(k);
+        }
+        else
+        {
+            break;
+        }
+    }
+    listPost[i].Title = listPost[i].Title + "...";
+}
+// function complete summary
+function completeTextSummary(listPost, end)
+{
+    var tmpSummary= listPost[i].Content_Summary;
+    listPost[i].Content_Summary = listPost[i].Content_Summary.substring(0, end);
+    for(k = end; k < end + 5; k++)
+    {
+        if(tmpSummary.charAt(k) != ' ')
+        {
+            listPost[i].Content_Summary = listPost[i].Content_Summary + tmpSummary.charAt(k);
+        }
+        else
+        {
+            break;
+        }
+    }
+    listPost[i].Content_Summary = listPost[i].Content_Summary + "...";
+}
+// function shorten of post
+function shortenText(listPost, end, endTitle)
+{
+    for(i = 0; i < listPost.length; i++)
+    {
+        if(listPost[i].Content_Summary.length > end)
+        {
+            completeTextSummary(listPost, end);
+        }
+    }
+
+    for(i = 1; i < listPost.length; i++)
+    {
+        if(listPost[i].Title.length > endTitle)
+        {
+            completeTextTitle(listPost, endTitle);
+        }
+    }
+}
+// function shorten title
+function shortenTitle(listPost, end)
+{
+    for(i = 0; i < listPost.length; i++)
+    {
+        if(listPost[i].Title.length > end)
+        {
+            completeTextTitle(listPost, end);
+        }
+    }
+}
+
 // Trang index
 router.get('/',async function (req, res) {
     const listTag = await tagModel.all();
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
+
+     // shorten randomPost, futureEvent
+     const end_Random = 20;
+     const end_FutureEvent = 35;
+ 
+     // random
+     shortenTitle(listRandomSidebar, end_Random);
+     // futureEvent
+     shortenTitle(listFutureEvent, end_FutureEvent);
+
 
 
     for(let i = 0; i < listRandomSidebar.length; i++)
@@ -127,6 +205,22 @@ router.get('/:TagName',async function(req, res){
     const listPostTags = await postModel.postTags();
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
+
+
+     // shorten context summary, title
+     const end_Cotent_Summary = 110;
+     const end_Title = 65;
+     shortenText(listPost, end_Cotent_Summary, end_Title);
+ 
+ 
+     // shorten randomPost, futureEvent
+     const end_Random = 20;
+     const end_FutureEvent = 35;
+ 
+     // random
+     shortenTitle(listRandomSidebar, end_Random);
+     // futureEvent
+     shortenTitle(listFutureEvent, end_FutureEvent);
 
 
     for(let i = 0; i < listRandomSidebar.length; i++)

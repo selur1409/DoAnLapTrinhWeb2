@@ -1,0 +1,25 @@
+.content-summary{
+	/* white-space: nowrap;  */
+	height: 80px; 
+	overflow: hidden;
+	/* text-overflow: ellipsis; */
+}
+
+.card-tag{
+	height: 90px; 
+	overflow: hidden;
+}
+
+.title-post{
+	height: 65px;
+	overflow: hidden; 
+}
+
+.list-tag{
+	height: 60px;
+	overflow: hidden; 
+}
+
+.side_post{
+	margin-top: 20px;
+}

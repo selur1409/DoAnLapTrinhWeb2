@@ -40,6 +40,75 @@ const printPdf = async(htmlPage)=>{
 	return pdf;
 }
 
+// function complete text
+function completeTextTitle(listPost, endTitle)
+{
+    var tmpTitle = listPost[i].Title;
+    listPost[i].Title = listPost[i].Title.substring(0, endTitle);
+    for(k = endTitle; k < endTitle + 10; k++)
+    {
+        if(tmpTitle.charAt(k) != ' ')
+        {
+            listPost[i].Title = listPost[i].Title + tmpTitle.charAt(k);
+        }
+        else
+        {
+            break;
+        }
+    }
+    listPost[i].Title = listPost[i].Title + "...";
+}
+// function complete summary
+function completeTextSummary(listPost, end)
+{
+    var tmpSummary= listPost[i].Content_Summary;
+    listPost[i].Content_Summary = listPost[i].Content_Summary.substring(0, end);
+    for(k = end; k < end + 5; k++)
+    {
+        if(tmpSummary.charAt(k) != ' ')
+        {
+            listPost[i].Content_Summary = listPost[i].Content_Summary + tmpSummary.charAt(k);
+        }
+        else
+        {
+            break;
+        }
+    }
+    listPost[i].Content_Summary = listPost[i].Content_Summary + "...";
+}
+// function shorten of post
+function shortenText(listPost, end, endTitle)
+{
+    for(i = 0; i < listPost.length; i++)
+    {
+        if(listPost[i].Content_Summary.length > end)
+        {
+            completeTextSummary(listPost, end);
+        }
+    }
+
+    for(i = 1; i < listPost.length; i++)
+    {
+        if(listPost[i].Title.length > endTitle)
+        {
+            completeTextTitle(listPost, endTitle);
+        }
+    }
+}
+// function shorten title
+function shortenTitle(listPost, end)
+{
+    for(i = 0; i < listPost.length; i++)
+    {
+        if(listPost[i].Title.length > end)
+        {
+            completeTextTitle(listPost, end);
+        }
+    }
+}
+
+
+
 // Trang index
 router.get('/',async function (req, res) {
 
@@ -80,6 +149,9 @@ router.get('/',async function (req, res) {
 
 
 
+   
+
+
     const listMostView = await postModel.mostview();
     const listPostNew = await postModel.postnew();
     const listCatPostNew = await postModel.categorypostnew();
@@ -90,11 +162,25 @@ router.get('/',async function (req, res) {
     const listSliderPost = await postModel.SliderPost();
 
 
-    
+    // shorten context summary, title
+    const end_Cotent_Summary = 110;
+    const end_Title = 65;
+    shortenText(listTreding, end_Cotent_Summary, end_Title);
+    shortenText(listMostView, end_Cotent_Summary, end_Title);
+    shortenText(listPostNew, end_Cotent_Summary, end_Title);
+    shortenText(listCatPostNew, end_Cotent_Summary, end_Title);
 
-   
 
-
+    // shorten sliderPost, randomPost, futureEvent
+    const end_Slider = 60;
+    const end_Random = 20;
+    const end_FutureEvent = 35;
+    // slider
+    shortenTitle(listSliderPost, end_Slider);
+    // random
+    shortenTitle(listRandomSidebar, end_Random);
+    // futureEvent
+    shortenTitle(listFutureEvent, end_FutureEvent);
 
     for(let i = 0; i < listTreding.length; i++)
     {
@@ -394,6 +480,17 @@ router.get('/detail/:Url', async function(req, res){
     }
     post.DatetimePost = moment(post.DatetimePost, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
     
+
+    // shorten randomPost, futureEvent
+    const end_Random = 20;
+    const end_FutureEvent = 35;
+
+    // random
+    shortenTitle(listRandomSidebar, end_Random);
+    // futureEvent
+    shortenTitle(listFutureEvent, end_FutureEvent);
+
+
     // Bình luận bài viét
     const offset = (+req.body.number || 0) * config.pagination.limit;
     
