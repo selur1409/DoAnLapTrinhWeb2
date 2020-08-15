@@ -412,7 +412,8 @@ section
 
 .hamburger
 {
-	display: none;
+	/* display: none; */
+	margin-left: 20px;
 	cursor: pointer;
 }
 .hamburger i
@@ -525,7 +526,7 @@ section
 .menu .search
 {
 	width: 100%;
-	margin-bottom: 67px;
+	margin-bottom: 40px;
 }
 .search
 {

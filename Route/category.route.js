@@ -145,10 +145,11 @@ router.get('/:Url',async function(req, res){
     {
         listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    
+    const nameCat = await categoryModel.getNameByUrlCategory(ValueSearch);
     res.render('vwCategory/postByCategory', {
         layout: 'listCategoryTag',
         listPost,
+        nameCategory: nameCat[0].Name || '',
         emptyPost: listPost.length === 0,
         listPostTags,
         listRandomSidebar,
@@ -160,8 +161,6 @@ router.get('/:Url',async function(req, res){
                 let count = 0;
                 for(let i = 0; i < context.length; i++)
                 {
-                    //console.log(context[i].Id);
-                    //console.log(context[i]);
                     if(context[i].IdPost === Id && count < 3)
                     {
                         ret = ret + options.fn(context[i]);

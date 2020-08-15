@@ -1,35 +1,36 @@
 {
-    "mysql": {
-      "host": "bzs3goj1xfhxz2ygmedo-mysql.services.clever-cloud.com",
-      "port": 3306,
-      "user": "u9ah0l4ifjtunewo",
-      "password": "VEqdhf47ozXUVNgQI9g2",
-      "database": "bzs3goj1xfhxz2ygmedo",
-      "connectionLimit": 10,
-      "multipleStatements": true
+  "mysql": {
+    "host": "localhost",
+    "port": 3306,
+    "user": "root",
+    "password": "",
+    "database": "news",
+    "connectionLimit": 10,
+    "multipleStatements": true
+  },
+  "authentication":{
+    "saltRounds": 8
+  },
+  "momentDefault":{
+    "Duration": {
+      "Year": "Y",
+      "Quarters": "Q",
+      "Months": "M",
+      "Weeks": "w",
+      "Days": "d",
+      "Hours": "h",
+      "Minutes": "m",
+      "Seconds": "s",
+      "Miliseconds": "ms"
     },
-    "authentication":{
-      "saltRounds": 8
-    },
-    "momentDefault":{
-      "Duration": {
-        "Year": "Y",
-        "Quarters": "Q",
-        "Months": "M",
-        "Weeks": "w",
-        "Days": "d",
-        "Hours": "h",
-        "Minutes": "m",
-        "Seconds": "s",
-        "Miliseconds": "ms"
-      },
-      "NumberTime": 7
-    },
-    "addMinutes": 10080,
-    "pagination": {
-      "limit": 4,
-      "limitPaginationLinks":5,
-      "limitPostPage": 3
-    },
-    "filesize": 1048576
+    "NumberTime": 7
+  },
+  "addMinutes": 10080,
+  "pagination": {
+    "limit": 4,
+    "limitPaginationLinks":5,
+    "limitPostPage": 3
+  },
+  "filesize": 1048576,
+  "dayTrend": 7
 }

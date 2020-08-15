@@ -11,7 +11,7 @@
 
 						<div class="category">
 							<div class="section_panel d-flex flex-row align-items-center justify-content-start">
-								<div class="section_title">List post for category {{this.listPost.Name}}</div>
+								<div class="section_title">List post for category: {{nameCategory}}</div>
 							</div>
 							<div class="section_content">
 								<div class="grid clearfix">
@@ -40,8 +40,12 @@
 																	<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
 																{{/if }}
 																	<p class="card-text"></p>{{Content_Summary}}</p>
-																	<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-																	<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+																	<small class="post_meta">
+																		<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
+																		<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
+																	</small>
+																	<i class="fa fa-th-list" aria-hidden="true"></i>Category &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+																	<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp; 
 																{{#load_list_tags ../listPostTags Id}}
 																	<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a href="/tag/{{TagName}}">{{Name}}</a></li>
 																{{/load_list_tags}}

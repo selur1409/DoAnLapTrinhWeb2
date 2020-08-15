@@ -35,8 +35,10 @@
 						{{{this.post.Content_Full}}}
 						<!-- Post Tags -->
 						<div class="post_tags">
-							<div>Tags:
+							<div>
 								<ul>
+									<i class="fa fa-tags" aria-hidden="true"></i>
+									Tags: &nbsp;
 									{{#each this.listTag}}
 									<li class="post_tag"><a href="/tag/{{TagName}}">{{Name}}</a></li>
 									{{/each}}
@@ -116,9 +118,12 @@
 										<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
 										{{/if}}
 										<p class="card-text"></p>{{Content_Summary}}</p>
-										<small class="post_meta"><a href="#">{{Nickname}}</a><span>{{DatetimePost}}</span></small>
-										<li class="post_tag" style="background-color: rgb(173, 57, 57);"><a
-												style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+										<small class="post_meta">
+											<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
+											<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
+										</small>
+										<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+										<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
 										{{#load_list_tags ../listPostTags Id}}
 										<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
 												href="/tag/{{TagName}}">{{Name}}</a></li>
@@ -313,7 +318,7 @@
 								<div class="owl-carousel owl-theme sidebar_slider_events">
 
 									{{#if emptyFutureEvent}}
-									<p>NOT FUTURE EVVENTS</p>
+									<p>NOT FUTURE EVENTS</p>
 
 									{{else}}
 

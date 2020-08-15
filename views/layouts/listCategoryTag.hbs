@@ -26,6 +26,11 @@
 			<div class="row">
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
+
+						<div class="hamburger menu_mm">
+							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
+						</div>
+						
 						<div class="logo" style="margin-left: 20px;"><a href="/">avision</a></div>
 						<nav class="main_nav">
 							<menu>
@@ -160,9 +165,6 @@
 						
 						{{!-- /register_login --}}
 
-						<div class="hamburger ml-auto menu_mm">
-							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -180,20 +182,37 @@
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
+		
 		<nav class="container-fluid">
-			{{#each lcListMenu}}
 			<div class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						{{Name}}
+					<a class="nav-link item_Nav" href="/" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-home" aria-hidden="true"></i> &nbsp;
+						Home
 					</a>
-					<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
-						{{#each Sub}}
-							<a class="dropdown-item" href="/category/{{Url}}">{{Name}}</a>
-						{{/each}}
-					</div>
+					<a class="nav-link item_Nav" href="/category" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-th-list" aria-hidden="true"></i> &nbsp;
+						List Category
+					</a>
+					<a class="nav-link item_Nav" href="/tag" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-tags" aria-hidden="true"></i> &nbsp;
+						List Tag
+					</a>
+					<a class="nav-link item_Nav" href="#idPostTreding" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-diamond" aria-hidden="true"></i> &nbsp;
+						Top Treding
+					</a>
+					<a class="nav-link item_Nav" href="#idMostView" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-eye" aria-hidden="true"></i> &nbsp;
+						Top View
+					</a>
+					<a class="nav-link item_Nav" href="#idPostNew" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-plus-square" aria-hidden="true"></i> &nbsp;
+						Post New
+					</a>
+				
 			</div>
-			{{/each}}
 		</nav>
+
 	</div>
 
 	<!-- Home -->

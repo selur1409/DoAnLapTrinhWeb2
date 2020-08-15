@@ -53,6 +53,9 @@ module.exports = {
         WHERE IsDelete = 0 ORDER BY Name
         limit ${limit} offset ${offset}`);
     },
+    getNameByUrlCategory: function (url) {
+        return db.load(`SELECT Name FROM ${TBL_CATEGORIES_SUB} WHERE Url = '${url}'`);
+    },
     countAll: function () {
         return db.load(`SELECT count(*) as SoLuong
                         from (SELECT Id, Name, Url, Description FROM ${TBL_CATEGORIES_SUB} WHERE IsDelete = 0 

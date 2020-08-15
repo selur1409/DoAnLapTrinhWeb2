@@ -104,3 +104,7 @@ menuitem > menu > menuitem.hover > menu > menuitem{
    transform:translateX(0) translateY(0%);
    opacity: 1;
 }
+
+.item_Nav{
+   text-align: left;
+}

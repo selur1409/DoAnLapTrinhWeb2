@@ -32,23 +32,9 @@
 				<div class="col">
 					<div class="header_content d-flex flex-row align-items-center justify-content-start">
 
-						{{!-- <div id="menu-bar">
-							<div id="menu" onclick="onClickMenu()">
-								<div id="bar1" class="bar"></div>
-								<div id="bar2" class="bar"></div>
-								<div id="bar3" class="bar"></div>
-							</div>
-							<ul class="nav" id="nav">
-								<li><a href="#">Home</a></li>
-								<li><a href="#">About</a></li>
-								<li><a href="#">Blog</a></li>
-								<li><a href="#">Gallery</a></li>
-								<li><a href="#">Contact</a></li>
-							</ul>
+						<div class="hamburger menu_mm">
+							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
 						</div>
-						<div class="menu-bg" id="menu-bg"></div>
-						<script src="script.js"></script> --}}
-
 
 						<div class="logo" style="margin-left: 20px;"><a href="/">avision</a></div>
 						<nav class="main_nav">
@@ -81,14 +67,14 @@
 								<div class="temperature">+10°</div>
 								<img class="weather_icon" src="images/cloud.png" alt="">
 							</div> -->
-							<form action="/search" method="POST">
-								<input type="search" name="searchPost" class="header_search_input" required="required" placeholder="Type to Search...">
+							<form action="/search" method="GET">
+								<input type="search" name="Search" class="header_search_input" required="required" placeholder="Type to Search...">
 								<img class="header_search_icon" src="/public/images/search.png" alt="">
 							</form>							
 						</div>
 						
 						{{!-- Đã đăng nhập hay chưa --}}
-						<div class="ml-5">
+						<div class="ml-5" class="premium">
 							{{#if lcIsAuthenticated}}
 						{{!-- Kiểm tra xem có phải là độc giả hay không --}}
 						{{#if isSubscriber}}
@@ -190,9 +176,7 @@
 						
 						{{!-- /register_login --}}
 
-						<div class="hamburger ml-auto menu_mm">
-							<i class="fa fa-bars trans_200 menu_mm" aria-hidden="true"></i>
-						</div>
+						
 					</div>
 				</div>
 			</div>
@@ -204,26 +188,45 @@
 	<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
 		<div class="menu_close_container"><div class="menu_close"><div></div><div></div></div></div>
 		<div class="logo menu_mm"><a href="/">Avision</a></div>
+		
 		<div class="search">
-			<form action="/search" method="POST">
-				<input type="search" name="searchPost" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
+			<form action="/search" method="GET">
+				<input type="search" name="Search" class="header_search_input menu_mm" required="required" placeholder="Type to Search...">
 				<img class="header_search_icon menu_mm" src="/public/images/search_2.png" alt="">
 			</form>
 		</div>
+
 		<nav class="container-fluid">
-			{{#each lcListMenu}}
 			<div class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						{{Name}}
+					<a class="nav-link item_Nav" href="/" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-home" aria-hidden="true"></i> &nbsp;
+						Home
 					</a>
-					<div class="container-fluid dropdown-menu" aria-labelledby="navbarDropdown">
-						{{#each Sub}}
-							<a class="dropdown-item" href="/category/{{Url}}">{{Name}}</a>
-						{{/each}}
-					</div>
+					<a class="nav-link item_Nav" href="/category" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-th-list" aria-hidden="true"></i> &nbsp;
+						List Category
+					</a>
+					<a class="nav-link item_Nav" href="/tag" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-tags" aria-hidden="true"></i> &nbsp;
+						List Tag
+					</a>
+					<a class="nav-link item_Nav" href="#idPostTreding" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-diamond" aria-hidden="true"></i> &nbsp;
+						Top Treding
+					</a>
+					<a class="nav-link item_Nav" href="#idMostView" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-eye" aria-hidden="true"></i> &nbsp;
+						Top View
+					</a>
+					<a class="nav-link item_Nav" href="#idPostNew" id="navbarDropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<i class="fa fa-plus-square" aria-hidden="true"></i> &nbsp;
+						Post New
+					</a>
+				
 			</div>
-			{{/each}}
 		</nav>
+
+		
 	</div>
 	
 	<!-- Home -->
