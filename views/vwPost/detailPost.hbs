@@ -171,21 +171,25 @@
 									<div class="card-body">
 
 										{{#if IsPremium}}
-										<div class="card-title card-title-small"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a></div>
+										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a></div>
 										{{else}}
-										<div class="card-title card-title-small"><a href="/detail/{{Url}}">{{Title}}</a></div>
+										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}">{{Title}}</a></div>
 										{{/if}}
-										<p class="card-text"></p>{{Content_Summary}}</p>
+										<p class="card-text content-summary">{{Content_Summary}}</p>
 										<small class="post_meta">
 											<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
 											<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
 										</small>
 										<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
-										<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
-										{{#load_list_tags ../listPostTags Id}}
-										<li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
+										
+										<div class="list-tag">
+											<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
+											{{#load_list_tags ../listPostTags Id}}
+												<li	li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
 												href="/tag/{{TagName}}">{{Name}}</a></li>
-										{{/load_list_tags}}
+											{{/load_list_tags}}
+										</div>
+										
 									</div>
 								</div>
 								{{/each}}

@@ -485,11 +485,14 @@ router.get('/detail/:Url', async function(req, res){
     const end_Random = 20;
     const end_FutureEvent = 35;
 
-    // random
+    // random sidebar
     shortenTitle(listRandomSidebar, end_Random);
     // futureEvent
     shortenTitle(listFutureEvent, end_FutureEvent);
-
+    // shorten context summary, title related articles
+    const end_Cotent_Summary = 110;
+    const end_Title = 65;
+    shortenText(postRandom, end_Cotent_Summary, end_Title);
 
     // Bình luận bài viét
     const offset = (+req.body.number || 0) * config.pagination.limit;
@@ -705,8 +708,6 @@ router.get('/search',async function(req, res){
     const [listPost, Total] = await Promise.all([postModel.LoadPostBySearch(config.pagination.limitPostPage, offset, ValueSearch), postModel.CountPostSearch(ValueSearch)]);
     const nPages = Math.ceil(Total[0].Number / config.pagination.limitPostPage);
 
-
-    console.log(nPages);
 
     const page_items = [];
     let count = 0;
