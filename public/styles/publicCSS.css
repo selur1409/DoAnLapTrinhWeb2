@@ -41,3 +41,28 @@
 	border-radius: 0%;
 	font-size: 14px;
 }
+
+
+.img-resize{
+	/* height: 60vh;
+	object-fit: contain;  */
+}
+
+.post_body img{
+	object-fit: contain;
+}
+
+@media only screen and (max-width: 1199px)
+{
+	.post_body img{
+		width: 100%;
+	}
+}
+
+@media only screen and (max-width: 767px)
+{
+	.post_body img{
+		width: 100%;
+	}
+}
+
