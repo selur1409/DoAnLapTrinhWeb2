@@ -68,12 +68,15 @@ router.get('/',async function (req, res) {
 
     var listTreding = [];
     var numTrend = 0;
+    
+    var checkTrend = 0;
     do
     {
         numTrend = numTrend + config.dayTrend;
         listTreding = await postModel.trending(numTrend);
+        checkTrend = checkTrend + 1;
     }
-    while(listTreding.length < 4);
+    while(listTreding.length < 4 || checkTrend >= 10);
 
 
 

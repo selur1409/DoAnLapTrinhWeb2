@@ -23,6 +23,15 @@
       "Seconds": "s",
       "Miliseconds": "ms"
     },
+    "mysql_cloud": {
+      "host": "bzs3goj1xfhxz2ygmedo-mysql.services.clever-cloud.com",
+      "port": 3306,
+      "user": "u9ah0l4ifjtunewo",
+      "password": "VEqdhf47ozXUVNgQI9g2",
+      "database": "bzs3goj1xfhxz2ygmedo",
+      "connectionLimit": 10,
+      "multipleStatements": true
+    },
     "NumberTime": 7
   },
   "addMinutes": 10080,
