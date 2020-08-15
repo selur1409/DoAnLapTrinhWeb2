@@ -113,6 +113,7 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
     req.flash('error', `Error. You do not have permission to do this yet.`);
     return res.redirect('/editor');
   }
+  console.log(listCate);
   const idCate = +req.query.cate || listCate[0].IdCategories;
 
   const listCateSub = await editorModel.LoadCateSub(idCate);
@@ -541,6 +542,10 @@ router.get('/reviewPost/:Url', restrict, Authories, async function (req, res) {
   try {
     const url = req.params.Url;
     const list = await editorModel.LoadSinglePost(url);
+    if (list.length===0)
+    {
+      return res.redirect('/404');
+    }
     for (d of list) {
       d.DatePost = moment(d.DatePost).format('Do MMMM YYYY, HH:mm:ss');
     }

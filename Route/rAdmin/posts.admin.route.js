@@ -210,15 +210,16 @@ module.exports = (router) => {
 
                     //Update src for img tag in Full Content 
                     const NewTagImg = '/public/img/ImagePost/' + Result.insertId;
-                    const regexTest =  RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
+                    const regexTest =  RegExp(`(<img.*?src=")(.*temp*)(\/[^">]*?")(.*?>)`, 'g');
+                    const regexAvatar = RegExp(`(.*temp*)`);
                     const regex = RegExp(`(<img.*?src=")([^">]*)(\/[^">]*?")(.*?>)`, 'g');
                     let NewFullContent;
                     let NewAvatar;
 
                     if (FullContent.match(regexTest)) {
-                        NewFullContent = FullContent.replace(regex, `$1${NewTagImg}$3$4`);
-                        if (tagsImg[0].match(regexTest)) {
-                            NewAvatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
+                        NewFullContent = FullContent.replace(regexTest, `$1${NewTagImg}$3$4`);
+                        if (fullSrcImg[0].match(regexAvatar)) {
+                            NewAvatar = fullSrcImg.length > 0 ? '/../public/img/ImagePost/' + Result.insertId + '/' + tagsImg[0] : null;
                         }
                         else {
                             NewAvatar = fullSrcImg.length > 0 ? fullSrcImg[0] : null;
@@ -399,9 +400,9 @@ module.exports = (router) => {
 
                     let TagsImg = getTagImg(FullContent);
                     let FullSrcImg = getFullSrcImg(FullContent)
-                    const regexTest = RegExp(`(<img.*?src=")([^">]|[public]*)(\/[^">]*?")(.*?>)`, 'g');
-                    if (TagsImg[0].match(regexTest)) {
-                        Avatar = tagsImg.length > 0 ? '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0] : null;
+                    const regexAvatar = RegExp(`(.*temp*)`);
+                    if (FullSrcImg[0].match(regexAvatar)) {
+                        Avatar = FullSrcImg.length > 0 ? '/../public/img/ImagePost/' + IdPost + '/' + TagsImg[0] : null;
                     }
                     else {
                         Avatar = FullSrcImg.length > 0 ? FullSrcImg[0] : null;
