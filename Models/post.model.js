@@ -147,7 +147,7 @@ module.exports = {
     },
     CountPostByCategory:(Value)=>{
         return db.load(`SELECT Count(*) AS Number FROM categories_sub cb, posts p
-                        WHERE cb.Id = p.IdCategories AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND cb.IsDelete = 0 
+                        WHERE cb.Id = p.IdCategories AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND cb.IsDelete = 0 AND p.IdStatus = 2
                         AND cb.Url =  '${Value}'
                         `);
     },
@@ -206,7 +206,7 @@ module.exports = {
     CountPostSearch:(Value)=>{
         return db.load(`SELECT Count(*) AS Number
         FROM posts p, postdetails pd, information inf
-        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = inf.IdAccount`);
+        WHERE MATCH(p.Title, p.Content_Summary, p.Content_Full) AGAINST ('${Value}' IN NATURAL LANGUAGE MODE) AND p.Id = pd.IdPost AND pd.IdAccount = inf.IdAccount AND p.IdStatus = 2`);
     },
 
     add: function (entity) {

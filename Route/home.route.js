@@ -606,8 +606,10 @@ router.get('/search',async function(req, res){
 
 
     const [listPost, Total] = await Promise.all([postModel.LoadPostBySearch(config.pagination.limitPostPage, offset, ValueSearch), postModel.CountPostSearch(ValueSearch)]);
-    const nPages = Math.ceil(Total[0].Number / config.pagination.limit);
+    const nPages = Math.ceil(Total[0].Number / config.pagination.limitPostPage);
 
+
+    console.log(nPages);
 
     const page_items = [];
     let count = 0;
@@ -637,11 +639,6 @@ router.get('/search',async function(req, res){
         }
         page_items.push(item);
     }
-
-
-
-
-
 
     const listPostTags = await postModel.postTags();
     const listRandomSidebar = await postModel.postRandomSideBar();
