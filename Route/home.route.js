@@ -741,6 +741,19 @@ router.get('/search',async function(req, res){
     const listRandomSidebar = await postModel.postRandomSideBar();
     const listFutureEvent = await postModel.furuteEvents();
 
+    // shorten context summary, title
+    const end_Cotent_Summary = 110;
+    const end_Title = 65;
+    shortenText(listPost, end_Cotent_Summary, end_Title);
+
+
+    // shorten randomPost, futureEvent
+    const end_Random = 20;
+    const end_FutureEvent = 35;
+    // random
+    shortenTitle(listRandomSidebar, end_Random);
+    // futureEvent
+    shortenTitle(listFutureEvent, end_FutureEvent);
 
     for(let i = 0; i < listRandomSidebar.length; i++)
     {

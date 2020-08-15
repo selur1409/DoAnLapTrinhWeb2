@@ -58,63 +58,63 @@
                                         {{/if}}
 								</div>
 
-
-								<div class="row justify-content-center">
-									<nav aria-label="...">
-										<ul class="pagination">
-											<li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-												<a class="page-link"
-													{{#if SearchNotEmpty}}href="/category/{{Url}}?page=1"
-													{{else}}href="/category/{{Url}}?page=1"
-													{{/if}} aria-label="Previous">
-													<span aria-hidden="true">FIRST</span>
-												</a>
-											</li>
-											<li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
-												<a class="page-link"
-													{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{prev_value}}"
-													{{else}}href="/category/{{Url}}?page={{prev_value}}"
-													{{/if}} aria-label="Previous">
-													<span aria-hidden="true">&laquo;</span>
-												</a>
-											</li>
-											{{#each this.page_items}}
-												{{#if isActive}}
-												<li class="page-item active" aria-current="page">
-													<span class="page-link">
-														{{value}}
-														<span class="sr-only">(current)</span>
-													</span>
-												</li>
-												{{else}}
-												<li class="page-item {{#if isDisabled}}disabled{{/if}}">
+								<div class="pagination-reinstall">
+									<div class="row justify-content-center">
+										<nav aria-label="...">
+											<ul class="pagination">
+												<li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
 													<a class="page-link"
-														{{#if ../SearchNotEmpty}}href="/category/{{../Url}}?page={{value}}"
-														{{else}}href="/category/{{../Url}}?page={{value}}"
-														{{/if}}>{{value}}</a>
+														{{#if SearchNotEmpty}}href="/category/{{Url}}?page=1"
+														{{else}}href="/category/{{Url}}?page=1"
+														{{/if}} aria-label="Previous">
+														<span aria-hidden="true">FIRST</span>
+													</a>
 												</li>
-												{{/if}}
-											{{/each}}
-											<li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-												<a class="page-link"
-													{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{next_value}}"
-													{{else}}href="/category/{{Url}}?page={{next_value}}"
-													{{/if}} aria-label="Next">
-													<span aria-hidden="true">&raquo;</span>
-												</a>
-											</li>
-											<li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
-												<a class="page-link"
-													{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{last}}"
-													{{else}}href="/category/{{Url}}?page={{last}}"
-													{{/if}} aria-label="Next">
-													<span aria-hidden="true">LAST</span>
-												</a>
-											</li>
-										</ul>
-									</nav>
+												<li class="page-item {{#unless can_go_prev}}disabled{{/unless}}">
+													<a class="page-link"
+														{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{prev_value}}"
+														{{else}}href="/category/{{Url}}?page={{prev_value}}"
+														{{/if}} aria-label="Previous">
+														<span aria-hidden="true">&laquo;</span>
+													</a>
+												</li>
+												{{#each this.page_items}}
+													{{#if isActive}}
+													<li class="page-item active" aria-current="page">
+														<span class="page-link">
+															{{value}}
+															<span class="sr-only">(current)</span>
+														</span>
+													</li>
+													{{else}}
+													<li class="page-item {{#if isDisabled}}disabled{{/if}}">
+														<a class="page-link"
+															{{#if ../SearchNotEmpty}}href="/category/{{../Url}}?page={{value}}"
+															{{else}}href="/category/{{../Url}}?page={{value}}"
+															{{/if}}>{{value}}</a>
+													</li>
+													{{/if}}
+												{{/each}}
+												<li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+													<a class="page-link"
+														{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{next_value}}"
+														{{else}}href="/category/{{Url}}?page={{next_value}}"
+														{{/if}} aria-label="Next">
+														<span aria-hidden="true">&raquo;</span>
+													</a>
+												</li>
+												<li class="page-item {{#unless can_go_next}}disabled{{/unless}}">
+													<a class="page-link"
+														{{#if SearchNotEmpty}}href="/category/{{Url}}?page={{last}}"
+														{{else}}href="/category/{{Url}}?page={{last}}"
+														{{/if}} aria-label="Next">
+														<span aria-hidden="true">LAST</span>
+													</a>
+												</li>
+											</ul>
+										</nav>
+									</div>
 								</div>
-
 
 
 								

@@ -219,7 +219,6 @@ router.get('/:Url',async function(req, res){
     // shorten randomPost, futureEvent
     const end_Random = 20;
     const end_FutureEvent = 35;
-
     // random
     shortenTitle(listRandomSidebar, end_Random);
     // futureEvent
