@@ -135,24 +135,24 @@ router.post('/login', async function (req, res) {
         return res.redirect('/account/login');
     }
 
-    //captcha
-    if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
-        /*return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});*/
-        req.flash('error', 'Please select captcha.');
-        return res.redirect('/account/login');
-    }
+    // //captcha
+    // if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+    //     /*return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});*/
+    //     req.flash('error', 'Please select captcha.');
+    //     return res.redirect('/account/login');
+    // }
 
-    const secretKey = '6LfNc78ZAAAAAE4eRpe5Myswh-Dd_CMLSDtPJpk8';
-    const verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
-    request(verificationUrl,function(error,response,body) {
-        body = JSON.parse(body);
-        // Success will be true or false depending upon captcha validation.
-        if(body.success !== undefined && !body.success) {
-            /*return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});*/
-            req.flash('error', 'Failed captcha verification.');
-            return res.redirect('/account/login');
-        }
-    });
+    // const secretKey = '6LfNc78ZAAAAAE4eRpe5Myswh-Dd_CMLSDtPJpk8';
+    // const verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
+    // request(verificationUrl,function(error,response,body) {
+    //     body = JSON.parse(body);
+    //     // Success will be true or false depending upon captcha validation.
+    //     if(body.success !== undefined && !body.success) {
+    //         /*return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});*/
+    //         req.flash('error', 'Failed captcha verification.');
+    //         return res.redirect('/account/login');
+    //     }
+    // });
 
     const rows = await accountModel.single(req.body.Username);
 
