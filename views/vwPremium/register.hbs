@@ -12,19 +12,14 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
 <body class="container text-center">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/">NEWS</a>
+  <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+  <a class="navbar-brand" href="/"><i class="fas fa-home"></i>HOME</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-      </li>
-
-    </ul>
+  <div class="collapse navbar-collapse " id="navbarSupportedContent">
+    <form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
     <ul class="nav navbar-light bg-light">
           {{#if lcIsAuthenticated}}
           <li class="nav-item dropdown">

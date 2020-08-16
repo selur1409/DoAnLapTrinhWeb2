@@ -20,17 +20,15 @@ function Authories(req, res, next) {
 
 router.get('/', restrict, Authories, async function (req, res) {
   const list = await editorModel.LoadCategoriesOfEditor(res.locals.lcAuthUser.Id);
-  var empty=false;
-  if(list.length===0)
-  {
-    empty=true;
+  var empty = false;
+  if (list.length === 0) {
+    empty = true;
   }
-  var countAll=0;
-  var temp=0;
-  for(c of list)
-  {
-    temp=await editorModel.CountPostByCate(c.Id);
-    countAll+=temp[0].total;
+  var countAll = 0;
+  var temp = 0;
+  for (c of list) {
+    temp = await editorModel.CountPostByCate(c.Id);
+    countAll += temp[0].total;
   }
   res.render('vwEditor/index', {
     list,
@@ -49,15 +47,15 @@ router.get('/pending', restrict, Authories, async function (req, res) {
     req.flash('error', `Error. You do not have permission to do this yet.`);
     return res.redirect('/editor');
   }
-  var countAll=0;
-  var temp=0;
-  for(c of listCate)
-  {
-    temp=await editorModel.CountPostByCate(c.Id);
-    countAll+=temp[0].total;
+  var countAll = 0;
+  var temp = 0;
+  for (c of listCate) {
+    temp = await editorModel.CountPostByCate(c.Id);
+    countAll += temp[0].total;
   }
   const idCate = +req.query.cate || listCate[0].IdCategories;
   const listCateSub = await editorModel.LoadCateSub(idCate);
+
   const idCateSub = +req.query.catesub || listCateSub[0].Id;
   const IdPostPending = 4;
   const page = +req.query.page || 1;
@@ -153,8 +151,15 @@ router.get('/accepted', restrict, Authories, async function (req, res) {
     p.cate = idCate;
     p.catesub = idCateSub;
   }
+  var countAll = 0;
+  var temp = 0;
+  for (c of list) {
+    temp = await editorModel.CountPostByCate(c.Id);
+    countAll += temp[0].total;
+  }
   res.render('vwEditor/listPostAccept', {
     page_items,
+    countAll,
     IsActiveAccepted: true,
     listPost: list,
     prev_value: page - 1,
@@ -211,8 +216,15 @@ router.get('/denied', restrict, Authories, async function (req, res) {
     p.cate = idCate;
     p.catesub = idCateSub;
   }
+  var countAll = 0;
+  var temp = 0;
+  for (c of list) {
+    temp = await editorModel.CountPostByCate(c.Id);
+    countAll += temp[0].total;
+  }
   res.render('vwEditor/listPostDeny', {
     listCate,
+    countAll,
     idCate,
     idCateSub,
     listCateSub,
@@ -542,8 +554,7 @@ router.get('/reviewPost/:Url', restrict, Authories, async function (req, res) {
   try {
     const url = req.params.Url;
     const list = await editorModel.LoadSinglePost(url);
-    if (list.length===0)
-    {
+    if (list.length === 0) {
       return res.redirect('/404');
     }
     for (d of list) {
