@@ -1,18 +1,18 @@
-.content-summary{
-	/* white-space: nowrap;  */
+/* .content-summary{
+	white-space: nowrap; 
 	height: 80px; 
 	overflow: hidden;
-	/* text-overflow: ellipsis; */
-}
-
-.card-tag{
-	height: 90px; 
-	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .title-post{
 	height: 65px;
 	overflow: hidden; 
+} */
+
+.card-tag{
+	height: 90px; 
+	overflow: hidden;
 }
 
 .list-tag{
@@ -87,18 +87,15 @@
 	padding: 0;
 	color: rgb(67, 37, 70);
 }
+
 .btnLogin:hover{
 	background-color: black;
 	color: yellow;
 }
 
 
-/* .btnCategory{
-	background-color: rgb(255, 255, 255);
-	color: rgba(77, 23, 77, 0.959);
+.nav-link:focus, .nav-link:hover {
+	background-color: black;
+	color: rgb(247, 247, 45);
+	text-decoration: none;
 }
-
-.btnCategory:hover{
-	background-color: rgb(255, 255, 255);
-	color: rgba(107, 55, 167, 0.959);
-} */
