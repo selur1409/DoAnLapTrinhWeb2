@@ -676,7 +676,7 @@ module.exports = (router) => {
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
         
-        if (!req.body.TimePost || isNaN(Date.parse(req.body.TimePost)))
+        if (!req.body.TimePost || isNaN(Date.parse(moment(req.body.TimePost, "DD-MM-YYYY").format('MM-DD-YYYY'))))
         {
             req.flash('error', 'Chưa chọn thời gian đăng bài.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
