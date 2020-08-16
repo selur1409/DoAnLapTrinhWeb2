@@ -135,17 +135,29 @@ router.get('/',async function (req, res) {
         
     }
 
+
+    // danh sách bài viet moi nhat
+    const listPostNew = await postModel.postnew();
     var listTreding = [];
     var numTrend = 0;
-    
     var checkTrend = 0;
-    do
+    if(listPostNew.length >= 4)
+    {
+        do
+        {
+            numTrend = numTrend + config.dayTrend;
+            listTreding = await postModel.trending(numTrend);
+            checkTrend = checkTrend + 1;
+        }
+        while(listTreding.length < 4 || checkTrend >= 4); // chay 12 tuan neu khong ra thi dung 
+    }
+    else // bai viet khong du thi chay 1 luot
     {
         numTrend = numTrend + config.dayTrend;
         listTreding = await postModel.trending(numTrend);
-        checkTrend = checkTrend + 1;
     }
-    while(listTreding.length < 4 || checkTrend >= 10);
+
+   
 
 
 
@@ -153,7 +165,7 @@ router.get('/',async function (req, res) {
 
 
     const listMostView = await postModel.mostview();
-    const listPostNew = await postModel.postnew();
+    
     const listCatPostNew = await postModel.categorypostnew();
     const listTag = await tagModel.listTagHome();
 

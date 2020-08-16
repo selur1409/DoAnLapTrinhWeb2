@@ -66,3 +66,29 @@
 	}
 }
 
+.btnLogin{
+	display: block;
+	width: 125px;
+	height: 40px;
+	background-color: rgb(221, 201, 184);
+	float: left;
+	line-height: 40px;
+	margin: 5px;
+	text-align: center;
+	padding: 0;
+	color: rgb(67, 37, 70);
+}
+.btnLogin:hover{
+	background-color: black;
+	color: yellow;
+}
+
+/* .btnCategory{
+	background-color: rgb(255, 255, 255);
+	color: rgba(77, 23, 77, 0.959);
+}
+
+.btnCategory:hover{
+	background-color: rgb(255, 255, 255);
+	color: rgba(107, 55, 167, 0.959);
+} */
