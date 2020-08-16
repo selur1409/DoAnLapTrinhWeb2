@@ -140,17 +140,32 @@ router.post('/Profile/', Authories, async (req, res, next)=>{
 
                         const IdAccount = res.locals.lcAuthUser.IdAccount;
 
-                        const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${Sex}`, `${IdAccount}`];
+                        
                         if (DOB > dt_now) {
                             res.json({ fail: 'Your birthday cannot be greater than current date' });
                         }
                         else {
-                            const result = await db.UpdateProfile(value);
-                            if (result.affectedRows === 0) {
-                                res.json({ fail: 'Your birthday cannot be greater than current date' });
+                            if (Nickname === undefined){
+                                const entity = {
+                                    Name, DOB, Email, Phone, Avatar, Sex, IdAccount
+                                }
+                                const result = await account.patchInfo_IdAccount(entity);
+                                if (result.affectedRows === 0) {
+                                    res.json({ fail: 'Your birthday cannot be greater than current date' });
+                                }
+                                else {
+                                    res.json({ success: "The change process is successful" });
+                                }
                             }
-                            else {
-                                res.json({ success: "The change process is successful" });
+                            else{
+                                const value = [`${Name}`, `${Nickname}`, `${DOB}`, `${Email}`, `${Phone}`, `${Avatar}`, `${Sex}`, `${IdAccount}`];
+                                const result = await db.UpdateProfile(value);
+                                if (result.affectedRows === 0) {
+                                    res.json({ fail: 'Your birthday cannot be greater than current date' });
+                                }
+                                else {
+                                    res.json({ success: "The change process is successful" });
+                                }
                             }
                         }
                     }

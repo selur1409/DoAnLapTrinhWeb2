@@ -89,6 +89,13 @@ module.exports = {
         delete entity.Id;
         return db.patch('information', entity, condition);
     },
+    patchInfo_IdAccount: function (entity) {
+        const condition = {
+          IdAccount: entity.IdAccount
+        }
+        delete entity.IdAccount;
+        return db.patch('information', entity, condition);
+    },
     del: function (id) {
         const condition = {
           Id: id
