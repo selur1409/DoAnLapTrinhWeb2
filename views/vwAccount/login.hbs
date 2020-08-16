@@ -78,6 +78,8 @@
             </div>
             <small id="rsPassword"></small>
           </div>
+          {{!-- captcha --}}
+          <div class="g-recaptcha" data-sitekey="6LfNc78ZAAAAAKrXI7f-BgvEMg7t0ekCghzxp1mg"></div><br>
           <div class="form-group d-flex">
 
             <div class="flex-fill ml-1">
@@ -110,6 +112,8 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  {{!-- for captcha --}}
+  <script src='https://www.google.com/recaptcha/api.js'></script>
   <script>
   $('#frmLoginAccount').on('submit', function (e) {
     // alert('submit called');
