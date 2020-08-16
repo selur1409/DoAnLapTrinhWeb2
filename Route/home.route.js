@@ -10,98 +10,82 @@ const puppeteer = require('puppeteer');
 const { restrict } = require('../middlewares/auth.mdw');
 //sửa require categoriesModel (require('../models/category.model') -> require('../Models/category.model'))
 const categoriesModel = require('../Models/category.model');
-const {getTimeBetweenDate} = require('../js/betweendate');
-const {getTime_Minutes} = require('../js/betweendate');
-const {addMinutes}= require('../config/default.json');
+const { getTimeBetweenDate } = require('../js/betweendate');
+const { getTime_Minutes } = require('../js/betweendate');
+const { addMinutes } = require('../config/default.json');
 const accountModel = require('../models/account.model');
 const router = express.Router();
-const printPdf = async(htmlPage)=>{
+const printPdf = async (htmlPage) => {
     // //.log('Starting: Generating PDF Process, Kindly wait ..');
-	/** Launch a headleass browser */
-	const browser = await puppeteer.launch();
-	/* 1- Ccreate a newPage() object. It is created in default browser context. */
-	const page = await browser.newPage();
-	/* 2- Will open our generated `.html` file in the new Page instance. */
+    /** Launch a headleass browser */
+    const browser = await puppeteer.launch();
+    /* 1- Ccreate a newPage() object. It is created in default browser context. */
+    const page = await browser.newPage();
+    /* 2- Will open our generated `.html` file in the new Page instance. */
     // await page.goto(buildPathHtml, { waitUntil: 'networkidle0' });
     await page.setContent(htmlPage);
-	/* 3- Take a snapshot of the PDF */
-	const pdf = await page.pdf({
-		format: 'A4',
-		margin: {
-			top: '20px',
-			right: '20px',
-			bottom: '20px',
-			left: '20px'
-		}
-	});
-	/* 4- Cleanup: close browser. */
-	await browser.close();
-	// //.log('Ending: Generating PDF Process');
-	return pdf;
+    /* 3- Take a snapshot of the PDF */
+    const pdf = await page.pdf({
+        format: 'A4',
+        margin: {
+            top: '20px',
+            right: '20px',
+            bottom: '20px',
+            left: '20px'
+        }
+    });
+    /* 4- Cleanup: close browser. */
+    await browser.close();
+    // //.log('Ending: Generating PDF Process');
+    return pdf;
 }
 
 // function complete text
-function completeTextTitle(listPost, endTitle)
-{
+function completeTextTitle(listPost, endTitle) {
     var tmpTitle = listPost[i].Title;
     listPost[i].Title = listPost[i].Title.substring(0, endTitle);
-    for(k = endTitle; k < endTitle + 10; k++)
-    {
-        if(tmpTitle.charAt(k) != ' ')
-        {
+    for (k = endTitle; k < endTitle + 10; k++) {
+        if (tmpTitle.charAt(k) != ' ') {
             listPost[i].Title = listPost[i].Title + tmpTitle.charAt(k);
         }
-        else
-        {
+        else {
             break;
         }
     }
     listPost[i].Title = listPost[i].Title + "...";
 }
 // function complete summary
-function completeTextSummary(listPost, end)
-{
-    var tmpSummary= listPost[i].Content_Summary;
+function completeTextSummary(listPost, end) {
+    var tmpSummary = listPost[i].Content_Summary;
     listPost[i].Content_Summary = listPost[i].Content_Summary.substring(0, end);
-    for(k = end; k < end + 5; k++)
-    {
-        if(tmpSummary.charAt(k) != ' ')
-        {
+    for (k = end; k < end + 5; k++) {
+        if (tmpSummary.charAt(k) != ' ') {
             listPost[i].Content_Summary = listPost[i].Content_Summary + tmpSummary.charAt(k);
         }
-        else
-        {
+        else {
             break;
         }
     }
     listPost[i].Content_Summary = listPost[i].Content_Summary + "...";
 }
 // function shorten of post
-function shortenText(listPost, end, endTitle)
-{
-    for(i = 0; i < listPost.length; i++)
-    {
-        if(listPost[i].Content_Summary.length > end)
-        {
+function shortenText(listPost, end, endTitle) {
+    for (i = 0; i < listPost.length; i++) {
+        if (listPost[i].Content_Summary.length > end) {
             completeTextSummary(listPost, end);
         }
     }
 
-    for(i = 1; i < listPost.length; i++)
-    {
-        if(listPost[i].Title.length > endTitle)
-        {
+    for (i = 1; i < listPost.length; i++) {
+        if (listPost[i].Title.length > endTitle) {
             completeTextTitle(listPost, endTitle);
         }
     }
 }
 // function shorten title
-function shortenTitle(listPost, end)
-{
-    for(i = 0; i < listPost.length; i++)
-    {
-        if(listPost[i].Title.length > end)
-        {
+function shortenTitle(listPost, end) {
+    for (i = 0; i < listPost.length; i++) {
+        if (listPost[i].Title.length > end) {
             completeTextTitle(listPost, end);
         }
     }
@@ -110,12 +94,11 @@ function shortenTitle(listPost, end)
 
 
 // Trang index
-router.get('/',async function (req, res) {
+router.get('/', async function (req, res) {
 
     let IsLogin = false;
     let IsAccountPremium = true;
-    if(!req.session.isAuthenticated)
-    {
+    if (!req.session.isAuthenticated) {
         IsLogin = false;
         IsAccountPremium = false;
     }
@@ -124,15 +107,15 @@ router.get('/',async function (req, res) {
 
 
         const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired))) 
+        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired)))
             && res.locals.lcAuthUser.TypeAccount === 1)
-                IsAccountPremium = false;
-        const dateEx =  moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-    
-    
-        if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-                IsAccountPremium = false;
-        
+            IsAccountPremium = false;
+        const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+
+
+        if (dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
+            IsAccountPremium = false;
+
     }
 
 
@@ -141,15 +124,13 @@ router.get('/',async function (req, res) {
     var listTreding = [];
     var numTrend = 0;
     var checkTrend = 0;
-    if(listPostNew.length >= 4)
-    {
-        do
-        {
+    if (listPostNew.length >= 4) {
+        do {
             numTrend = numTrend + config.dayTrend;
             listTreding = await postModel.trending(numTrend);
             checkTrend = checkTrend + 1;
         }
-        while(listTreding.length < 4 || checkTrend >= 4); // chay 12 tuan neu khong ra thi dung 
+        while (listTreding.length < 4 || checkTrend >= 4); // chay 12 tuan neu khong ra thi dung 
     }
     else // bai viet khong du thi chay 1 luot
     {
@@ -157,15 +138,15 @@ router.get('/',async function (req, res) {
         listTreding = await postModel.trending(numTrend);
     }
 
-   
 
 
 
-   
+
+
 
 
     const listMostView = await postModel.mostview();
-    
+
     const listCatPostNew = await postModel.categorypostnew();
     const listTag = await tagModel.listTagHome();
 
@@ -194,28 +175,22 @@ router.get('/',async function (req, res) {
     // futureEvent
     shortenTitle(listFutureEvent, end_FutureEvent);
 
-    for(let i = 0; i < listTreding.length; i++)
-    {
+    for (let i = 0; i < listTreding.length; i++) {
         listTreding[i].DatetimePost = moment(listTreding[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    for(let i = 0; i < listMostView.length; i++)
-    {
+    for (let i = 0; i < listMostView.length; i++) {
         listMostView[i].DatetimePost = moment(listMostView[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    for(let i = 0; i < listPostNew.length; i++)
-    {
+    for (let i = 0; i < listPostNew.length; i++) {
         listPostNew[i].DatetimePost = moment(listPostNew[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    for(let i = 0; i < listCatPostNew.length; i++)
-    {
+    for (let i = 0; i < listCatPostNew.length; i++) {
         listCatPostNew[i].DatetimePost = moment(listCatPostNew[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    for(let i = 0; i < listRandomSidebar.length; i++)
-    {
+    for (let i = 0; i < listRandomSidebar.length; i++) {
         listRandomSidebar[i].DatetimePost = moment(listRandomSidebar[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
-    for(let i = 0; i < listFutureEvent.length; i++)
-    {
+    for (let i = 0; i < listFutureEvent.length; i++) {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
     // khởi tạo biến premium chưa được đăng kí
@@ -224,21 +199,20 @@ router.get('/',async function (req, res) {
     var isSubscriber = true;
 
     // Kiểm tra đăng nhập
-    if (res.locals.lcIsAuthenticated === true){
+    if (res.locals.lcIsAuthenticated === true) {
         // Kiểm tra tài khoản là độc giả
-        if (res.locals.lcAuthUser.TypeAccount === 1){
+        if (res.locals.lcAuthUser.TypeAccount === 1) {
             isSubscriber = true;
             const user = res.locals.lcAuthUser.Username;
 
             const list = await accountModel.singUsername_Expired(user);
             const account = list[0];
             delete account.Password_hash;
-            
 
-                // Tính thời hạn đăng kí premium
-            
-            if (account.DateExpired)
-            {
+
+            // Tính thời hạn đăng kí premium
+
+            if (account.DateExpired) {
                 const authU = res.locals.lcAuthUser;
                 const dt_exp = new Date(moment(account.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
                 const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
@@ -246,13 +220,12 @@ router.get('/',async function (req, res) {
                 premium = getTimeBetweenDate(dt_now, dt_exp);
             }
         }
-        else
-        {
+        else {
             isSubscriber = false;
         }
     }
 
-    
+
 
 
     // console.log(listTreding);
@@ -274,9 +247,9 @@ router.get('/',async function (req, res) {
 
         listSliderPost,
         emptySliderPost: listSliderPost.length === 0,
-        
 
-        listRandomSidebar, 
+
+        listRandomSidebar,
         listFutureEvent,
         emptyFutureEvent: listFutureEvent.length === 0,
         isSubscriber: isSubscriber,
@@ -284,62 +257,52 @@ router.get('/',async function (req, res) {
         IsLogin,
         IsAccountPremium,
         helpers: {
-            load_Post1: function(context, options)
-            {
+            load_Post1: function (context, options) {
                 return options.fn(context[0]);
             },
-            load_Post2: function(context, options)
-            {
+            load_Post2: function (context, options) {
                 let ret = "";
-                for(let i = 1; i < context.length; i++)
-                {
+                for (let i = 1; i < context.length; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             },
-            loadListRandomSideBar_1: function(context, options)
-            {
+            loadListRandomSideBar_1: function (context, options) {
                 let ret = "";
-                for(let i = 0; i < 4; i++)
-                {
+                for (let i = 0; i < 4; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_2: function(context, options)
-            {
+            loadListRandomSideBar_2: function (context, options) {
                 let ret = "";
-                for(let i = 4; i < 8; i++)
-                {
+                for (let i = 4; i < 8; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_3: function(context, options)
-            {
+            loadListRandomSideBar_3: function (context, options) {
                 let ret = "";
-                for(let i = 8; i < 12; i++)
-                {
+                for (let i = 8; i < 12; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             },
-            convertMonth: function(value)
-            {
-                     if(value == 1) return "Jan";
-                else if(value == 2) return "Feb";
-                else if(value == 3) return "Mar";
-                else if(value == 4) return "Apr";
-                else if(value == 5) return "May";
-                else if(value == 6) return "Jun";
-                else if(value == 7) return "Jul";
-                else if(value == 8) return "Aug";
-                else if(value == 9) return "Sep";
-                else if(value == 10) return "Oct";
-                else if(value == 11) return "Nov";
-                else if(value == 12) return "Dec";
+            convertMonth: function (value) {
+                if (value == 1) return "Jan";
+                else if (value == 2) return "Feb";
+                else if (value == 3) return "Mar";
+                else if (value == 4) return "Apr";
+                else if (value == 5) return "May";
+                else if (value == 6) return "Jun";
+                else if (value == 7) return "Jul";
+                else if (value == 8) return "Aug";
+                else if (value == 9) return "Sep";
+                else if (value == 10) return "Oct";
+                else if (value == 11) return "Nov";
+                else if (value == 12) return "Dec";
                 else return "?";
             }
         }
@@ -348,8 +311,8 @@ router.get('/',async function (req, res) {
 
 })
 
-router.get('/premium/register', restrict, async function(req, res){
-    if(res.locals.lcAuthUser.TypeAccount!==1){
+router.get('/premium/register', restrict, async function (req, res) {
+    if (res.locals.lcAuthUser.TypeAccount !== 1) {
         return res.redirect('/');
     }
     // khởi tạo biến premium chưa được đăng kí
@@ -365,14 +328,13 @@ router.get('/premium/register', restrict, async function(req, res){
     const user = res.locals.lcAuthUser.Username;
     const list = await accountModel.singUsername_Expired(user);
     const account = list[0];
-        // Tính thời hạn đăng kí premium
-    if (account.DateExpired)
-    {
+    // Tính thời hạn đăng kí premium
+    if (account.DateExpired) {
         const dt_exp = new Date(moment(account.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
         const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
         premium = getTimeBetweenDate(dt_now, dt_exp);
     }
-    
+
     return res.render('vwPremium/register', {
         layout: false,
         time: time,
@@ -384,16 +346,15 @@ router.get('/premium/register', restrict, async function(req, res){
     })
 })
 
-router.post('/premium/register', restrict,async function(req, res){
+router.post('/premium/register', restrict, async function (req, res) {
     const username = req.body.Username;
     const list = await accountModel.singUsername_Expired(username);
-    if (list.length === 0){
+    if (list.length === 0) {
         return res.redirect('/');
     }
     const user = list[0];
 
-    if (user.DateExpired)
-    {
+    if (user.DateExpired) {
         const dt_exp = new Date(moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss'));
         const dt_now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
         user.premium = getTimeBetweenDate(dt_now, dt_exp);
@@ -401,13 +362,11 @@ router.post('/premium/register', restrict,async function(req, res){
 
     var date_expired = moment().add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
 
-    if (user.premium)
-    {
-        if (!user.premium.Notvalue)
-        {
+    if (user.premium) {
+        if (!user.premium.Notvalue) {
             date_expired = moment(user.DateExpired, 'YYYY/MM/DD HH:mm:ss').add(req.body.Time, 'm').format('YYYY:MM:DD H:mm:ss');
         }
-    }   
+    }
     const entity = {
         Id: user.Id,
         DateExpired: date_expired
@@ -422,47 +381,51 @@ router.post('/premium/register', restrict,async function(req, res){
 
 
 
-router.get('/detail/:Url', async function(req, res){
+router.get('/detail/:Url', async function (req, res) {
 
     const url = req.params.Url;
 
     const posts_cmt = await postModel.single_url_posts(url);
-    if (posts_cmt.length === 0){
+    if (posts_cmt.length === 0) {
         req.flash('error', 'Bài viết không tồn tại.');
         return res.redirect('/');
     }
 
-    if (posts_cmt[0].IdStatus !== 2){
+    if (posts_cmt[0].IdStatus !== 2) {
         req.flash('error', 'Bài viết chưa được xuất bản.');
         return res.redirect('/');
     }
 
 
     const retURL = `/detail/${url}`;
-    if(posts_cmt[0].IsPremium === 1){
-        if (!req.session.isAuthenticated){
+    if (posts_cmt[0].IsPremium === 1) {
+        if (!req.session.isAuthenticated) {
             return res.redirect(`/account/login?retUrl=${retURL}`)
         }
-        else
-        {
+        else {
+            const username = req.session.authAccount.Username;
+            const list = await accountModel.singUsername_Expired(username);
+            if (list.length === 0) {
+                return res.redirect('/');
+            }
+            const user = list[0];
             const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-            if(!req.session.authAccount.DateExpired && res.locals.lcAuthUser.TypeAccount === 1)
-            {
+            if (!user.DateExpired && user.TypeAccount === 1) {
+                
                 return res.redirect(`/premium/register?retUrl=${retURL}`);
             }
-            const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-        
-            if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-            {
+            const dateEx = moment(user.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+
+            if (dateEx <= dt_now && user.TypeAccount === 1) {
                 return res.redirect(`/premium/register?retUrl=${retURL}`);
             }
-                    
+
         }
     }
 
     const rows = await postModel.single(url);
     const post = rows[0];
-    
+
     const postRandom = await postModel.postRandomByCategories(post.IdCategories, post.Id);
 
     const listTag = await tagModel.tagByIdPost(post.Id);
@@ -478,20 +441,17 @@ router.get('/detail/:Url', async function(req, res){
 
     const listFutureEvent = await postModel.furuteEvents();
 
-    for(let i = 0; i < postRandom.length; i++)
-    {
+    for (let i = 0; i < postRandom.length; i++) {
         postRandom[i].DatetimePost = moment(postRandom[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    for(let i = 0; i < listRandomSidebar.length; i++)
-    {
+    for (let i = 0; i < listRandomSidebar.length; i++) {
         listRandomSidebar[i].DatetimePost = moment(listRandomSidebar[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
-    for(let i = 0; i < listFutureEvent.length; i++)
-    {
+    for (let i = 0; i < listFutureEvent.length; i++) {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
     post.DatetimePost = moment(post.DatetimePost, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY HH:mm:ss');
-    
+
 
     // shorten randomPost, futureEvent
     const end_Random = 20;
@@ -508,23 +468,22 @@ router.get('/detail/:Url', async function(req, res){
 
     // Bình luận bài viét
     const offset = (+req.body.number || 0) * config.pagination.limit;
-    
+
     const pcmt = posts_cmt[0];
     const listComment = await commentModel.commentByIdPost_admin(pcmt.Id, offset, config.pagination.limit);
 
-    for (l of listComment){
+    for (l of listComment) {
         l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
         l.Url = url;
     }
     const empty = await commentModel.countCommentByIdPost_admin(pcmt.Id);
 
 
-    
+
     let IsLogin = false;
     let IsAccountPremium = true;
-    
-    if(!req.session.isAuthenticated)
-    {
+
+    if (!req.session.isAuthenticated) {
         IsLogin = false;
         IsAccountPremium = false;
     }
@@ -532,30 +491,28 @@ router.get('/detail/:Url', async function(req, res){
         IsLogin = true;
 
         const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-        if (!req.session.authAccount.DateExpired && res.locals.lcAuthUser.TypeAccount === 1)
-        {
+        if (!req.session.authAccount.DateExpired && res.locals.lcAuthUser.TypeAccount === 1) {
             // console.log(2);
             IsAccountPremium = false;
         }
         const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-    
-        if(dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
-        {
+
+        if (dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1) {
             //console.log(3);
             IsAccountPremium = false;
         }
-    }   
+    }
 
     const entityPost = {
         Id: post.Id,
         Views: post.Views + 1
     }
-    
+
     ////.log(post.Id + ":" + post.Views);
 
 
     await postModel.patch(entityPost);
-    
+
     res.render('vwPost/detailPost', {
         layout: 'detailpost',
         post,
@@ -563,7 +520,7 @@ router.get('/detail/:Url', async function(req, res){
         postRandom,
         // listComment,
         // countComment,
-        
+
         listComment: listComment,
         empty: empty[0].Count,
         more: empty[0].Count > config.pagination.limit,
@@ -575,66 +532,56 @@ router.get('/detail/:Url', async function(req, res){
         IsLogin,
         IsAccountPremium,
         emptyFutureEvent: listFutureEvent.length === 0,
-        helpers:{
-            load_list_tags: function(context, Id, options)
-            {
+        helpers: {
+            load_list_tags: function (context, Id, options) {
                 let ret = "";
                 let count = 0;
-                for(let i = 0; i < context.length; i++)
-                {
+                for (let i = 0; i < context.length; i++) {
                     // //.log(context[i].Id);
                     // //.log(context[i]);
-                    if(context[i].IdPost === Id && count < 3)
-                    {
+                    if (context[i].IdPost === Id && count < 3) {
                         ret = ret + options.fn(context[i]);
                         count++;
                     }
                 }
                 return ret;
             },
-            loadListRandomSideBar_1: function(context, options)
-            {
+            loadListRandomSideBar_1: function (context, options) {
                 let ret = "";
-                for(let i = 0; i < 4; i++)
-                {
+                for (let i = 0; i < 4; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_2: function(context, options)
-            {
+            loadListRandomSideBar_2: function (context, options) {
                 let ret = "";
-                for(let i = 4; i < 8; i++)
-                {
+                for (let i = 4; i < 8; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_3: function(context, options)
-            {
+            loadListRandomSideBar_3: function (context, options) {
                 let ret = "";
-                for(let i = 8; i < 12; i++)
-                {
+                for (let i = 8; i < 12; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             },
-            convertMonth: function(value)
-            {
-                     if(value == 1) return "Jan";
-                else if(value == 2) return "Feb";
-                else if(value == 3) return "Mar";
-                else if(value == 4) return "Apr";
-                else if(value == 5) return "May";
-                else if(value == 6) return "Jun";
-                else if(value == 7) return "Jul";
-                else if(value == 8) return "Aug";
-                else if(value == 9) return "Sep";
-                else if(value == 10) return "Oct";
-                else if(value == 11) return "Nov";
-                else if(value == 12) return "Dec";
+            convertMonth: function (value) {
+                if (value == 1) return "Jan";
+                else if (value == 2) return "Feb";
+                else if (value == 3) return "Mar";
+                else if (value == 4) return "Apr";
+                else if (value == 5) return "May";
+                else if (value == 6) return "Jun";
+                else if (value == 7) return "Jul";
+                else if (value == 8) return "Aug";
+                else if (value == 9) return "Sep";
+                else if (value == 10) return "Oct";
+                else if (value == 11) return "Nov";
+                else if (value == 12) return "Dec";
                 else return "?";
             }
         }
@@ -642,38 +589,38 @@ router.get('/detail/:Url', async function(req, res){
 });
 
 
-router.post('/post/comment/load', async function(req, res){
+router.post('/post/comment/load', async function (req, res) {
     // //.log(1);
     const url = req.body.url || "empty";
-        const posts = await postModel.single_url_posts(url);
-        if (posts.length === 0){
-            req.flash('error', 'Bài viết không tồn tại.');
-            return res.redirect('/admin/posts');
-        }
-        if (posts[0].IdStatus !== 2){
-            req.flash('error', 'Bài viết chưa được xuất bản.');
-            return res.redirect('/admin/posts');
-        }
+    const posts = await postModel.single_url_posts(url);
+    if (posts.length === 0) {
+        req.flash('error', 'Bài viết không tồn tại.');
+        return res.redirect('/admin/posts');
+    }
+    if (posts[0].IdStatus !== 2) {
+        req.flash('error', 'Bài viết chưa được xuất bản.');
+        return res.redirect('/admin/posts');
+    }
 
-        const offset = (+req.body.number || 1) * config.pagination.limit;
+    const offset = (+req.body.number || 1) * config.pagination.limit;
 
-        const post = posts[0];
-        const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, config.pagination.limit);
+    const post = posts[0];
+    const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, config.pagination.limit);
 
-    
-    for (l of listComment){
+
+    for (l of listComment) {
         l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
         l.Url = url;
     }
-    
+
     const empty = await commentModel.countCommentByIdPost_admin(post.Id);
     var more = true;
-    if (offset + config.pagination.limit >= empty[0].Count){
+    if (offset + config.pagination.limit >= empty[0].Count) {
         more = false;
     }
-    
+
     const number = +req.body.number + 1;
-    
+
     const data = {
         listComment: listComment,
         number: number,
@@ -682,23 +629,22 @@ router.post('/post/comment/load', async function(req, res){
     return res.json(data);
 })
 
-router.post('/post/comment/add', async function(req, res){
+router.post('/post/comment/add', async function (req, res) {
     const Url = req.body.Url;
-    if (!res.locals.lcIsAuthenticated)
-    {
+    if (!res.locals.lcIsAuthenticated) {
         const url = querystring.escape(`/detail/${Url}#cmt`);
         return res.redirect(`/account/login?retUrl=${url}`);
     }
     // {"IdPost":"10","Url":"gioi-thieu-ve-iostream-cout-cin-va-endl-1596752895575","Content":""}
     const IdPost = req.body.IdPost;
     const Content = req.body.Content;
-    if (!Content){
+    if (!Content) {
         req.flash('error', 'Nội dung bình luận không thể để trống ');
         return res.redirect(`/admin/posts/comment?url=${Url}`);
     }
-    
+
     const DatetimeComment = moment().format('YYYY-MM-DD HH:mm:ss');
-    
+
     const entity = {
         IdPost,
         Content,
@@ -707,11 +653,11 @@ router.post('/post/comment/add', async function(req, res){
         IdAccount: res.locals.lcAuthUser.Id
     }
     await commentModel.add(entity);
-    
+
     return res.redirect(`/detail/${Url}#cmt`);
 })
 
-router.get('/search',async function(req, res){
+router.get('/search', async function (req, res) {
     const ValueSearch = req.query.Search || '';
     const page = +req.query.page || 1;
     const offset = (page - 1) * config.pagination.limitPostPage;
@@ -725,7 +671,7 @@ router.get('/search',async function(req, res){
     let count = 0;
     let lengthPagination = 0;
     let temp = page;
-    
+
 
     while (true) {
         if (temp - config.pagination.limitPaginationLinks > 0) {
@@ -768,20 +714,17 @@ router.get('/search',async function(req, res){
     // futureEvent
     shortenTitle(listFutureEvent, end_FutureEvent);
 
-    for(let i = 0; i < listRandomSidebar.length; i++)
-    {
+    for (let i = 0; i < listRandomSidebar.length; i++) {
         listRandomSidebar[i].DatetimePost = moment(listRandomSidebar[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
-    for(let i = 0; i < listFutureEvent.length; i++)
-    {
+    for (let i = 0; i < listFutureEvent.length; i++) {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
 
-    for(let i = 0; i < listPost.length; i++)
-    {
+    for (let i = 0; i < listPost.length; i++) {
         listPost[i].DatetimePost = moment(listPost[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM/YYYY, HH:mm');
     }
-    
+
     res.render('vwPost/search', {
         layout: 'listCategoryTag',
         listPost,
@@ -789,65 +732,55 @@ router.get('/search',async function(req, res){
         listPostTags,
         listRandomSidebar,
         listFutureEvent,
-        helpers:{
-            load_list_tags: function(context, Id, options)
-            {
+        helpers: {
+            load_list_tags: function (context, Id, options) {
                 let ret = "";
                 let count = 0;
-                for(let i = 0; i < context.length; i++)
-                {
-                   
-                    if(context[i].IdPost === Id && count < 3)
-                    {
+                for (let i = 0; i < context.length; i++) {
+
+                    if (context[i].IdPost === Id && count < 3) {
                         ret = ret + options.fn(context[i]);
                         count++;
                     }
                 }
                 return ret;
             },
-            loadListRandomSideBar_1: function(context, options)
-            {
+            loadListRandomSideBar_1: function (context, options) {
                 let ret = "";
-                for(let i = 0; i < 4; i++)
-                {
+                for (let i = 0; i < 4; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_2: function(context, options)
-            {
+            loadListRandomSideBar_2: function (context, options) {
                 let ret = "";
-                for(let i = 4; i < 8; i++)
-                {
+                for (let i = 4; i < 8; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             }
             ,
-            loadListRandomSideBar_3: function(context, options)
-            {
+            loadListRandomSideBar_3: function (context, options) {
                 let ret = "";
-                for(let i = 8; i < 12; i++)
-                {
+                for (let i = 8; i < 12; i++) {
                     ret = ret + options.fn(context[i]);
                 }
                 return ret;
             },
-            convertMonth: function(value)
-            {
-                     if(value == 1) return "Jan";
-                else if(value == 2) return "Feb";
-                else if(value == 3) return "Mar";
-                else if(value == 4) return "Apr";
-                else if(value == 5) return "May";
-                else if(value == 6) return "Jun";
-                else if(value == 7) return "Jul";
-                else if(value == 8) return "Aug";
-                else if(value == 9) return "Sep";
-                else if(value == 10) return "Oct";
-                else if(value == 11) return "Nov";
-                else if(value == 12) return "Dec";
+            convertMonth: function (value) {
+                if (value == 1) return "Jan";
+                else if (value == 2) return "Feb";
+                else if (value == 3) return "Mar";
+                else if (value == 4) return "Apr";
+                else if (value == 5) return "May";
+                else if (value == 6) return "Jun";
+                else if (value == 7) return "Jul";
+                else if (value == 8) return "Aug";
+                else if (value == 9) return "Sep";
+                else if (value == 10) return "Oct";
+                else if (value == 11) return "Nov";
+                else if (value == 12) return "Dec";
                 else return "?";
             }
         },
@@ -857,20 +790,20 @@ router.get('/search',async function(req, res){
         can_go_prev: page > 1,
         can_go_next: page < nPages,
         last: nPages,
-        SearchNotEmpty:ValueSearch.length !== 0,
+        SearchNotEmpty: ValueSearch.length !== 0,
         Search: querystring.escape(ValueSearch),
         SearchKey: ValueSearch,
     })
 });
 
 
-router.get('/ExportPdf/', async function(req, res){
-        const IdPost = +req.query.id;
-        const content = await postModel.singleById(IdPost);
-        const PdfFile = await printPdf(content[0].Content_Full);
-        res.setHeader('Content-disposition', 'attachment; filename=' + content[0].Url + '.pdf');
-        res.end(PdfFile);
-   
+router.get('/ExportPdf/', async function (req, res) {
+    const IdPost = +req.query.id;
+    const content = await postModel.singleById(IdPost);
+    const PdfFile = await printPdf(content[0].Content_Full);
+    res.setHeader('Content-disposition', 'attachment; filename=' + content[0].Url + '.pdf');
+    res.end(PdfFile);
+
 });
 
 module.exports = router;

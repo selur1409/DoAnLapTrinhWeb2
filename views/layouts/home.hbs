@@ -98,7 +98,7 @@
 						{{else}}
 						<a class="btn btn-warning btn-sm" href="#" role="button" title="Premium">
 						<i class="fab fa-vuejs"></i>
-							Premium: {{Premium.days}}d {{Premium.hours}}h {{Premium.minutes}}m
+							Premium: {{#if Premium.days}}{{Premium.days}}d {{/if}} {{#if Premium.hours}}{{Premium.hours}}h {{/if}} {{#if Premium.minutes}}{{Premium.minutes}}m {{/if}} {{Premium.seconds}} s
 							{{!-- :{{premium.miniutes}}:{{premium.seconds}}s --}}
 						</a>
 						<a class="btn btn-danger btn-sm" href="premium/register" role="button" title="Add Premium">                  

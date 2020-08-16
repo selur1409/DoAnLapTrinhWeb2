@@ -84,17 +84,17 @@
     </div>
     <h3 class="text-left">Thông tin người dùng</h3>
     <ul class="text-left">
-        <li>Name: {{lcAuthUser.Name}}</li>
-        <li>DOB: {{lcAuthUser.DOB}}</li>
-        <li>Email:{{#if lcAuthUser.Email}}{{lcAuthUser.Email}}{{else}}Chưa có{{/if}}</li>
-        <li>Phone: {{#if lcAuthUser.Phone}}{{lcAuthUser.Phone}}{{else}}Chưa có{{/if}}</li>
-        <li>Sex: {{#if lcAuthUser.Sex}} Nữ {{else}} Nam {{/if}}</li>
-        <li><i class="fab fa-vuejs"></i>Thời hạn VIP: 
+        <li><b>Name:</b> {{lcAuthUser.Name}}</li>
+        <li><b>DOB: </b>{{lcAuthUser.DOB}}</li>
+        <li><b>Email: </b>{{#if lcAuthUser.Email}}{{lcAuthUser.Email}}{{else}}Chưa có{{/if}}</li>
+        <li><b>Phone: </b>{{#if lcAuthUser.Phone}}{{lcAuthUser.Phone}}{{else}}Chưa có{{/if}}</li>
+        <li><b>Sex: </b>{{#if lcAuthUser.Sex}} Nữ {{else}} Nam {{/if}}</li>
+        <li class="text-danger"><i class="fab fa-vuejs"></i>Thời hạn VIP: 
         {{#if this.Premium}}
             {{#if this.Premium.Notvalue}}
             Hết hạn
             {{else}}             
-            Còn: {{this.Premium.days}} ngày {{this.Premium.hours}} giờ {{this.Premium.minutes}} phút
+            Còn {{#if this.Premium.days}} {{this.Premium.days}} ngày {{/if}} {{#if this.Premium.hours}}  {{this.Premium.hours}} giờ {{/if}} {{#if this.Premium.minutes}}{{this.Premium.minutes}} phút {{/if}}{{this.Premium.seconds}} giây
             {{/if}}
         {{else}}
             Chưa đăng kí
