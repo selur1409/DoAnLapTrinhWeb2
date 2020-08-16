@@ -38,7 +38,7 @@
   "pagination": {
     "limit": 4,
     "limitPaginationLinks":5,
-    "limitPostPage": 3
+    "limitPostPage": 6
   },
   "filesize": 1048576,
   "dayTrend": 7

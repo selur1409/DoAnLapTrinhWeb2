@@ -79,14 +79,7 @@
 						<form class="ml-auto" id="frmLogout" action="/account/logout" method="POST"></form>
 						<nav class="main_nav">
 							<ul>
-							{{#if lcIsSubscriber}}
-							<li>		
-								<a class="nav-link" href="/subcriber" role="button"
-								aria-haspopup="true" aria-expanded="false">
-								<b>SUBSCRIBER</b>
-								</a>	
-							</li>
-							{{/if}}								
+													
 							{{#if lcIsWriter}}
 							<li>		
 								<a class="nav-link" href="/write/Writer" role="button"
@@ -124,11 +117,7 @@
 									Account Profil
 								</a>
 								<div class="dropdown-divider"></div>
-								{{#if lcIsSubscriber}}
-									<a class="nav-link" href="/subcriber" role="button" aria-haspopup="true" aria-expanded="false">
-										<b>SUBSCRIBER</b>
-									</a>
-								{{/if}}
+								
 								{{#if lcIsWriter}}
 									<a class="nav-link" href="/writer/Writer" role="button" aria-haspopup="true" aria-expanded="false">
 										<b>WRITER</b>
