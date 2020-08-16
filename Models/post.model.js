@@ -68,21 +68,21 @@ module.exports = {
                         where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
                         AND p.DatetimePost <= NOW() AND DATE_ADD(p.DatetimePost, INTERVAL ${dayTrend} DAY) >= NOW()  
                         AND p.IsDelete = 0 AND p.IdStatus = 2
-                        ORDER BY p.Views DESC LIMIT 4`);
+                        ORDER BY pd.IsPremium DESC, p.Views DESC LIMIT 4`);
     },
     mostview: function () {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL' 
                         from ${TBL_POSTS} p, information i, postdetails pd, categories_sub cb 
                         where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
                         AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2
-                        ORDER BY p.Views DESC LIMIT 10`);
+                        ORDER BY pd.IsPremium DESC, p.Views DESC LIMIT 10`);
     },
     postnew: function () {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL' 
                         from ${TBL_POSTS} p, information i, postdetails pd, categories_sub cb 
                         where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
                         AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2
-                        ORDER BY p.DatetimePost DESC LIMIT 10`);
+                        ORDER BY pd.IsPremium DESC, p.DatetimePost DESC LIMIT 10`);
     },
     categorypostnew: function () {
         return db.load(`select p.Id, p.Title, p.Url,i.Nickname, p.Content_Summary, p.Avatar, p.DatetimePost, pd.IsPremium, cb.Name, cb.Url as 'CatURL' 
@@ -90,7 +90,7 @@ module.exports = {
                         where p.Id = pd.IdPost AND cb.Id = p.IdCategories AND pd.IdAccount = i.IdAccount
                         AND p.DatetimePost <= NOW() AND p.IsDelete = 0 AND p.IdStatus = 2
                         GROUP BY p.IdCategories 
-                        ORDER BY p.DatetimePost DESC LIMIT 10`);
+                        ORDER BY pd.IsPremium DESC, p.DatetimePost DESC LIMIT 10`);
     },
     postByCategories: function (id) {
         return db.load(`SELECT * FROM ${TBL_POSTS} WHERE IdCategories = ${id}`);
