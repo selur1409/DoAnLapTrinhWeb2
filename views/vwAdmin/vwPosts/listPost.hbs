@@ -111,6 +111,15 @@
             </a>
             {{/if}}
             {{#if IsComment}}
+            {{#if IsPremium}}
+            <button class="btn btn-danger btn-sm" formaction="/admin/posts/del-premium" role="button" title="Delete Premium">
+                <i class="fab fa-uniregistry"></i>
+            </button>
+            {{else}}
+            <button class="btn btn-success btn-sm" formaction="/admin/posts/select-premium" role="button" title="Select Premium">
+                <i class="fas fa-registered"></i>
+            </button>
+            {{/if}}
             <a class="btn btn-primary btn-sm" href="/admin/posts/comment?url={{Url}}" role="button" title="Comment">
                 <i class="fas fa-comment-alt"><span class="badge badge-danger float-right">{{#if AmountComment}}{{AmountComment}}{{/if}}</span></i>
             </a>

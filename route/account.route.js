@@ -28,6 +28,7 @@ router.get('/is-available', auth.referer, async function(req, res){
 })
 
 router.post('/register', async function(req, res){
+
     const rows = await accountModel.singleId(req.body.Username);
 
     //captcha

@@ -1044,4 +1044,20 @@ module.exports = (router) => {
         await postModel.patch(entity);
         return res.redirect('/admin/posts?status=1');
     })
+    router.post('/posts/del-premium', restrict, isAdmin, async function(req, res){
+        const entity = {
+            IdPost: req.body.Id,
+            IsPremium: 0
+        };
+        await postModel.patchPostDetails(entity);
+        return res.redirect(`/admin/posts?status=${req.body.Status}`);
+    })
+    router.post('/posts/select-premium', restrict, isAdmin, async function(req, res){
+        const entity = {
+            IdPost: req.body.Id,
+            IsPremium: 1
+        };
+        await postModel.patchPostDetails(entity);
+        return res.redirect(`/admin/posts?status=${req.body.Status}`);
+    })
 }
