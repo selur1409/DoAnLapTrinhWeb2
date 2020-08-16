@@ -306,7 +306,7 @@ section
 	font-family: 'Ubuntu', sans-serif;
 	font-size: 14px;
 	font-weight: 700;
-	color: rgba(255,255,255,0.5);
+	/* color: rgba(255,255,255,0.5); */
 	-webkit-transition: all 200ms ease;
 	-moz-transition: all 200ms ease;
 	-ms-transition: all 200ms ease;
@@ -316,7 +316,7 @@ section
 .main_nav ul li a:hover,
 .main_nav ul li.active a
 {
-	color: rgba(255,255,255,1);
+	color: rgb(247, 247, 45);
 }
 
 /*********************************
