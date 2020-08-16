@@ -691,16 +691,27 @@ module.exports = (router) => {
         
         const id = req.body.Id;
         await editorModel.DeleteTagsOfPost(id);
-        
-        for (l of listTag){
+
+        if (typeof(listTag) === "string")
+        {
             const entityTag = {
-                IdTag: +l,
+                IdTag: listTag,
                 IdPost: id
             }
             const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
             await editorModel.InsertTagsPost(value);
         }
+        else {
+            for (l of listTag){
+                const entityTag = {
+                    IdTag: +l,
+                    IdPost: id
+                }
+                const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
 
+                await editorModel.InsertTagsPost(value);
+            }
+        }
         const entity = {
             Id: id,
             IdStatus: 1,
@@ -720,7 +731,7 @@ module.exports = (router) => {
 
     router.post('/posts/status/repost', restrict, isAdmin, async function (req, res){
         const listTag = req.body.TagSeleted || [];
-
+        
         if (listTag.length === 0){
             req.flash('error', 'Phải lựa chọn ít nhất 1 thẻ Tag.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
@@ -729,13 +740,25 @@ module.exports = (router) => {
         const id = req.body.Id;
         await editorModel.DeleteTagsOfPost(id);
 
-        for (l of listTag){
+        if (typeof(listTag) === "string")
+        {
             const entityTag = {
-                IdTag: +l,
-                IdPost: id,
+                IdTag: listTag,
+                IdPost: id
             }
             const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
             await editorModel.InsertTagsPost(value);
+        }
+        else{
+            for (l of listTag){
+                const entityTag = {
+                    IdTag: +l,
+                    IdPost: id,
+                }
+                const value = ['IdTag', 'IdPost', `${entityTag.IdTag}`, `${entityTag.IdPost}`];
+                console.log(value);
+                await editorModel.InsertTagsPost(value);
+            }
         }
         
         const entity = {
