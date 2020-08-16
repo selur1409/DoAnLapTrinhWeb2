@@ -28,6 +28,7 @@ router.get('/is-available', auth.referer, async function(req, res){
 })
 
 router.post('/register', async function(req, res){
+
     const rows = await accountModel.singleId(req.body.Username);
 
     //captcha
@@ -62,7 +63,7 @@ router.post('/register', async function(req, res){
     }
 
     if (req.body.Name === "" ||
-        isNaN(Date.parse(req.body.DOB))||
+    isNaN(Date.parse(moment(req.body.DOB, "DD-MM-YYYY").format('MM-DD-YYYY')))||
         req.body.Sex === undefined){
             req.flash('error', "Have a item don't empty.");
             return res.redirect('/account/register');
@@ -81,7 +82,7 @@ router.post('/register', async function(req, res){
     const dt_now = moment().format('YYYY-MM-DD');
     // gia hạn ngày
     var dob = '1999/01/01';
-    if (!isNaN(Date.parse(req.body.DOB))){
+    if (!isNaN(Date.parse(moment(req.body.DOB, "DD-MM-YYYY").format('MM-DD-YYYY')))){
         dob = moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
     }
 
