@@ -676,7 +676,7 @@ module.exports = (router) => {
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
         }
         
-        if (!req.body.TimePost || isNaN(Date.parse(req.body.TimePost)))
+        if (!req.body.TimePost || isNaN(Date.parse(moment(req.body.TimePost, "DD-MM-YYYY").format('MM-DD-YYYY'))))
         {
             req.flash('error', 'Chưa chọn thời gian đăng bài.');
             return res.redirect(`/admin/posts/status?number=${req.body.number}&url=${req.body.Url}`);
@@ -1043,5 +1043,21 @@ module.exports = (router) => {
         }
         await postModel.patch(entity);
         return res.redirect('/admin/posts?status=1');
+    })
+    router.post('/posts/del-premium', restrict, isAdmin, async function(req, res){
+        const entity = {
+            IdPost: req.body.Id,
+            IsPremium: 0
+        };
+        await postModel.patchPostDetails(entity);
+        return res.redirect(`/admin/posts?status=${req.body.Status}`);
+    })
+    router.post('/posts/select-premium', restrict, isAdmin, async function(req, res){
+        const entity = {
+            IdPost: req.body.Id,
+            IsPremium: 1
+        };
+        await postModel.patchPostDetails(entity);
+        return res.redirect(`/admin/posts?status=${req.body.Status}`);
     })
 }

@@ -181,7 +181,7 @@ module.exports = (router) =>{
         const dt_now = moment().format('YYYY-MM-DD');
         // gia hạn ngày
         var dob = '1999/01/01';
-        if (!isNaN(Date.parse(req.body.DOB))){
+        if (!isNaN(Date.parse(moment(req.body.DOB, "DD-MM-YYYY").format('MM-DD-YYYY')))){
             dob =  moment(req.body.DOB, 'DD/MM/YYYY').format('YYYY-MM-DD');
         }
     
