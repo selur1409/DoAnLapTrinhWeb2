@@ -47,13 +47,14 @@
 }
 
 
-.img-resize{
-	/* height: 60vh;
-	object-fit: contain;  */
-}
+/* .img-resize{
+	height: 60vh;
+	object-fit: contain;
+}*/
 
 .post_body img{
 	object-fit: contain;
+	width: 100%;
 }
 
 .post_body p{
