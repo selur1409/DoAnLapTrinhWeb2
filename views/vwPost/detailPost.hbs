@@ -439,6 +439,14 @@
 									style="background-color: rgb(231, 231, 146);">
 									{{else}}
 									<div class="card card_default card_small_with_image grid-item">
+								{{/if}}
+									<img class="card-img-top" src="{{Avatar}}" alt="">
+									<div class="card-body">
+
+										{{#if IsPremium}}
+										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a></div>
+										{{else}}
+										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}">{{Title}}</a></div>
 										{{/if}}
 										<img class="card-img-top" src="../..{{Avatar}}" alt="">
 										<div class="card-body">

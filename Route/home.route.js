@@ -189,8 +189,7 @@ router.get('/', async function (req, res) {
     else {
         IsLogin = true;
         const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
-        let dateEx;
-        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired)))
+        if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(moment(req.session.authAccount.DateExpired, "DD-MM-YYYY").format('MM-DD-YYYY'))))
             && res.locals.lcAuthUser.TypeAccount === 1)
         {
             IsAccountPremium = false;

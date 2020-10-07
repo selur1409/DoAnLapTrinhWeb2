@@ -31,7 +31,9 @@
 										{{else}}	
 											<div class="card card_default card_small_with_image grid-item">
 										{{/if }}	
-												<img class="card-img-top" src="../..{{Avatar}}" alt="">
+												
+												<img class="card-img-top" src="{{Avatar}}" alt="">
+
 												<div class="card-body">
 													{{#if IsPremium}}
 														<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>  &nbsp;<i class="fas fa-crown"></i></a></div>
@@ -40,8 +42,9 @@
 													{{/if }}
 														<p class="card-text content-summary">{{Content_Summary}}</p>
 														<small class="post_meta">
-															<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
-															<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
+															<i class="fa fa-user" aria-hidden="true"></i> &nbsp;
+															<a href="#">{{Nickname}}</a>
+															<p class="card-text views"><i class="fa fa-calendar" aria-hidden="true"></i> &nbsp; {{DatetimePost}} <span><i class="fa fa-eye" aria-hidden="true"></i> {{Views}}</span></p>
 														</small>
 														<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
 														

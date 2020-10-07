@@ -34,7 +34,7 @@
     },
     "NumberTime": 7
   },
-  "addMinutes": 1,
+  "addMinutes": 10080,
   "pagination": {
     "limit": 4,
     "limitPaginationLinks":5,

@@ -254,10 +254,11 @@ section
 	-ms-transition: all 200ms ease;
 	-o-transition: all 200ms ease;
 	transition: all 200ms ease;
+	background: rgba(19, 18, 18, 0.699);
 }
 .header_content
 {
-	height: 106px;
+	height: 95px;
 	-webkit-transition: all 200ms ease;
 	-moz-transition: all 200ms ease;
 	-ms-transition: all 200ms ease;
@@ -309,7 +310,7 @@ section
 	font-family: 'Ubuntu', sans-serif;
 	font-size: 14px;
 	font-weight: 700;
-	color: rgba(255,255,255,0.5);
+	/* color: rgba(255,255,255,0.5); */
 	-webkit-transition: all 200ms ease;
 	-moz-transition: all 200ms ease;
 	-ms-transition: all 200ms ease;
@@ -319,7 +320,7 @@ section
 .main_nav ul li a:hover,
 .main_nav ul li.active a
 {
-	color: rgba(255,255,255,1);
+	color: rgb(247, 247, 45);
 }
 
 /*********************************

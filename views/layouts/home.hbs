@@ -57,7 +57,7 @@
 									<menu>
 									{{#if lcListMenu}}
 										{{#each lcListMenu}}
-											<menuitem id="demo2">
+											<menuitem class="menu-item">
 												<a>{{Name}}</a>
 												<menu>
 													{{#each Sub}}
@@ -350,7 +350,11 @@
 										<div class="col">
 											<div class="home_slider_content" style="background-color: rgba(0, 0, 0, 0.685); padding: 20px;">
 												<div class="home_slider_item_title" >
+													{{#if IsPremium}}
+													<a href="/detail/{{Url}}"><span style="color: rgb(236, 233, 46);">{{Title}} <i class="fas fa-crown"></i></span></a>
+													{{else}}
 													<a href="/detail/{{Url}}">{{Title}}</a>
+													{{/if}}
 												</div>
 												<div class="home_slider_item_link">
 													<a href="/detail/{{Url}}" class="trans_200">Continue Reading
