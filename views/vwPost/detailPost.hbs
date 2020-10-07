@@ -2,62 +2,332 @@
 <link rel="stylesheet" href="../../public/css/comment.css">
 {{/section}}
 {{#section 'js'}}
-<script language="javascript">
-    function load_ajax() {
-        $.ajax({
-            url: "/post/comment/load",
-            type: "post",
-            dataType: "text",
-            data: {
-                number: $('#Number').val(),
-                url: $('#Url').val()
-            },
-            success: function (result) {
-                loadSuccess(result);
-            }
-        });
-    }
-    function loadSuccess(data) {
+<script>
+	/*function load_ajax() {
+		$.ajax({
+			url: "/post/comment/load",
+			type: "post",
+			dataType: "text",
+			data: {
+				number: $('#Number').val(),
+				url: $('#Url').val()
+			},
+			success: function (result) {
+				loadSuccess(result);
+			}
+		});
+	}
+	function loadSuccess(data) {
 		console.log(data);
-        const dt = JSON.parse(data);
-        console.log(dt);
-        var rs = $('#media-list');
-        $('#Number').val(`${dt.number}`);
-        if (dt.more === false){
-            $('#more').hide();
-        }
-        for (d of dt.listComment) {
-            var avt = d.Avatar;
-            if (avt === null){
-                avt = "NoAvatar.png";
-            }
-            rs.append(`
-            <li class="media">
-                <a class="pull-left" href="#">
-                    <img class="media-object img-circle"
-                        src="/public/img/Avatar/${avt}"
-                        alt="Profile">
-                </a>
-                <div class="media-body">
-                    <div class="well well-lg">
-                        <h4 class="media-heading text-uppercase reviews">${d.Name}</h4>
-                        <span class="media-date text-uppercase reviews list-inline">
-                            Lúc ${d.DatetimeComment} 
-                        </span>
-                        <p class="media-comment">
-                            ${d.Content}
-                        </p>                      
-                        <br>
-                    </div>
-                </div>
-            </li>
-            `);
-        }
+		const dt = JSON.parse(data);
+		console.log(dt);
+		var rs = $('#media-list');
+		$('#Number').val(`${dt.number}`);
+		if (dt.more === false){
+			$('#more').hide();
+		}
+		for (d of dt.listComment) {
+			var avt = d.Avatar;
+			if (avt === null){
+				avt = "NoAvatar.png";
+			}
+			rs.append(`
+			<li class="media">
+				<a class="pull-left" href="#">
+					<img class="media-object img-circle"
+						src="/public/img/Avatar/${avt}"
+						alt="Profile">
+				</a>
+				<div class="media-body">
+					<div class="well well-lg">
+						<h4 class="media-heading text-uppercase reviews">${d.Name}</h4>
+						<span class="media-date text-uppercase reviews list-inline">
+							Lúc ${d.DatetimeComment} 
+						</span>
+						<p class="media-comment">
+							${d.Content}
+						</p>                      
+						<br>
+					</div>
+				</div>
+			</li>
+			`);
+		}
+	}*/
+	async function PostComment(event) {
+		try {
+
+			const IdComment = $(event.currentTarget).val();
+			const IdForm = $(event.currentTarget).attr('id');
+			const levelParent = $(`#OpenComment-${IdForm.substring(4)}`).data('level');
+			const levelChild = levelParent + 1;
+
+			const Index = Date.now();
+			const form = document.getElementById('comment_form' + IdForm.substring(4));
+			const formData = new FormData(form);
+			formData.append('IdComment', IdComment);
+			console.log(formData);
+			const response = await fetch('/post/comment/add', {
+				method: 'POST',
+				body: formData
+			});
+
+			const responseJSON = await response.json();
+
+			if (responseJSON.hasOwnProperty('Login')) {
+				document.getElementById('Modal-Login').innerHTML = Handlebars.templates.Login();
+				$('#Login').modal('show');
+				$('#login').on('click', Login);
+
+			}
+			else if (responseJSON === 'IsEmpty') {
+				$('.postComment').prop('disabled', true);
+			}
+			else {
+				if (IdComment !== '') {
+					const Reply = document.getElementById('collapse' + IdForm.substring(4)) !== undefined ? document.getElementById('collapse' + IdForm.substring(4)) : document.getElementById('reply' + IdForm.substring(4));
+					const tmp = document.createElement('div');
+					tmp.innerHTML = Handlebars.templates.Comment({
+						level2: levelChild !== 3, level: levelChild, Post: { Id: responseJSON.IdPost, Url: responseJSON.Url },
+						Comment: { Content: responseJSON.Content, Name: responseJSON.Name, DatetimeComment: responseJSON.DatetimeComment, Id: responseJSON.Id, index: Index, Id: responseJSON.IdPost, Url: responseJSON.Url }
+					});
+					Reply.appendChild(tmp);
+				}
+				else {
+					const comment = document.getElementById('ListComment');
+					const tmp = document.createElement('div');
+					tmp.innerHTML = Handlebars.templates.Comment({
+						level2: levelChild !== 3, level: levelChild, Post: { Id: responseJSON.IdPost, Url: responseJSON.Url },
+						Comment: { Content: responseJSON.Content, Name: responseJSON.Name, DatetimeComment: responseJSON.DatetimeComment, Id: responseJSON.Id, index: Index }
+					});
+					comment.appendChild(tmp);
+				}
+			}
+		}
+		catch (error) {
+			console.log(error);
+		}
+	}
+
+	async function LikeComment(event) {
+		try {
+
+			let $currentLinkLike = $(event.currentTarget);
+			let $iconThumsub = $(event.currentTarget).children().first();
+			let $spanLike = "#" + $(event.currentTarget).children().next().attr('id');
+			let Id = $(event.currentTarget).children().next().attr('id').substring(5);
+			let totalLike = $(event.currentTarget).children().next().data("like");
+			let clicked = $currentLinkLike.hasClass('check') ? true : false;
+
+			const response = await fetch('/post/comment/like', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ IdComment: Id, totalLike: totalLike, Clicked: clicked })
+
+			});
+
+			const responseJSON = await response.json();
+			if ($currentLinkLike.hasClass('check')) {
+				$($iconThumsub).css({ 'color': 'black' });
+				$($currentLinkLike).attr('onclick', 'return false');
+			}
+			else {
+				$currentLinkLike.addClass('check');
+				$($iconThumsub).css({ 'color': 'blue' });
+			}
+			$($spanLike).data('like', responseJSON.total_like);
+			$($spanLike).text(responseJSON.total_like);
+
+		}
+		catch (error) {
+			console.log(error);
+		}
+	}
+
+	function buildComment(listComment, level, post) {
+    if (!level) {
+        level = 1;
     }
+
+    let dateTimeFromNow = moment(listComment.DatetimeComment).startOf('hour').fromNow();
+    let arrayDate = dateTimeFromNow.split(' ');
+    let dateTimeComment;
+    if (arrayDate[1] !== 'giờ') {
+        dateTimeComment = moment(listComment.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+    }
+    else {
+        dateTimeComment = dateTimeFromNow;
+    }
+    listComment.DatetimeComment = dateTimeComment;
+
+    let str = "";
+
+    str += Handlebars.templates.Comment({ Comment:listComment, level:level, level2:level !== 3, Post:post });
+    if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+        str += `<a class="view-all-reply" data-toggle="collapse" href="#collapse${listComment.index}" role="button" aria-expanded="false" aria-controls="#collapse${listComment.index}">
+          <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+          <span>more reply</span>
+        </a>
+        <div class="collapse media-content ml-5 pl-2" id="collapse${listComment.index}"> <div class="vetical"></div>`;
+    }
+
+
+    listComment.list.forEach((o) => {
+        str += buildComment(o, level + 1, post);
+    });
+
+    if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+        str += '</div>';
+    }
+
+    return new Handlebars.SafeString(str);
+}
+
+	async function LoadCommentByType(event, type){
+		try{
+			const $currentTab = $(event.currentTarget);
+			const IdPost = $($currentTab).data('idPost');
+			const Url = $($currentTab).data('url');
+
+			const response = await fetch('/post/comment/load', {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ Type: type, IdPost: IdPost, Url:Url})
+			});
+
+			const responseJSON = await response.json();
+		
+			if(responseJSON.length !== 0)
+			{
+				const $ListComment = $('#ListComment');
+				let template = '';
+				for(let i = 0; i < responseJSON.listComment.length; i++)
+				{
+					template += buildComment(responseJSON.listComment[i], false, responseJSON.post)
+				}
+				$($ListComment).html(template);
+				$()
+			}
+ 
+		}
+		catch(error)
+		{
+			console.log(error);
+		}
+	}
+ 
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js">
+	import { saveAs } from 'file-saver';
+</script>
+<script>
+	function Export() {
+		const btn = document.getElementById("btnExport");
+		const IdPost = btn.getAttribute('data-value');
+		btn.addEventListener("click", function () {
+			event.preventDefault();
+			const xhttp = new XMLHttpRequest();
+			xhttp.responseType = 'blob';
+			xhttp.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					let filename = "";
+					const disposition = xhttp.getResponseHeader('Content-Disposition');
+					if (disposition && disposition.indexOf('attachment') !== -1) {
+						const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+						const matches = filenameRegex.exec(disposition);
+						if (matches != null && matches[1]) {
+							filename = matches[1].replace(/['"]/g, '');
+						}
+						const blob = new Blob([xhttp.response], { type: 'application/pdf' });
+						console.log(blob);
+						saveAs(blob, filename);
+					}
+				}
+			}
+			xhttp.open("GET", "/ExportPdf/?id=" + IdPost, true);
+			xhttp.send();
+		}, true);
+	}
+
+	$(document).ready(() => {
+
+		let style = {};
+
+		$('.link_comment').on('click', (event) => {
+			const curent = '#collapse-' + $(event.currentTarget).children().next().attr('id').substring(12);
+			const check = $(curent).hasClass('show');
+
+			if (check) {
+				$(curent).addClass('show');
+			}
+			else {
+				$(curent).removeClass('show');
+				$('.comment-box').removeClass('show');
+			}
+
+		});
+
+		$('.type-comment li').on('click', (event)=>{
+			const $currentType = $(event.currentTarget);
+			$currentType.children().addClass('active');
+			$(event.currentTarget).siblings().children().removeClass('active');
+		});
+
+
+		$('.view-all-reply').on('click',(event) => {
+			console.log($(event.currentTarget));
+			const currentCollapse = $(event.currentTarget).attr('href');
+			style = {
+				'border-left': '2px solid hsla(200, 10%, 50%,100)',
+			};
+			$(currentCollapse).css(style);
+		});
+
+		$(document).on('show.bs.collapse', 'div.media-content', (event)=>{
+			style = {
+				'border-left': '2px solid hsla(200, 10%, 50%,100)',
+			};
+			$(event.currentTarget).css(style);
+		}) 
+	});
+	window.onload = function () {
+		Export();
+
+	}
+
+
+</script>
+<script>
+	$(document).ready(() => {
+		$('.textarea').on('input', (event) => {
+			const content = $(event.currentTarget).val();
+			if (content.length === 0) {
+				$('.note-count-text').css({
+					display: 'none'
+				});
+				$('.postComment').prop('disabled', true);
+			}
+			else {
+				$('.counter-word').html(content.length + ' / 1500 ký tự');
+				$('.note-count-text').css({
+					display: 'block'
+				});
+				$('.postComment').removeAttr('disabled');
+			}
+		});
+
+	});		
 </script>
 {{/section}}
-
-
 
 <div class="page_content">
 	<div class="container">
@@ -73,7 +343,8 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a
+								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -106,23 +377,23 @@
 
 						<div style="margin-top: 20px;">Download Post:</div>
 						{{#if IsLogin}}
-								{{#if IsAccountPremium}}
-									<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-										data-value={{this.post.Id}} id="btnExport" href="">Export pdf
-									</a>
-								{{else}}
-										<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-											href="/premium/register?retUrl=/detail/{{this.post.Url}}">Export pdf
-										</a>
-								{{/if}}
-							
+						{{#if IsAccountPremium}}
+						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+							data-value={{this.post.Id}} id="btnExport" href="">Export pdf
+						</a>
 						{{else}}
-							<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-								href="/account/login?retUrl=/detail/{{this.post.Url}}">Export pdf
-							</a>
+						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+							href="/premium/register?retUrl=/detail/{{this.post.Url}}">Export pdf
+						</a>
 						{{/if}}
 
-						
+						{{else}}
+						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+							href="/account/login?retUrl=/detail/{{this.post.Url}}">Export pdf
+						</a>
+						{{/if}}
+
+
 					</div>
 
 					<!-- Bottom Panel -->
@@ -130,7 +401,8 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a
+								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -163,51 +435,110 @@
 								<!-- Small Card With Image -->
 
 								{{#if IsPremium}}
-									<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
-								{{else}}
+								<div class="card card_default card_small_with_image grid-item"
+									style="background-color: rgb(231, 231, 146);">
+									{{else}}
 									<div class="card card_default card_small_with_image grid-item">
-								{{/if}}
-									<img class="card-img-top" src="../..{{Avatar}}" alt="">
-									<div class="card-body">
-
-										{{#if IsPremium}}
-										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span> &nbsp; <i class="fas fa-crown"></i></a></div>
-										{{else}}
-										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}">{{Title}}</a></div>
 										{{/if}}
-										<p class="card-text content-summary">{{Content_Summary}}</p>
-										<small class="post_meta">
-											<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
-											<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
-										</small>
-										<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
-										
-										<div class="list-tag">
-											<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
-											{{#load_list_tags ../listPostTags Id}}
-												<li	li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
-												href="/tag/{{TagName}}">{{Name}}</a></li>
-											{{/load_list_tags}}
+										<img class="card-img-top" src="../..{{Avatar}}" alt="">
+										<div class="card-body">
+
+											{{#if IsPremium}}
+											<div class="card-title card-title-small title-post"><a
+													href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>
+													&nbsp; <i class="fas fa-crown"></i></a></div>
+											{{else}}
+											<div class="card-title card-title-small title-post"><a
+													href="/detail/{{Url}}">{{Title}}</a></div>
+											{{/if}}
+											<p class="card-text content-summary">{{Content_Summary}}</p>
+											<small class="post_meta">
+												<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a
+													href="#">{{Nickname}}</a>
+												<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;
+													{{DatetimePost}}</span>
+											</small>
+											<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li
+												class="post_tag" style="background-color: rgb(173, 57, 57);"><a
+													style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li>
+											<br>
+
+											<div class="list-tag">
+												<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
+												{{#load_list_tags ../listPostTags Id}}
+												<li li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
+														href="/tag/{{TagName}}">{{Name}}</a></li>
+												{{/load_list_tags}}
+											</div>
+
 										</div>
-										
 									</div>
+									{{/each}}
 								</div>
-								{{/each}}
+								{{/if}}
 							</div>
-							{{/if}}
-						</div>								
-					</div>
-					<br>
-					<hr>
-					<br><br>
-					{{!-- bình luận bài viết --}}
-					<div class="container" id="cmt">
-						<div class="row">
-							<div class="col-sm-10 col-sm-offset-1" id="logout">
-								<div class="page-header">
-									<h3 class="reviews">Recent Comments <span class="badge badge-danger">{{empty}}</span> </h3>
-								</div>
-								<div class="comment-tabs">
+						</div>
+						<br>
+						<hr>
+						<br><br>
+						{{!-- bình luận bài viết --}}
+						<div class="container" id="cmt">
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1" id="logout">
+									<div class="page-header">
+										<h3 class="reviews">Comments <span
+												class="badge badge-danger">{{empty}}</span> </h3>
+									</div>
+									{{#unless empty}}
+									<div class="width_common empty-comment flexbox">
+										<i class="fa fa-comments fa-5x"></i>
+										<p>
+											Be the first person<br />
+											comments in this post.
+										</p>
+									</div>
+									<div id="ListComment"></div>
+									{{else}}
+									<ul class="nav nav-tabs type-comment">
+										<li class="nav-item">
+											<a class="nav-link {{tabComment}}" href="javascript:;" data-url="{{post.Url}}" data-idPost="{{post.Id}}" onclick="LoadCommentByType(event, 1)">Newest</a>
+										</li>
+										<li class="nav-item">
+											<a class="nav-link" href="javascript:;" data-url="{{post.Url}}" data-idPost="{{post.Id}}" onclick="LoadCommentByType(event, 2)">Most interested</a>
+										</li>
+									</ul>
+									<div id="ListComment">
+										{{#each listComment}}
+										{{buildComment this false ../post}}
+										{{/each}}
+									</div>
+									{{/unless}}
+									<div class="input_comment width_common mt-3">
+										<form id="comment_form-1">
+											<input type="hidden" name="IdPost" value="{{post.Id}}">
+											<input type="hidden" name="Url" value="{{post.Url}}">
+											<div class="d-flex flex-row align-items-start">
+												<img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg"
+													width="40">
+												<div class="box_text">
+													<textarea class="form-control ml-1 shadow-none textarea"
+														name='Content'></textarea>
+													<span class="note-count-text" style="display:none">
+														<span class="counter-word">
+														</span>
+													</span>
+												</div>
+											</div>
+											<div class="mt-2 text-right">
+												<button class="btn btn-primary btn-sm shadow-none postComment"
+													id="Post-1" type="button" onclick="PostComment(event)">Post
+													comment</button>
+												<button class="btn btn-outline-primary btn-sm ml-1 shadow-none"
+													type="button">Cancel</button>
+											</div>
+										</form>
+									</div>
+									{{!-- <div class="comment-tabs">
 									<ul class="nav nav-tabs" id="myTab" role="tablist">
 										<li class="nav-item" role="presentation">
 											<a class="nav-link active" href="#comments-list" role="tab" data-toggle="tab">
@@ -282,64 +613,64 @@
 											</form>
 										</div>
 									</div>
+								</div> --}}
 								</div>
 							</div>
 						</div>
+						{{!-- /bình luận bài viết --}}
+						<hr><br>
 					</div>
-					{{!-- /bình luận bài viết --}}
-					<hr><br>
 				</div>
-			</div>
 
 
-			<!-- Sidebar -->
+				<!-- Sidebar -->
 
-			<div class="col-lg-3">
-				<div class="sidebar">
-					<div class="sidebar_background"></div>
+				<div class="col-lg-3">
+					<div class="sidebar">
+						<div class="sidebar_background"></div>
 
-					<!-- Top Stories -->
+						<!-- Top Stories -->
 
-					<div class="sidebar_section">
-						<div class="sidebar_title_container">
-							<div class="sidebar_title">Random Post</div>
-							<div class="sidebar_slider_nav">
-								<div class="custom_nav_container sidebar_slider_nav_container">
-									<div class="custom_prev custom_prev_top">
-										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-											xml:space="preserve">
-											<polyline fill="#bebebe"
-												points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
-										</svg>
-									</div>
-									<ul id="custom_dots" class="custom_dots custom_dots_top">
-										<li class="custom_dot custom_dot_top active"><span></span></li>
-										<li class="custom_dot custom_dot_top"><span></span></li>
-										<li class="custom_dot custom_dot_top"><span></span></li>
-									</ul>
-									<div class="custom_next custom_next_top">
-										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-											xml:space="preserve">
-											<polyline fill="#bebebe"
-												points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
-										</svg>
+						<div class="sidebar_section">
+							<div class="sidebar_title_container">
+								<div class="sidebar_title">Random Post</div>
+								<div class="sidebar_slider_nav">
+									<div class="custom_nav_container sidebar_slider_nav_container">
+										<div class="custom_prev custom_prev_top">
+											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+												xml:space="preserve">
+												<polyline fill="#bebebe"
+													points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
+											</svg>
+										</div>
+										<ul id="custom_dots" class="custom_dots custom_dots_top">
+											<li class="custom_dot custom_dot_top active"><span></span></li>
+											<li class="custom_dot custom_dot_top"><span></span></li>
+											<li class="custom_dot custom_dot_top"><span></span></li>
+										</ul>
+										<div class="custom_next custom_next_top">
+											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+												xml:space="preserve">
+												<polyline fill="#bebebe"
+													points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
+											</svg>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<div class="sidebar_section_content">
+							<div class="sidebar_section_content">
 
-							<!-- Top Stories Slider -->
-							<div class="sidebar_slider_container">
-								<div class="owl-carousel owl-theme sidebar_slider_top">
+								<!-- Top Stories Slider -->
+								<div class="sidebar_slider_container">
+									<div class="owl-carousel owl-theme sidebar_slider_top">
 
-									<!-- Top Stories Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_1 this.listRandomSidebar}}
+										<!-- Top Stories Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_1 this.listRandomSidebar}}
 											<div class="side_post">
 												<a href="/detail/{{Url}}">
 													<div
@@ -349,21 +680,23 @@
 														</div>
 														<div class="side_post_content">
 															{{#if IsPremium}}
-																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
 															{{else}}
-																<div class="side_post_title">{{Title}}</div>
+															<div class="side_post_title">{{Title}}</div>
 															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 														</div>
 													</div>
 												</a>
 											</div>
-										{{/loadListRandomSideBar_1}}
-									</div>
+											{{/loadListRandomSideBar_1}}
+										</div>
 
-									<!-- Top Stories Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_2 this.listRandomSidebar}}
+										<!-- Top Stories Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_2 this.listRandomSidebar}}
 											<div class="side_post">
 												<a href="/detail/{{Url}}">
 													<div
@@ -373,21 +706,23 @@
 														</div>
 														<div class="side_post_content">
 															{{#if IsPremium}}
-																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
 															{{else}}
-																<div class="side_post_title">{{Title}}</div>
+															<div class="side_post_title">{{Title}}</div>
 															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 														</div>
 													</div>
 												</a>
 											</div>
-										{{/loadListRandomSideBar_2}}
-									</div>
+											{{/loadListRandomSideBar_2}}
+										</div>
 
-									<!-- Top Stories Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_3 this.listRandomSidebar}}
+										<!-- Top Stories Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_3 this.listRandomSidebar}}
 											<div class="side_post">
 												<a href="/detail/{{Url}}">
 													<div
@@ -397,210 +732,185 @@
 														</div>
 														<div class="side_post_content">
 															{{#if IsPremium}}
-																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
 															{{else}}
-																<div class="side_post_title">{{Title}}</div>
+															<div class="side_post_title">{{Title}}</div>
 															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
 														</div>
 													</div>
 												</a>
 											</div>
-										{{/loadListRandomSideBar_3}}
-									</div>
+											{{/loadListRandomSideBar_3}}
+										</div>
 
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Advertising -->
-
-					<div class="sidebar_section">
-						<div class="advertising">
-							<div class="advertising_background"
-								style="background-image:url(../../public/images/post_17.jpg)"></div>
-							<div class="advertising_content d-flex flex-column align-items-start justify-content-end">
-								<div class="advertising_perc">-15%</div>
-								<div class="advertising_link"><a href="#">How Did van Gogh’s Turbulent Mind</a></div>
-							</div>
-						</div>
-					</div>
-
-
-					<!-- Future Events -->
-
-					<div class="sidebar_section future_events">
-						<div class="sidebar_title_container">
-							<div class="sidebar_title">Future Events</div>
-							<div class="sidebar_slider_nav">
-								<div class="custom_nav_container sidebar_slider_nav_container">
-									<div class="custom_prev custom_prev_events">
-										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-											xml:space="preserve">
-											<polyline fill="#bebebe"
-												points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
-										</svg>
-									</div>
-									<ul id="custom_dots" class="custom_dots custom_dots_events">
-										<li class="custom_dot custom_dot_events active"><span></span></li>
-										<li class="custom_dot custom_dot_events"><span></span></li>
-										<li class="custom_dot custom_dot_events"><span></span></li>
-									</ul>
-									<div class="custom_next custom_next_events">
-										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-											xml:space="preserve">
-											<polyline fill="#bebebe"
-												points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
-										</svg>
 									</div>
 								</div>
 							</div>
 						</div>
-						<div class="sidebar_section_content">
 
-							<!-- Sidebar Slider -->
-							<div class="sidebar_slider_container">
-								<div class="owl-carousel owl-theme sidebar_slider_events">
+						<!-- Advertising -->
 
-									{{#if emptyFutureEvent}}
-									<p>NOT FUTURE EVENTS</p>
-
-									{{else}}
-
-									<!-- Future Events Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_1 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-										{{/loadListRandomSideBar_1}}
+						<div class="sidebar_section">
+							<div class="advertising">
+								<div class="advertising_background"
+									style="background-image:url(../../public/images/post_17.jpg)"></div>
+								<div
+									class="advertising_content d-flex flex-column align-items-start justify-content-end">
+									<div class="advertising_perc">-15%</div>
+									<div class="advertising_link"><a href="#">How Did van Gogh’s Turbulent Mind</a>
 									</div>
-
-									<!-- Future Events Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_2 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-										{{/loadListRandomSideBar_2}}
-									</div>
-
-									<!-- Future Events Slider Item -->
-									<div class="owl-item">
-										{{#loadListRandomSideBar_3 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-										{{/loadListRandomSideBar_3}}
-									</div>
-
-									{{/if}}
-
 								</div>
 							</div>
 						</div>
-					</div>
 
+
+						<!-- Future Events -->
+
+						<div class="sidebar_section future_events">
+							<div class="sidebar_title_container">
+								<div class="sidebar_title">Future Events</div>
+								<div class="sidebar_slider_nav">
+									<div class="custom_nav_container sidebar_slider_nav_container">
+										<div class="custom_prev custom_prev_events">
+											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+												xml:space="preserve">
+												<polyline fill="#bebebe"
+													points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
+											</svg>
+										</div>
+										<ul id="custom_dots" class="custom_dots custom_dots_events">
+											<li class="custom_dot custom_dot_events active"><span></span></li>
+											<li class="custom_dot custom_dot_events"><span></span></li>
+											<li class="custom_dot custom_dot_events"><span></span></li>
+										</ul>
+										<div class="custom_next custom_next_events">
+											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+												xml:space="preserve">
+												<polyline fill="#bebebe"
+													points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
+											</svg>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="sidebar_section_content">
+
+								<!-- Sidebar Slider -->
+								<div class="sidebar_slider_container">
+									<div class="owl-carousel owl-theme sidebar_slider_events">
+
+										{{#if emptyFutureEvent}}
+										<p>NOT FUTURE EVENTS</p>
+
+										{{else}}
+
+										<!-- Future Events Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_1 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div
+															class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">
+																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+											{{/loadListRandomSideBar_1}}
+										</div>
+
+										<!-- Future Events Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_2 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div
+															class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">
+																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+											{{/loadListRandomSideBar_2}}
+										</div>
+
+										<!-- Future Events Slider Item -->
+										<div class="owl-item">
+											{{#loadListRandomSideBar_3 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div
+															class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">
+																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span
+																	style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small
+																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+											{{/loadListRandomSideBar_3}}
+										</div>
+
+										{{/if}}
+
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
 				</div>
-			</div>
 
+			</div>
 		</div>
 	</div>
-</div>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.2/FileSaver.min.js">
-	import { saveAs } from 'file-saver';
-</script>
-<script>
-function Export()
-    {
-        const btn = document.getElementById("btnExport");
-		const IdPost = btn.getAttribute('data-value');
-        btn.addEventListener("click", function () 
-		{
-			event.preventDefault();
-			const xhttp = new XMLHttpRequest();
-			xhttp.responseType = 'blob';
-			xhttp.onreadystatechange = function () 
-			{
-				if (this.readyState == 4 && this.status == 200) 
-				{
-						let filename = "";
-						const disposition = xhttp.getResponseHeader('Content-Disposition');
-						if (disposition && disposition.indexOf('attachment') !== -1) 
-						{
-							const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-							const matches = filenameRegex.exec(disposition);
-							if (matches != null && matches[1]) 
-							{
-								filename = matches[1].replace(/['"]/g, '');
-							}
-							const blob = new Blob([xhttp.response], { type: 'application/pdf' });
-							console.log(blob);
-							saveAs(blob, filename);
-						}
-				}
-			}
-			xhttp.open("GET", "/ExportPdf/?id=" + IdPost, true);
-			xhttp.send();
-		}, true);
-	}
-
-	window.onload = function () {
-		Export();
-	}
-</script>

@@ -129,47 +129,44 @@ router.get('/login', auth.referer, function (req, res) {
 }) 
 
 router.post('/login', async function (req, res) {
+
     if (req.body.Username === "" || req.body.Password === ""){
-        req.flash('error', 'Please fill data in items.');
-        return res.redirect('/account/login');
+        return res.json({err:'Username or Password is invalid'});
     }
 
     //captcha
-    if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
-        /*return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});*/
-        req.flash('error', 'Please select captcha.');
-        return res.redirect('/account/login');
-    }
+    // if(req.body['g-recaptcha-response'] === undefined || req.body['g-recaptcha-response'] === '' || req.body['g-recaptcha-response'] === null) {
+    //     /*return res.json({"responseCode" : 1,"responseDesc" : "Please select captcha"});*/
+    //     req.flash('error', 'Please select captcha.');
+    //     return res.redirect('/account/login');
+    // }
 
-    const secretKey = '6LfNc78ZAAAAAE4eRpe5Myswh-Dd_CMLSDtPJpk8';
-    const verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
-    request(verificationUrl,function(error,response,body) {
-        body = JSON.parse(body);
-        // Success will be true or false depending upon captcha validation.
-        if(body.success !== undefined && !body.success) {
-            /*return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});*/
-            req.flash('error', 'Failed captcha verification.');
-            return res.redirect('/account/login');
-        }
-    });
+    // const secretKey = '6LfNc78ZAAAAAE4eRpe5Myswh-Dd_CMLSDtPJpk8';
+    // const verificationUrl = "https://www.google.com/recaptcha/api/siteverify?secret=" + secretKey + "&response=" + req.body['g-recaptcha-response'] + "&remoteip=" + req.connection.remoteAddress;
+    // request(verificationUrl,function(error,response,body) {
+    //     body = JSON.parse(body);
+    //     // Success will be true or false depending upon captcha validation.
+    //     if(body.success !== undefined && !body.success) {
+    //         /*return res.json({"responseCode" : 1,"responseDesc" : "Failed captcha verification"});*/
+    //         req.flash('error', 'Failed captcha verification.');
+    //         return res.redirect('/account/login');
+    //     }
+    // });
 
     const rows = await accountModel.single(req.body.Username);
 
     if (rows.length === 0){
-        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
-        return res.redirect('/account/login');
+        return res.json({err:'Username or Password is invalid'});
     }
     
     const acc = rows[0];
     if (acc.IsGoogle !== 0){
-        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
-        return res.redirect('/account/login');
+        return res.json({err:'Username or Password is invalid'});
     }
 
     const rs = bcrypt.compareSync(req.body.Password, acc.Password_hash);
     if (rs === false){
-        req.flash('error', 'Tài khoản không tồn tại hoặc mật khẩu không đúng.');
-        return res.redirect('/account/login');
+        return res.json({err:'Username or Password is invalid'});
     }
 
     delete acc.Password_hash;
@@ -200,21 +197,21 @@ router.post('/login', async function (req, res) {
     else if (acc.TypeAccount == 4){
         req.session.isAdmin = true;
     }
-
-    const url = req.query.retUrl || '/';
-    res.redirect(url);
+    
+    const url = req.headers.referer || '/';   
+    res.json({success:url});
 }) 
 
 router.post('/logout', auth.restrict, function (req, res) {
     req.logout();
-
     req.session.isAuthenticated = false;
     req.session.authAccount = null;
     req.session.isSubscriber = false;
     req.session.isWriter = false;
     req.session.isEditor = false;
     req.session.isAdmin = false;
-
+    req.session.destroy();
+    console.log(req.session);
     res.redirect(req.headers.referer);
 })
 

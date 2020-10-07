@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const bodyparser = require('body-parser');
 const db = require('./models/account.model');
 const cors = require('cors')
 // Phần của Khương mới thêm
@@ -7,7 +8,8 @@ const flash = require('express-flash');
 
 const app = express();
 app.use(cors())
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyparser.urlencoded({ extended: true }));
+app.use(bodyparser.json());
 app.use('/public', express.static('public'));
 // middlewares
 require('./middlewares/session.mdw')(app);
@@ -19,14 +21,12 @@ app.use(passport.session());
 require('./passport-setup');
 app.use(flash());
 
-// Trang chủ Home
-//sửa require của / và /index.html ((require('./route/home.route') -> (require('./Route/home.route'))
-app.use('/', require('./Route/home.route'));
-app.use('/index.html', require('./Route/home.route'));
-
-
 const {exposeTemplates} = require('./public/js/exposeTemplate');
 
+// Trang chủ Home
+//sửa require của / và /index.html ((require('./route/home.route') -> (require('./Route/home.route'))
+app.use('/', exposeTemplates, require('./Route/home.route'));
+app.use('/index.html', exposeTemplates, require('./Route/home.route'));
 
 // route tag
 //sửa require của '/tag' ((require('./route/tag.route') -> require('./Route/tag.route'))
@@ -37,27 +37,27 @@ app.use('/tag', require('./Route/tag.route'));
 app.use('/category', require('./Route/category.route'));
 
 // route account
-const accountRoute = require('./route/account.route');
-app.use('/account', accountRoute);
+ const accountRoute = require('./route/account.route');
+ app.use('/account', accountRoute);
 // passport
-app.use('/auth', require('./Route/auth.route'));
+ app.use('/auth', require('./Route/auth.route'));
 
 // Trang writer
-app.use('/writer', exposeTemplates, require('./Route/Writer'));
+ app.use('/writer', exposeTemplates, require('./Route/Writer'));
 
 // Trang forgot password
 
-app.use('/account', require('./Route/ForgotPW'));
+  app.use('/account', require('./Route/ForgotPW'));
 
 
 //Trang Profile
-app.use('/account', exposeTemplates, require('./Route/profile'));
+ app.use('/account', exposeTemplates, require('./Route/profile'));
 
 
-app.use('/admin', exposeTemplates, require('./Route/admin.route'));
+ app.use('/admin', exposeTemplates, require('./Route/admin.route'));
 
 //Trang editor
-app.use('/editor', require('./Route/editor.route'));
+ app.use('/editor', require('./Route/editor.route'));
 
 app.use(function (req, res) {
   res.render('404', { layout: false });

@@ -31,6 +31,13 @@ module.exports = {
         FROM ${TBL_ACCOUNTS} a, information i 
         WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}' and a.IsGoogle = 1`);
     },
+
+    singleFacebook: function (username) {
+        return db.load(`SELECT a.Id, a.Username, a.IsGoogle, a.TypeAccount, a.DateExpired, i.Name, i.Nickname, i.Avatar, i.DOB, i.Email, i.Phone, i.Sex, i.IdAccount 
+        FROM ${TBL_ACCOUNTS} a, information i 
+        WHERE a.Id = i.IdAccount and a.IsDelete = 0 and Username = '${username}' and a.IsFacebook = 1`);
+    },
+
     singUsername_Expired: function (username) {
         return db.load(`select a.Id, a.Username, i.Name, i.Sex, i.DOB, i.Email, i.Phone, i.Avatar, a.TypeAccount, a.DateRegister, a.DateExpired, i.Nickname
         from ${TBL_ACCOUNTS} a, information i, typeaccount t
@@ -62,6 +69,9 @@ module.exports = {
     },
     singleGoogle_check: function(username){
         return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsGoogle = 1 and IsDelete = 0`);
+    },
+    singleFacebook_check: function(username){
+        return db.load(`select Id from ${TBL_ACCOUNTS} where Username = '${username}' and IsFacebook = 1 and IsDelete = 0`);
     },
     singleEmail: function(email){
         return db.load(`select IdAccount from information where Email = '${email}'`);

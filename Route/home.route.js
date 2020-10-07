@@ -15,6 +15,12 @@ const { getTime_Minutes } = require('../js/betweendate');
 const { addMinutes } = require('../config/default.json');
 const accountModel = require('../models/account.model');
 const router = express.Router();
+const Handlebars = require('express-handlebars');
+const fs = require('fs');
+const path = require('path');
+const multer = require('multer');
+const { LoadAccount } = require('../models/account.model');
+let upload = multer();
 const printPdf = async (htmlPage) => {
     // //.log('Starting: Generating PDF Process, Kindly wait ..');
     /** Launch a headleass browser */
@@ -39,6 +45,84 @@ const printPdf = async (htmlPage) => {
     // //.log('Ending: Generating PDF Process');
     return pdf;
 }
+
+function getComment(check, array, tmp, parent)
+{
+    parent.list = [];
+    parent.count = 0;
+    parent.index = Date.now() + parent.Id;
+    check[parent.Id] = (check[parent.Id] || 0) + 1;
+    for(let i = 0; i < tmp.length; i++)
+    { 
+      if(tmp[i].recipient_id === parent.Id)
+      {
+          tmp[i].list = [];
+          tmp[i].index = Date.now() + tmp[i].Id;
+          parent.count = parent.count + 1;
+          parent.list.push(tmp[i]);
+          getComment(check, tmp[i].list, tmp, tmp[i]);
+      }
+    }
+    return parent;
+}
+
+function loadComment(listComment, check, url)
+{
+    for (const [key, value] of Object.entries(check)) {
+        if(value !== 1)
+        {
+          const index = listComment.findIndex(element => element.Id+'' === key);
+          listComment.splice(index, 1);
+        }
+    }
+
+    return listComment;
+}
+
+// function buildComment(listComment, level, post) {
+//     if (!level) {
+//         level = 1;
+//     }
+
+//     let dateTimeFromNow = moment(listComment.DatetimeComment).startOf('hour').fromNow();
+//     let arrayDate = dateTimeFromNow.split(' ');
+//     let dateTimeComment;
+//     if (arrayDate[1] !== 'giờ') {
+//         dateTimeComment = moment(listComment.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+//     }
+//     else {
+//         dateTimeComment = dateTimeFromNow;
+//     }
+//     listComment.DatetimeComment = dateTimeComment;
+
+//     let str = "";
+
+//     console.log(listComment);
+
+//     const template = fs.readFileSync(path.join(__dirname, '../templates/Comment.hbs'), "utf8");
+//       const temp = Handlebars.precompile(template);
+//       const precompiled = (new Function('return' + temp)());
+//       str += Handlebars.template(precompiled)({ Comment:listComment, level:level, level2:level !== 3, Post:post });
+//     if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+//         str += `<a class="view-all-reply" data-toggle="collapse" href="#collapse${listComment.index}" role="button" aria-expanded="false" aria-controls="#collapse${listComment.index}">
+//           <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+//           <span>more reply</span>
+//         </a>
+//         <div class="collapse media-content ml-5 pl-2" id="collapse${listComment.index}"> <div class="vetical"></div>`;
+//     }
+
+
+//     listComment.list.forEach((o) => {
+//         str += buildComment(o, level + 1, post);
+//     });
+
+//     if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+//         str += '</div>';
+//     }
+
+//     return new Handlebars.SafeString(str);
+// }
+
 
 // function complete text
 function completeTextTitle(listPost, endTitle) {
@@ -104,22 +188,23 @@ router.get('/', async function (req, res) {
     }
     else {
         IsLogin = true;
-
-
         const dt_now = moment().format('YYYY-MM-DD HH:mm:ss');
+        let dateEx;
         if ((!req.session.authAccount.DateExpired || isNaN(Date.parse(req.session.authAccount.DateExpired)))
             && res.locals.lcAuthUser.TypeAccount === 1)
+        {
             IsAccountPremium = false;
-        const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
-
+            dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
+        }
 
         if (dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
+        {
             IsAccountPremium = false;
-
+        } 
     }
 
 
-    // danh sách bài viet moi nhat
+    // // danh sách bài viet moi nhat
     const listPostNew = await postModel.postnew();
     var listTreding = [];
     var numTrend = 0;
@@ -137,13 +222,6 @@ router.get('/', async function (req, res) {
         numTrend = numTrend + config.dayTrend;
         listTreding = await postModel.trending(numTrend);
     }
-
-
-
-
-
-
-
 
     const listMostView = await postModel.mostview();
 
@@ -193,12 +271,12 @@ router.get('/', async function (req, res) {
     for (let i = 0; i < listFutureEvent.length; i++) {
         listFutureEvent[i].DatetimePost = moment(listFutureEvent[i].DatetimePost, 'DD/MM/YYYY').format('DD/MM');
     }
-    // khởi tạo biến premium chưa được đăng kí
-    var premium = false;
-    // Khởi tạo isSubscriber là tài khoản độc giả
+    // // khởi tạo biến premium chưa được đăng kí
+     var premium = false;
+    // // Khởi tạo isSubscriber là tài khoản độc giả
     var isSubscriber = true;
 
-    // Kiểm tra đăng nhập
+    // // Kiểm tra đăng nhập
     if (res.locals.lcIsAuthenticated === true) {
         // Kiểm tra tài khoản là độc giả
         if (res.locals.lcAuthUser.TypeAccount === 1) {
@@ -228,7 +306,7 @@ router.get('/', async function (req, res) {
 
 
 
-    // console.log(listTreding);
+    // // console.log(listTreding);
     res.render('index', {
         Treding: listTreding,
         emptyTreding: listTreding.length === 0,
@@ -304,11 +382,11 @@ router.get('/', async function (req, res) {
                 else if (value == 11) return "Nov";
                 else if (value == 12) return "Dec";
                 else return "?";
-            }
+            },
         }
 
-    });
-
+     });
+    //res.send('Hello');
 })
 
 router.get('/premium/register', restrict, async function (req, res) {
@@ -378,8 +456,6 @@ router.post('/premium/register', restrict, async function (req, res) {
     const returnURL = req.body.returnUrl || '/';
     return res.redirect(returnURL);
 })
-
-
 
 router.get('/detail/:Url', async function (req, res) {
 
@@ -470,15 +546,19 @@ router.get('/detail/:Url', async function (req, res) {
     const offset = (+req.body.number || 0) * config.pagination.limit;
 
     const pcmt = posts_cmt[0];
-    const listComment = await commentModel.commentByIdPost_admin(pcmt.Id, offset, config.pagination.limit);
+    const listComment = await commentModel.commentByIdPost_admin(pcmt.Id);
 
-    for (l of listComment) {
-        l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
-        l.Url = url;
+    let temparray = [];
+    let check = {};
+
+    for(let i = 0; i < listComment.length; i++)
+    {
+        temparray.push(getComment(check, temparray, listComment, listComment[i]));
     }
+
+    let temp = loadComment(temparray, check, url);
+
     const empty = await commentModel.countCommentByIdPost_admin(pcmt.Id);
-
-
 
     let IsLogin = false;
     let IsAccountPremium = true;
@@ -508,9 +588,6 @@ router.get('/detail/:Url', async function (req, res) {
         Views: post.Views + 1
     }
 
-    ////.log(post.Id + ":" + post.Views);
-
-
     await postModel.patch(entityPost);
 
     res.render('vwPost/detailPost', {
@@ -520,10 +597,11 @@ router.get('/detail/:Url', async function (req, res) {
         postRandom,
         // listComment,
         // countComment,
-
-        listComment: listComment,
+        listComment: temp,
         empty: empty[0].Count,
         more: empty[0].Count > config.pagination.limit,
+        tabComment:'active',
+
 
         emptyPostRandom: postRandom.length === 0,
         listPostTags,
@@ -583,15 +661,19 @@ router.get('/detail/:Url', async function (req, res) {
                 else if (value == 11) return "Nov";
                 else if (value == 12) return "Dec";
                 else return "?";
-            }
+            },
+
+           
+            
         }
     })
 });
 
+router.post('/post/comment/load', upload.fields([]), async function (req, res) {
+    const url = req.body.Url || "empty";
+    const idPost = +req.body.IdPost;
+    const type = +req.body.Type === 1 ? 'c.DatetimeComment' : 'c.total_like';
 
-router.post('/post/comment/load', async function (req, res) {
-    // //.log(1);
-    const url = req.body.url || "empty";
     const posts = await postModel.single_url_posts(url);
     if (posts.length === 0) {
         req.flash('error', 'Bài viết không tồn tại.');
@@ -602,45 +684,57 @@ router.post('/post/comment/load', async function (req, res) {
         return res.redirect('/admin/posts');
     }
 
-    const offset = (+req.body.number || 1) * config.pagination.limit;
+    // const offset = (+req.body.Page || 1) * config.pagination.limit;
 
     const post = posts[0];
-    const listComment = await commentModel.commentByIdPost_admin(post.Id, offset, config.pagination.limit);
+    const listComment = await commentModel.commentByIdPost_admin(post.Id, type);
 
+    let temparray = [];
+    let check = {};
 
-    for (l of listComment) {
-        l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
-        l.Url = url;
+    for(let i = 0; i < listComment.length; i++)
+    {
+        temparray.push(getComment(check, temparray, listComment, listComment[i]));
     }
 
-    const empty = await commentModel.countCommentByIdPost_admin(post.Id);
-    var more = true;
-    if (offset + config.pagination.limit >= empty[0].Count) {
-        more = false;
-    }
+    let temp = loadComment(temparray, check, url);
 
-    const number = +req.body.number + 1;
+    // for (l of listComment) {
+    //     l.DatetimeComment = moment(l.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+    //     l.Url = url;
+    // }
+
+    // const empty = await commentModel.countCommentByIdPost_admin(post.Id);
+    // var more = true;
+    // if (offset + config.pagination.limit >= empty[0].Count) {
+    //     more = false;
+    // }
+
+    // const number = +req.body.number + 1;
 
     const data = {
-        listComment: listComment,
-        number: number,
-        more: more
+        listComment: temp,
+        post: post,
     }
-    return res.json(data);
+    res.json(data);
 })
 
-router.post('/post/comment/add', async function (req, res) {
+router.post('/post/comment/add', upload.fields([]), async function (req, res) {
+    
     const Url = req.body.Url;
+    const IdComment = req.body.IdComment || null;
+
     if (!res.locals.lcIsAuthenticated) {
         const url = querystring.escape(`/detail/${Url}#cmt`);
-        return res.redirect(`/account/login?retUrl=${url}`);
+        return res.json({Login:`/account/login?retUrl=${url}`});
     }
     // {"IdPost":"10","Url":"gioi-thieu-ve-iostream-cout-cin-va-endl-1596752895575","Content":""}
     const IdPost = req.body.IdPost;
     const Content = req.body.Content;
+    const Name = res.locals.lcAuthUser.Name;
     if (!Content) {
         req.flash('error', 'Nội dung bình luận không thể để trống ');
-        return res.redirect(`/admin/posts/comment?url=${Url}`);
+        return res.json('IsEmpty');
     }
 
     const DatetimeComment = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -648,14 +742,46 @@ router.post('/post/comment/add', async function (req, res) {
     const entity = {
         IdPost,
         Content,
+        recipient_id:IdComment,
         DatetimeComment,
         IsDelete: 0,
         IdAccount: res.locals.lcAuthUser.Id
     }
-    await commentModel.add(entity);
+    const CommentInserted = await commentModel.add(entity);
 
-    return res.redirect(`/detail/${Url}#cmt`);
+    res.json({Content, DatetimeComment, Name, Id:CommentInserted.insertId, IdPost, Url});
 })
+
+router.post('/post/comment/like', async function (req, res) {
+    
+    const IdComment = +req.body.IdComment;
+    let totalLike = +req.body.totalLike;
+    const clicked = JSON.parse(req.body.Clicked);
+
+    if(clicked === true)
+    {
+        totalLike -= 1;
+    }
+    else 
+    {
+        totalLike += 1;
+    }
+
+    if(req.body.length === 0)
+    {
+        res.json('fail');
+    }
+    const entity = {
+        Id:IdComment,
+        total_like:totalLike
+    };
+    const result = await commentModel.patch(entity);
+
+    if(result.changedRows !== 0)
+    {
+        res.json({total_like: totalLike});
+    }
+});
 
 router.get('/search', async function (req, res) {
     const ValueSearch = req.query.Search || '';

@@ -14,7 +14,7 @@ const {restrict, referer} = require('../middlewares/auth.mdw');
 function Authories(req, res, next)
 {
     if (!req.session.isAuthenticated) {
-        return res.redirect(`/account/login`);
+        return res.redirect(`/`);
     }
     next();
 }
@@ -103,7 +103,8 @@ router.post('/Profile/', Authories, async (req, res, next)=>{
                 fileFilter: function (req, file, cb) {
                     if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG)$/)) {
                         req.fileValidationError = 'Only image files are allowed!';
-                        return cb(new Error('Only image files are allowed!'), false);
+                        //return cb(new Error('Only image files are allowed!'), false);
+                        return cb(res.json({ fail: "Email has already exsist or not valid!" }));
                     }
                     cb(null, true);
                 }

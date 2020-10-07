@@ -22,6 +22,8 @@
 <link rel="stylesheet" type="text/css" href="/public/styles/menu_dropdown.css">
 <link rel="stylesheet" href="/public/styles/menu.css">
 <link rel="stylesheet" href="/public/styles/publicCSS.css">
+<link rel="stylesheet" href="../../public/css/Login.css">
+<link rel="stylesheet" href="../../public/css/backtotop.css">
 <style>
 .scroll{
 	display:block;
@@ -37,7 +39,6 @@
 
 <div class="super_container">
 	<!-- Header -->
-
 	<header class="header">
 		<div class="container-fluid">
 			<div class="row">
@@ -171,7 +172,7 @@
 							</li>
 							{{else}}
 							<li class="nav-item">
-								<a class="nav-link" href="/account/login">
+								<a class="nav-link" id="btnLogin" href="javascript:;">
 								<i class="fa fa-sign-in" aria-hidden="true"></i>
 								Login
 								</a>
@@ -274,11 +275,11 @@
 				</a>
 				</div>
 			{{else}}
-				<a class="nav-link btnLogin" href="/account/login">
+				<a class="nav-link" id="btnLogin" href="javascript:;">
 				<i class="fa fa-sign-in" aria-hidden="true"></i>
 				Login
 				</a>
-				<a class="nav-link btnLogin" href="/account/register">
+				<a class="nav-link btnRegister" href="/account/register">
 				<i class="fa fa-user-plus" aria-hidden="true"></i>
 				Register
 				</a>
@@ -328,7 +329,7 @@
 	<!-- Home -->
 
 	<div class="home">
-		
+		<div id="Modal-Login"></div>
 		<!-- Home Slider -->
 
 		<div class="home_slider_container">
@@ -398,7 +399,7 @@
     {{{body}}}
 
 	<!-- Footer -->
-
+	<a id="back2Top" title="Back to top" href="#"><i class="fas fa-arrow-up"></i></a>
 	<footer class="footer">
 		<div class="container">
 			<div class="row row-lg-eq-height">
@@ -448,6 +449,7 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <script src="/public/styles/bootstrap4/bootstrap.min.js"></script>
 <script src="/public/plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
 <script src="/public/plugins/jquery.mb.YTPlayer-3.1.12/jquery.mb.YTPlayer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.runtime.js"></script>
 <script src="/public/plugins/easing/easing.js"></script>
 <script src="/public/plugins/masonry/masonry.js"></script>
 <script src="/public/plugins/masonry/images_loaded.js"></script>
@@ -496,17 +498,122 @@ function reset() {
 }
 
 
-
 document.addEventListener('mouseover', function() {
    mousein = true
    reset()
 })
 
-window.onload = ()=>
+
+
+async function Login(event)
 {
-	Search();
-}
+	try{
+		const $username = $('#email').val();
+		const $password = $('#password').val();
+		const $url = $('#url').val();
+		console.log($url);
+
+		const response = await fetch('/account/login', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ Username:$username , Password: $password, Url:$url})
+		});
+		
+		const responseJSON = await response.json();
+		if(responseJSON.success)
+		{
+			location.href=responseJSON.success;
+		}
+		else
+		{
+			$('#invalid').html(responseJSON.err);
+			console.log( responseJSON.err);
+		}
+	}
+	catch(error)
+	{
+		console.log(error);
+	}
+} 
+
+$(document).ready(()=>{
+	
+	let loginWindow;
+	$('#btnLogin').on('click', (event)=>{
+		document.getElementById('Modal-Login').innerHTML = Handlebars.templates.Login();
+		$('#Login').modal('show');
+
+		$('#email, #password').on('keypress', () => {
+			if($('#password').val().length !== 0 && $('#email').val().length !== 0) {
+				$('#email, #password').one('keypress', (event)=>{
+					if(event.which === 13)
+					{
+						$('#login').click();
+					}	
+				});
+			}
+		});
+		$('#login').off('click').on('click', Login);
+
+		document.querySelectorAll('.Login-Social').forEach(btn => {
+			btn.addEventListener('click', (event) => {
+				event.preventDefault();
+				let url = $(event.currentTarget).children().attr('href');
+				let width = 500, height = 370;
+				if (url.indexOf('/auth/google') === 0 || url.indexOf('/auth/facebook') === 0) {
+					width = 470; height = 580;
+				}
+				let w = window.outerWidth - width, h = window.outerHeight - height;
+				let left = Math.round(window.screenX + (w / 2));
+				let top = Math.round(window.screenY + (h / 2.5));
+
+				loginWindow = window.open(url, 'LogIn',
+					'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top +
+					',toolbar=0,scrollbars=0,status=0,resizable=0,location=0,menuBar=0');
+			});
+		})
+	});
+
+	$("#back2Top").click(function(event) {
+        event.preventDefault();
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+        return false;
+    });
+});
+
+$(window).scroll(()=>{
+	let height = $(window).scrollTop();
+	if(height > 200 && height <= $('.sidebar_background').offset().top + $('.sidebar_background').outerHeight() - window.innerHeight)
+	{
+		$('#back2Top').fadeIn();
+	}
+	else
+	{        
+        $('#back2Top').fadeOut(); 
+	}
+});
+
+window.addEventListener('message', function(event) {
+	if (event.data !== 'popup-done') 
+	{ 
+		return; 
+	}
+	window.location.replace('/auth/good');
+});
+
 </script>
 {{{_sections.js}}}
 </body>
 </html>
+<script>
+	(function () {
+		var revive = Handlebars.template,
+		templates = Handlebars.templates = Handlebars.templates || {};
+		{{#templates}}
+			templates['{{{name}}}'] = revive({{{ template }}});
+		{{/templates}}
+  	} ());
+</script>

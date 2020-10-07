@@ -29,9 +29,17 @@ module.exports = {
     InsertPost:(value)=>{
         return db.insert(`INSERT INTO posts(??, ??, ??, ??, ??, ??, ??, ??, ??, ??, ??) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, value);
     },
+
+    InsertTag:(value)=>{
+        return db.insert(`INSERT INTO tags(Name, TagName) VALUES ?`, value);
+    },
     
     InsertTagPost:(value)=>{
         return db.insert(`INSERT INTO tag_posts(??, ??) VALUES ?`, value);
+    },
+
+    LoadTagOfWriter:(value)=>{
+        return db.insert(`SELECT Id FROM tags WHERE TagName IN (${value})`);
     },
 
     InsertPostDetail:(value)=>{

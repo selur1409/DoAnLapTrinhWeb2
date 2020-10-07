@@ -1,0 +1,54 @@
+<div class="d-flex justify-content-center row mt-3">
+        <div class="col-md">
+            <div class="d-flex flex-column comment-section" id="myGroup{{Comment.index}}">
+                <div class="bg-white p-2">
+                    <div class="d-flex flex-row user-info">
+                        <img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+                        <div class="d-flex flex-column justify-content-start ml-2">
+                            <span class="d-block font-weight-bold name">{{Comment.Name}}</span>
+                            <span class="date text-black-50">Shared publicly - {{Comment.DatetimeComment}}</span>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="comment-text">{{Comment.Content}}.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-2">
+                    <div class="d-flex flex-row fs-12">
+                        <div class="like p-2 cursor">
+                            <a class="link_like" href="javascript:;" onclick="LikeComment(event)">
+                                <i class="fa fa-thumbs-o-up"></i>
+                                <span class="ml-1" id="like-{{Comment.Id}}" data-like={{Comment.total_like}}>{{Comment.total_like}}</span>
+                            </a>
+                        </div>
+                        {{#if level2}}
+                        <div class="like p-2 cursor action-collapse" data-toggle="collapse" aria-expanded="true" aria-controls="collapse-{{Comment.index}}" href="#collapse-{{Comment.index}}">
+                            <a class="link_comment" href="javascript:;">
+                                <i class="fa fa-commenting-o"></i>
+                                <span class="comment-collapse ml-1" id="OpenComment-{{Comment.index}}" data-level={{level}}>Comment</span>
+                            </a>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+                {{#if level2}}
+                <div id="collapse-{{Comment.index}}" class="bg-light p-2 comment-box collapse" data-parent="#myGroup{{Comment.index}}">
+                    <form id="comment_form{{Comment.index}}">
+                        <input type="hidden" name="IdPost" value="{{Post.Id}}">
+						<input type="hidden" name="Url" value="{{Post.Url}}">
+                        <div class="d-flex flex-row align-items-start">
+                            <img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+                            <textarea class="form-control ml-1 shadow-none textarea" name="Content"></textarea>
+                        </div>
+                        <div class="mt-2 text-right">
+                            <button class="btn btn-primary btn-sm shadow-none" id="Post{{Comment.index}}" type="button" onclick="PostComment(event)" value="{{Comment.Id}}">Post comment</button>
+                            <button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="media-body ml-5 pl-2" id="reply{{Comment.index}}">
+				</div>
+                {{/if}}
+            </div>
+        </div>
+    </div>

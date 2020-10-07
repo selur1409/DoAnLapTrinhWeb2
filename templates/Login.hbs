@@ -1,0 +1,28 @@
+<div class="modal fade" id="Login" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-confirm" role="document"></div>
+        <div id="formcontainer">
+            <img id="img1"
+                src="/public/img/bg.png">
+            <a href="#" data-dismiss="modal">
+                <img id="cross" src="https://image.flaticon.com/icons/svg/148/148766.svg">
+            </a>
+            <p id="text">Login to your Account</p>
+            <p id="invalid"></p>
+            <input id="email" type="text" name='username'  placeholder="Username">
+            <input id="password" type="password" name='password' placeholder="Password">
+            <input id="check" type="checkbox">
+            <p id="text1">Remember Me</p>
+            <a id="forget" href="/account/ForgotPW">Forget Password ?</a>
+            <button id="login">Log In</button>
+            <hr id="hrline1">
+            <p id="text2">or login with</p>
+            <hr id="hrline2">
+            <button id="facebook" class='Login-Social'>
+                <a class='loginFacebook' href="/auth/facebook"><img id="facebook1" src="https://image.flaticon.com/icons/svg/174/174848.svg">Facebook</a>
+            </button>>
+            <button id="google" class='Login-Social'>
+                <a class='loginGoogle' href="/auth/google"><img id="google1" src="https://image.flaticon.com/icons/svg/281/281764.svg">Google</a>
+            </button>
+            <p id="text3">Not a Member?</p><a id="signup" href="/account/register">Signup Now</a>
+        </div>
+</div>

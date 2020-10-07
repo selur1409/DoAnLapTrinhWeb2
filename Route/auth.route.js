@@ -12,38 +12,42 @@ const isLoggedIn = (req, res, next) => {
 }
 
 router.get('/failed', function(req, res){
-  req.flash('error', 'Đăng nhập google+ thất bại.');
+  req.flash('error', 'Đăng nhập thất bại.');
   return res.redirect('/account/login');
 })
 
 // In this route you can see that if the user is logged in u can acess his info in: req.user
 router.get('/good', isLoggedIn, async function(req, res){
-  const verifed = req.user.emails[0].verified;
+  const verifed = req.user.emails[0].hasOwnProperty('verified') ? req.user.emails[0].verified : true;
   if (verifed !== true){
     req.flash('error', 'Email chưa được xác thực.');
     return res.redirect('/account/login');
   }
 
-  const check = await accountModel.singleGoogle_check(req.user.id);
-  if (check.length === 0){
+  const checkGoogle = await accountModel.singleGoogle_check(req.user.id);
+  const checkFacebook = await accountModel.singleFacebook_check(req.user.id);
+  if (checkGoogle.length === 0 && checkFacebook.length === 0){
     // Lấy ngày giờ hiện tại
     const dt_now = moment().format('YYYY-MM-DD');
     const entityAccount = {
       Username: req.user.id,
       DateRegister: dt_now,
       TypeAccount: 1,
-      IsGoogle: 1,
+      IsGoogle: req.user.provider === 'google' ? 1 : 0,
+      IsFacebook: req.user.provider === 'facebook' ? 1 : 0,
       IsDelete: 0
     }
     await accountModel.add(entityAccount);
 
-    const account = await accountModel.singleGoogle_check(entityAccount.Username);
-    if (account.length === 0){
-      req.flash('error', 'Thêm tài khoản Google không thành công');
+    const accountGoogle = await accountModel.singleGoogle_check(entityAccount.Username);
+    const accountFacebook = await accountModel.singleFacebook_check(entityAccount.Username);
+
+    if (accountGoogle.length === 0 && accountFacebook.length === 0){
+      req.flash('error', 'Thêm tài khoản không thành công');
       return res.redirect('/account/login');
     }
 
-    const idAccount = account[0].Id;
+    const idAccount = accountGoogle.length === 0 ? accountFacebook[0].Id : accountGoogle[0].Id;
 
     //Khởi tạo ngày sinh mặc định
     const dob = '1990/01/01';
@@ -53,7 +57,7 @@ router.get('/good', isLoggedIn, async function(req, res){
     const entityInfomation = {
       Name: req.user.displayName,
       Email: req.user.emails[0].value,
-      Avatar: req.user.photos[0].value,
+      Avatar: accountGoogle.length === 0 ? `https://graph.facebook.com/${req.user.id}/picture?type=large`: req.user._json.picture,
       DOB: dob,
       IdAccount: idAccount,
       Sex: sex
@@ -61,13 +65,14 @@ router.get('/good', isLoggedIn, async function(req, res){
     await accountModel.addInfor(entityInfomation);
   }
 
-  const rows = await accountModel.singleGoogle(req.user.id);
-  if (rows.length === 0){
+  const accountGoogleExists = await accountModel.singleGoogle(req.user.id);
+  const accountFacebookExists = await accountModel.singleFacebook(req.user.id);
+  if (accountGoogleExists.length === 0 && accountFacebookExists.length === 0){
     req.flash('error', 'Email không tồn tại.');
     return res.redirect('/account/login');
   }
 
-  const acc = rows[0];
+  const acc = req.user.provider === 'google' ? accountGoogleExists[0] : accountFacebookExists[0];
 
   if (acc.Avatar)
   {
@@ -89,15 +94,32 @@ router.get('/good', isLoggedIn, async function(req, res){
   return res.redirect(url);
 })
 
-// Auth Routes
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+// Auth Routes Google
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile', 'email'], 
+  prompt : "select_account" }));
 
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/auth/failed' }),
-  function(req, res) {
-    // Successful authentication, redirect home.
-    res.redirect('/auth/good');
-  }
+router.get('/google/callback', passport.authenticate('google', { 
+    failureRedirect: '/auth/popup', 
+    successRedirect: '/auth/popup' 
+  })
 );
+
+//Auth Routes Facebook
+router.get('/facebook', passport.authenticate('facebook', {
+  scope:['public_profile', 'email']
+}));
+
+router.get('/facebook/callback', 
+  passport.authenticate('facebook', {
+    successRedirect:'/auth/popup',
+    failureRedirect:'/auth/popup'
+  })
+);
+
+router.get('/popup', (req, res, next) =>{
+  res.render('auth.hbs', {layout:false});
+});
 
 router.get('/logout', (req, res) => {
     req.session = null;

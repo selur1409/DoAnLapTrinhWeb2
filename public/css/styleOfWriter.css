@@ -162,3 +162,47 @@ div > .btnTag :hover {
 }
 
 /*Imag fluid post detail */
+/* .tagOther {
+  padding: 5px;
+  background: aliceblue;
+  border: deepskyblue 1px solid;
+  border-radius: 5px;
+  display: inline-block;
+  margin:2px;
+} */
+
+#inputText {
+  height: 100%;
+  width:300px;
+  font-size: 20px;
+  margin-left: 10px;
+  border: none;
+  background: none;
+  display: inline-block;
+}
+
+#inputText:focus{
+  outline: none;
+}
+
+#containerTag {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid;
+  border-radius: 5px;
+  background: white;
+	padding: 10px;
+}
+
+#ListTag{
+  display: inline;
+  margin: auto;
+}
+
+ .tagOther{
+  display:inline-block;
+  margin: 2px 2px 2px 2px;
+  width: auto;
+  text-align: center;
+}

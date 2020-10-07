@@ -15,6 +15,7 @@ const { route } = require('../route/account.route');
 const { CountFB } = require('../Models/Writer');
 const { query } = require('express');
 const {mark_url} = require('../public/js/ConvertTitleToUrl');
+const {mark_tag} = require('../js/check');
 
 function exposeTemplates(req, res, next) {
     // Uses the `ExpressHandlebars` instance to get the get the **precompiled**
@@ -197,6 +198,7 @@ router.get('/Writer', restrict, Authories, async (req,res)=>{
 router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, next)=>{
     try{
         let checkbox = JSON.parse(req.body.arrCheck);
+        let arrTag = JSON.parse(req.body.arrTag);
         const IsDelete = 0;
         const IdStatus = 4;
         const IdPost = -1;
@@ -240,8 +242,17 @@ router.post('/Writer', restrict, Authories, upload.fields([]), async (req,res, n
                     Temp.push(Tag_Post);
                 }
 
-                const ValueOfTagPost = ['IdPost', 'IdTag', Temp];
+                let ValueOfTagPost = ['IdPost', 'IdTag', Temp];
                 const result = await db.InsertTagPost(ValueOfTagPost);
+
+                const valueTagToInsert = arrTag.map(tag => [tag, mark_tag(tag)]);
+                const markTag = arrTag.map(tag => `'${mark_tag(tag)}'`);
+                await db.InsertTag([valueTagToInsert]);
+                
+                let tagInserted = await db.LoadTagOfWriter([markTag]);
+                const tagToTagPost = tagInserted.map(element => [Result.insertId, element.Id]);
+                ValueOfTagPost = ['IdPost', 'IdTag', tagToTagPost];
+                await db.InsertTagPost(ValueOfTagPost);
 
                 //remove image is not exists in full content 
                 RemoveImage(directoryPath, tagsImg);

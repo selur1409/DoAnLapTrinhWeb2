@@ -49,11 +49,15 @@
           {{err}}
         </div>
         {{/if}}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert" style="display: none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         <a class="btn btn-lg btn-light btn-block" href="/" role="button">
           <i class="fa fa-home" aria-hidden="true"></i>
         </a>
         <br>
-        <form method="POST" id="frmLoginAccount">
           <div class="form-group">
             <div class="input-group">
               <input class="form-control form-control-lg border-right-0 border" id="txtUsername" placeholder="Tên đăng nhập" type="text"
@@ -79,11 +83,11 @@
             <small id="rsPassword"></small>
           </div>
           {{!-- captcha --}}
-          <div class="g-recaptcha" data-sitekey="6LfNc78ZAAAAAKrXI7f-BgvEMg7t0ekCghzxp1mg"></div><br>
+          {{!-- <div class="g-recaptcha" data-sitekey="6LfNc78ZAAAAAKrXI7f-BgvEMg7t0ekCghzxp1mg"></div><br> --}}
           <div class="form-group d-flex">
 
             <div class="flex-fill ml-1">
-              <button class="btn btn-info btn-lg btn-block" type="submit">
+              <button class="btn btn-info btn-lg btn-block" onclick="Login()">
                 <i class="fa fa-sign-in" aria-hidden="true"></i>
                 Đăng nhập
               </button>
@@ -95,14 +99,19 @@
               </a>
             </div>
           </div>
-        </form>
           <div class="flex-fill ml-1">
               <a class="btn btn-outline-danger btn-lg btn-block" href="/auth/google">
                 <i class="fab fa-google-plus"></i>
                 Đăng nhập với Google+
             </a>
           </div>
-          <div class="flex-fill ml-1">
+          <div class="flex-fill m-1">
+              <a class="btn btn-outline-primary btn-lg btn-block" href="/auth/facebook">
+                <i class="fab fa-facebook"></i>
+                Đăng nhập với Facebook
+            </a>
+          </div>
+          <div class="d-flex justify-content-center">
             <a href="/account/ForgotPW"><i>Quên mật khẩu.</i></a>
           </div>
       </div>
@@ -115,21 +124,21 @@
   {{!-- for captcha --}}
   <script src='https://www.google.com/recaptcha/api.js'></script>
   <script>
-  $('#frmLoginAccount').on('submit', function (e) {
+  /* $('#frmLoginAccount').on('submit', function (e) {
     // alert('submit called');
     e.preventDefault();
     // if (validate())
     //   $('#frmLoginAccount').off('submit').submit();
     validate();
-  })
+  }) */
 
-function validate() {
+/*function validate() {
   // ... các lệnh validate khác
   if (!validateUsername() || !validatePassword()){
     return alert('Thông tin nhập không chính xác hoặc không đầy đủ.'); 
   }
   return $('#frmLoginAccount').off('submit').submit();    
-}
+}*/
 
 function validateRegexUsername(username) {
     const re = /^(([a-z]){1}([a-z0-9_\.]){3,31})$/;
@@ -179,8 +188,8 @@ function validatePassword() {
   return false;
 }
 </script>
-
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <script>
 $(document).ready(function(){
   $("#txtUsername").change(function(){
@@ -190,6 +199,40 @@ $(document).ready(function(){
     validatePassword();
   });
 });
+
+async function Login(event)
+{
+	try{
+		const $username = $('#txtUsername').val();
+		const $password = $('#txtPassword').val();
+    
+		const response = await fetch('/account/login', {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ Username:$username , Password: $password})
+		});
+		
+		const responseJSON = await response.json();
+		if(responseJSON.success)
+		{
+			location.href=responseJSON.success;
+		}
+		else
+		{
+      $('.alert-warning').text(responseJSON.err);
+      $('.alert-warning').show();
+			//$('#invalid').html(responseJSON.err);
+			console.log( responseJSON.err);
+		} 
+	}
+	catch(error)
+	{
+		console.log(error);
+	}
+} 
 </script>
 </body>
 

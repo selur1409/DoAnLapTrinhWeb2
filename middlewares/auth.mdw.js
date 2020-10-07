@@ -3,7 +3,7 @@ const querystring = require('querystring');
 const restrict = function (req, res, next) {
     if (!req.session.isAuthenticated) {
         const url = querystring.escape(req.originalUrl);
-        return res.redirect(`/account/login?retUrl=${url}`);
+        return res.redirect(`/`);
     }
     next();
 }

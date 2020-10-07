@@ -34,18 +34,15 @@
           <h5><label for="">Tags</label></h5>
           <div class="row">
             {{#each this.ListTag}}
-              {{!-- <div class="col">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="checkbox{{@index}}"  value="{{Id}}">
-                    <label class="custom-control-label" for="checkbox{{@index}}">{{this.Name}}</label>
-                  </div>
-              </div> --}}
               <div class="p-1">
                     <button type="button" class="btn btnTag btn-outline-primary" id="checkbox{{@index}}"  value="{{Id}}">{{Name}}</button>
               </div>
               {{!-- {{{count_index @index}}} --}}
             {{/each}}
           </div>
+          <div class="row">
+            <h5><label for="IdTitle">Other tag</label></h5>
+            <div id="containerTag"><div id="ListTag"></div><input type="text" id="inputText" placeholder="Enter tag name and press enter.."></input></div>
         </div>
     </div>
     <div class="card-footer">
@@ -59,6 +56,8 @@
 {{#section 'js'}}
 <script src="/public/plugins/sweetalert2/sweetalert2.min.js"></script>
   <script src="https://cdn.tiny.cloud/1/ilpxmudgw3esovltoi6856rdmxd85dk15dunkemmkwt2pbt8/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+  <link rel="stylesheet" type="text/css" href="/public/css/prism.css">
+  <script src="/public/js/prism.js"></script>
 <script>
  $('.swalDefaultSuccess').click(function() {
       Toast.fire({
@@ -81,9 +80,10 @@ tinymce.init({
   autosave_restore_when_empty: false,
   autosave_retention: "2m",
   image_advtab: true,
-  content_css: '//www.tiny.cloud/css/codepen.min.css',
+  content_css: ['//www.tiny.cloud/css/codepen.min.css', 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.19.0/themes/prism-dark.min.css'],
   content_css_cors:true,
   importcss_append: true,
+  codesample_global_prismjs: true,
   file_picker_callback: function (cb, value, meta) {
     var input = document.createElement('input');
     input.setAttribute('type', 'file');
@@ -188,16 +188,29 @@ tinymce.init({
     return arrchkbox;
   }
 
+  function getTagName(){
+    let arrTag = [];
+    const tags = document.getElementsByClassName('tagOther');
+    for(let i = 0; i < tags.length; i++)
+    {
+      arrTag.push(tags.item(i).getAttribute('data-tagname'));
+    }
+    return arrTag;
+  }
+
    function attendConference() {
         const form = document.getElementById("formPost");
         const btnSubmit = document.getElementById("submit");
-        const arrChecked = active();
+        
+        let arrChecked = active();
         btnSubmit.addEventListener("click", function () {
             tinymce.triggerSave();
             event.preventDefault();
             const xhttp = new XMLHttpRequest();
+            let arrTag = getTagName();
             const FD = new FormData(form);
             FD.append("arrCheck", JSON.stringify(arrChecked));
+            FD.append("arrTag", JSON.stringify(arrTag));
             xhttp.onreadystatechange = function () {
                 if (this.readyState == 4 && this.status == 200) {
                     const data = xhttp.responseText;
@@ -225,10 +238,21 @@ tinymce.init({
 
     $('.btnTag').mousedown(function () {
         $(this).removeClass('jiggle').addClass('shrink')
-      });
-      $('.btnTag').mouseup(function () {
-        $(this).removeClass('shrink').addClass('jiggle')
-      });
+    });
+    $('.btnTag').mouseup(function () {
+      $(this).removeClass('shrink').addClass('jiggle')
+    });
+
+    $(document).ready(function () {
+        $("#inputText").keypress(function (event) {
+          if(event.which == 13) {
+            event.preventDefault();
+            $("#ListTag").append('<div class="alert alert-primary alert-dismissible tagOther" data-TagName="'+ ($(this).val()) + '" role="alert">'+ ($(this).val()) +'<button type="button" class="close" data-dismiss="alert" aria-label="Close" ><span aria-hidden="true">&times;</span></button></div>');
+            $(this).val("");
+          }
+        });
+    });
+    
 
     window.onload = function(){
         attendConference(); 
