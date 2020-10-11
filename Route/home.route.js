@@ -193,8 +193,8 @@ router.get('/', async function (req, res) {
             && res.locals.lcAuthUser.TypeAccount === 1)
         {
             IsAccountPremium = false;
-            dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
         }
+        const dateEx = moment(req.session.authAccount.DateExpired, 'DD-MM-YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss');
 
         if (dateEx <= dt_now && res.locals.lcAuthUser.TypeAccount === 1)
         {

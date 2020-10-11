@@ -85,13 +85,19 @@
 			}
 			else {
 				if (IdComment !== '') {
-					const Reply = document.getElementById('collapse' + IdForm.substring(4)) !== undefined ? document.getElementById('collapse' + IdForm.substring(4)) : document.getElementById('reply' + IdForm.substring(4));
+					const Reply = document.getElementById('collapse' + IdForm.substring(4)) !== null ? document.getElementById('collapse' + IdForm.substring(4)) : document.getElementById('reply' + IdForm.substring(4));
+					
+					console.log(Reply);
+					console.log(document.getElementById('collapse' + IdForm.substring(4)));
+					console.log(document.getElementById('reply' + IdForm.substring(4)));
+
 					const tmp = document.createElement('div');
 					tmp.innerHTML = Handlebars.templates.Comment({
 						level2: levelChild !== 3, level: levelChild, Post: { Id: responseJSON.IdPost, Url: responseJSON.Url },
 						Comment: { Content: responseJSON.Content, Name: responseJSON.Name, DatetimeComment: responseJSON.DatetimeComment, Id: responseJSON.Id, index: Index, Id: responseJSON.IdPost, Url: responseJSON.Url }
 					});
 					Reply.appendChild(tmp);
+					$('textarea').val('');
 				}
 				else {
 					const comment = document.getElementById('ListComment');
@@ -101,6 +107,8 @@
 						Comment: { Content: responseJSON.Content, Name: responseJSON.Name, DatetimeComment: responseJSON.DatetimeComment, Id: responseJSON.Id, index: Index }
 					});
 					comment.appendChild(tmp);
+					$('textarea').val('');
+
 				}
 			}
 		}
@@ -148,46 +156,46 @@
 	}
 
 	function buildComment(listComment, level, post) {
-    if (!level) {
-        level = 1;
-    }
+		if (!level) {
+			level = 1;
+		}
 
-    let dateTimeFromNow = moment(listComment.DatetimeComment).startOf('hour').fromNow();
-    let arrayDate = dateTimeFromNow.split(' ');
-    let dateTimeComment;
-    if (arrayDate[1] !== 'giờ') {
-        dateTimeComment = moment(listComment.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
-    }
-    else {
-        dateTimeComment = dateTimeFromNow;
-    }
-    listComment.DatetimeComment = dateTimeComment;
+		let dateTimeFromNow = moment(listComment.DatetimeComment).startOf('hour').fromNow();
+		let arrayDate = dateTimeFromNow.split(' ');
+		let dateTimeComment;
+		if (arrayDate[1] !== 'giờ') {
+			dateTimeComment = moment(listComment.DatetimeComment, 'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss DD-MM-YYYY');
+		}
+		else {
+			dateTimeComment = dateTimeFromNow;
+		}
+		listComment.DatetimeComment = dateTimeComment;
 
-    let str = "";
+		let str = "";
 
-    str += Handlebars.templates.Comment({ Comment:listComment, level:level, level2:level !== 3, Post:post });
-    if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
-        str += `<a class="view-all-reply" data-toggle="collapse" href="#collapse${listComment.index}" role="button" aria-expanded="false" aria-controls="#collapse${listComment.index}">
+		str += Handlebars.templates.Comment({ Comment: listComment, level: level, level2: level !== 3, Post: post });
+		if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+			str += `<a class="view-all-reply" data-toggle="collapse" href="#collapse${listComment.index}" role="button" aria-expanded="false" aria-controls="#collapse${listComment.index}">
           <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
           <span>more reply</span>
         </a>
         <div class="collapse media-content ml-5 pl-2" id="collapse${listComment.index}"> <div class="vetical"></div>`;
-    }
+		}
 
 
-    listComment.list.forEach((o) => {
-        str += buildComment(o, level + 1, post);
-    });
+		listComment.list.forEach((o) => {
+			str += buildComment(o, level + 1, post);
+		});
 
-    if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
-        str += '</div>';
-    }
+		if ((level === 1 && listComment.list.length !== 0) || (level === 2 && listComment.list.length !== 0)) {
+			str += '</div>';
+		}
 
-    return new Handlebars.SafeString(str);
-}
+		return new Handlebars.SafeString(str);
+	}
 
-	async function LoadCommentByType(event, type){
-		try{
+	async function LoadCommentByType(event, type) {
+		try {
 			const $currentTab = $(event.currentTarget);
 			const IdPost = $($currentTab).data('idPost');
 			const Url = $($currentTab).data('url');
@@ -198,30 +206,27 @@
 					'Accept': 'application/json',
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ Type: type, IdPost: IdPost, Url:Url})
+				body: JSON.stringify({ Type: type, IdPost: IdPost, Url: Url })
 			});
 
 			const responseJSON = await response.json();
-		
-			if(responseJSON.length !== 0)
-			{
+
+			if (responseJSON.length !== 0) {
 				const $ListComment = $('#ListComment');
 				let template = '';
-				for(let i = 0; i < responseJSON.listComment.length; i++)
-				{
+				for (let i = 0; i < responseJSON.listComment.length; i++) {
 					template += buildComment(responseJSON.listComment[i], false, responseJSON.post)
 				}
 				$($ListComment).html(template);
 				$()
 			}
- 
+
 		}
-		catch(error)
-		{
+		catch (error) {
 			console.log(error);
 		}
 	}
- 
+
 
 
 </script>
@@ -276,14 +281,14 @@
 
 		});
 
-		$('.type-comment li').on('click', (event)=>{
+		$('.type-comment li').on('click', (event) => {
 			const $currentType = $(event.currentTarget);
 			$currentType.children().addClass('active');
 			$(event.currentTarget).siblings().children().removeClass('active');
 		});
 
 
-		$('.view-all-reply').on('click',(event) => {
+		$('.view-all-reply').on('click', (event) => {
 			console.log($(event.currentTarget));
 			const currentCollapse = $(event.currentTarget).attr('href');
 			style = {
@@ -292,12 +297,12 @@
 			$(currentCollapse).css(style);
 		});
 
-		$(document).on('show.bs.collapse', 'div.media-content', (event)=>{
+		$(document).on('show.bs.collapse', 'div.media-content', (event) => {
 			style = {
 				'border-left': '2px solid hsla(200, 10%, 50%,100)',
 			};
 			$(event.currentTarget).css(style);
-		}) 
+		})
 	});
 	window.onload = function () {
 		Export();
@@ -343,8 +348,7 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a
-								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -377,23 +381,23 @@
 
 						<div style="margin-top: 20px;">Download Post:</div>
 						{{#if IsLogin}}
-						{{#if IsAccountPremium}}
-						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-							data-value={{this.post.Id}} id="btnExport" href="">Export pdf
-						</a>
+								{{#if IsAccountPremium}}
+									<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+										data-value={{this.post.Id}} id="btnExport" href="">Export pdf
+									</a>
+								{{else}}
+										<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+											href="/premium/register?retUrl=/detail/{{this.post.Url}}">Export pdf
+										</a>
+								{{/if}}
+							
 						{{else}}
-						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-							href="/premium/register?retUrl=/detail/{{this.post.Url}}">Export pdf
-						</a>
+							<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
+								href="/account/login?retUrl=/detail/{{this.post.Url}}">Export pdf
+							</a>
 						{{/if}}
 
-						{{else}}
-						<a class="btn btnExport btn-outline-primary p-1 my-1 mr-0 mml-1 collapsed"
-							href="/account/login?retUrl=/detail/{{this.post.Url}}">Export pdf
-						</a>
-						{{/if}}
-
-
+						
 					</div>
 
 					<!-- Bottom Panel -->
@@ -401,8 +405,7 @@
 						<div class="author_image">
 							<div><img src="../../public/img/avatar/{{this.post.AvatarWriter}}" alt=""></div>
 						</div>
-						<div class="post_meta"><a
-								href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
+						<div class="post_meta"><a href="#">{{this.post.Nickname}}</a><span>{{this.post.DatetimePost}}</span></div>
 						<div class="post_share ml-sm-auto">
 							<span>share</span>
 							<ul class="post_share_list">
@@ -435,9 +438,8 @@
 								<!-- Small Card With Image -->
 
 								{{#if IsPremium}}
-								<div class="card card_default card_small_with_image grid-item"
-									style="background-color: rgb(231, 231, 146);">
-									{{else}}
+									<div class="card card_default card_small_with_image grid-item" style="background-color: rgb(231, 231, 146);">
+								{{else}}
 									<div class="card card_default card_small_with_image grid-item">
 								{{/if}}
 									<img class="card-img-top" src="{{Avatar}}" alt="">
@@ -448,477 +450,362 @@
 										{{else}}
 										<div class="card-title card-title-small title-post"><a href="/detail/{{Url}}">{{Title}}</a></div>
 										{{/if}}
-										<img class="card-img-top" src="../..{{Avatar}}" alt="">
-										<div class="card-body">
-
-											{{#if IsPremium}}
-											<div class="card-title card-title-small title-post"><a
-													href="/detail/{{Url}}"><span style="color: red;">{{Title}}</span>
-													&nbsp; <i class="fas fa-crown"></i></a></div>
-											{{else}}
-											<div class="card-title card-title-small title-post"><a
-													href="/detail/{{Url}}">{{Title}}</a></div>
-											{{/if}}
-											<p class="card-text content-summary">{{Content_Summary}}</p>
-											<small class="post_meta">
-												<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a
-													href="#">{{Nickname}}</a>
-												<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;
-													{{DatetimePost}}</span>
-											</small>
-											<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li
-												class="post_tag" style="background-color: rgb(173, 57, 57);"><a
-													style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li>
-											<br>
-
-											<div class="list-tag">
-												<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
-												{{#load_list_tags ../listPostTags Id}}
-												<li li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
-														href="/tag/{{TagName}}">{{Name}}</a></li>
-												{{/load_list_tags}}
-											</div>
-
+										<p class="card-text content-summary">{{Content_Summary}}</p>
+										<small class="post_meta">
+											<i class="fa fa-user" aria-hidden="true"></i> &nbsp; <a href="#">{{Nickname}}</a>
+											<span><i class="fa fa-calendar" aria-hidden="true"></i>&nbsp; {{DatetimePost}}</span>
+										</small>
+										<i class="fa fa-th-list" aria-hidden="true"></i>Category: &nbsp; <li class="post_tag" style="background-color: rgb(173, 57, 57);"><a style="color:seashell" href="/category/{{CatURL}}">{{Name}}</a></li><br>
+										
+										<div class="list-tag">
+											<i class="fa fa-tags" aria-hidden="true"></i>Tags: &nbsp;
+											{{#load_list_tags ../listPostTags Id}}
+												<li	li class="post_tag" style="background-color: rgb(161, 179, 61);"><a
+												href="/tag/{{TagName}}">{{Name}}</a></li>
+											{{/load_list_tags}}
 										</div>
+										
 									</div>
+								</div>
+								{{/each}}
+							</div>
+							{{/if}}
+						</div>								
+					</div>
+					<br>
+					<hr>
+					<br><br>
+					{{!-- bình luận bài viết --}}
+					<div class="container mb-5 comment-section" id="cmt">
+						<div class="row">
+							<div class="col-sm-10 col-sm-offset-1" id="logout">
+								<div class="page-header">
+									<h3 class="reviews">Comments <span class="badge badge-danger">{{empty}}</span>
+									</h3>
+								</div>
+								{{#unless empty}}
+								<div class="width_common empty-comment flexbox">
+									<i class="fa fa-comments fa-5x"></i>
+									<p>
+										Be the first person<br />
+										comments in this post.
+									</p>
+								</div>
+								<div id="ListComment"></div>
+								{{else}}
+								<ul class="nav nav-tabs type-comment">
+									<li class="nav-item">
+										<a class="nav-link {{tabComment}}" href="javascript:;" data-url="{{post.Url}}"
+											data-idPost="{{post.Id}}" onclick="LoadCommentByType(event, 1)">Newest</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link" href="javascript:;" data-url="{{post.Url}}" data-idPost="{{post.Id}}"
+											onclick="LoadCommentByType(event, 2)">Most
+											interested</a>
+									</li>
+								</ul>
+								<div id="ListComment">
+									{{#each listComment}}
+									{{buildComment this false ../post}}
 									{{/each}}
 								</div>
-								{{/if}}
-							</div>
-						</div>
-						<br>
-						<hr>
-						<br><br>
-						{{!-- bình luận bài viết --}}
-						<div class="container" id="cmt">
-							<div class="row">
-								<div class="col-sm-10 col-sm-offset-1" id="logout">
-									<div class="page-header">
-										<h3 class="reviews">Comments <span
-												class="badge badge-danger">{{empty}}</span> </h3>
-									</div>
-									{{#unless empty}}
-									<div class="width_common empty-comment flexbox">
-										<i class="fa fa-comments fa-5x"></i>
-										<p>
-											Be the first person<br />
-											comments in this post.
-										</p>
-									</div>
-									<div id="ListComment"></div>
-									{{else}}
-									<ul class="nav nav-tabs type-comment">
-										<li class="nav-item">
-											<a class="nav-link {{tabComment}}" href="javascript:;" data-url="{{post.Url}}" data-idPost="{{post.Id}}" onclick="LoadCommentByType(event, 1)">Newest</a>
-										</li>
-										<li class="nav-item">
-											<a class="nav-link" href="javascript:;" data-url="{{post.Url}}" data-idPost="{{post.Id}}" onclick="LoadCommentByType(event, 2)">Most interested</a>
-										</li>
-									</ul>
-									<div id="ListComment">
-										{{#each listComment}}
-										{{buildComment this false ../post}}
-										{{/each}}
-									</div>
-									{{/unless}}
-									<div class="input_comment width_common mt-3">
-										<form id="comment_form-1">
-											<input type="hidden" name="IdPost" value="{{post.Id}}">
-											<input type="hidden" name="Url" value="{{post.Url}}">
-											<div class="d-flex flex-row align-items-start">
-												<img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg"
-													width="40">
-												<div class="box_text">
-													<textarea class="form-control ml-1 shadow-none textarea"
-														name='Content'></textarea>
-													<span class="note-count-text" style="display:none">
-														<span class="counter-word">
-														</span>
+								{{/unless}}
+								<div class="input_comment width_common mt-3">
+									<form id="comment_form-1">
+										<input type="hidden" name="IdPost" value="{{post.Id}}">
+										<input type="hidden" name="Url" value="{{post.Url}}">
+										<div class="d-flex flex-row align-items-start">
+											<img class="rounded-circle" src="https://i.imgur.com/RpzrMR2.jpg" width="40">
+											<div class="box_text">
+												<textarea class="form-control ml-1 shadow-none textarea" name='Content'></textarea>
+												<span class="note-count-text" style="display:none">
+													<span class="counter-word">
 													</span>
-												</div>
+												</span>
 											</div>
-											<div class="mt-2 text-right">
-												<button class="btn btn-primary btn-sm shadow-none postComment"
-													id="Post-1" type="button" onclick="PostComment(event)">Post
-													comment</button>
-												<button class="btn btn-outline-primary btn-sm ml-1 shadow-none"
-													type="button">Cancel</button>
-											</div>
-										</form>
-									</div>
-									{{!-- <div class="comment-tabs">
-									<ul class="nav nav-tabs" id="myTab" role="tablist">
-										<li class="nav-item" role="presentation">
-											<a class="nav-link active" href="#comments-list" role="tab" data-toggle="tab">
-												<h4 class="reviews text-capitalize">Comments</h4>
-											</a></li>
-										<li class="nav-item" role="presentation">
-											<a class="nav-link" href="#add-comment" role="tab" data-toggle="tab">
-												<h4 class="reviews text-capitalize">Add comment</h4>
-											</a>
-										</li>
-									</ul>
-									<div class="tab-content">
-										<div class="tab-pane active" id="comments-list">
-											{{#unless empty}}
-											Chưa có bình luận
-											{{else}}
-											<ul class="media-list" id="media-list">
-												{{#each listComment}}
-												<li class="media">
-													<a class="pull-left" href="#">
-														<img class="media-object img-circle" src="/public/img/Avatar/{{#if Avatar}}{{Avatar}}{{else}}NoAvatar.png{{/if}}"
-															alt="profile">
-													</a>
-													<div class="media-body">
-														<div class="well well-lg">
-															<h4 class="media-heading reviews">{{Name}}</h4>
-															<span class="media-date text-uppercase reviews list-inline">
-																Lúc {{DatetimeComment}}
-															</span>
-															<p class="media-comment">
-																{{Content}}
-															</p>
-															{{#if Img}}
-															<img class="media-comment" src="/public/img/comment/{{Img}}" alt="Images">
-															{{/if}}
-															<br>
-														</div>
-													</div>
-												</li>
-												{{/each}}
-											</ul>
-											<input type="hidden" id="Number" value="1">
-											<input type="hidden" id="Url" value="{{post.Url}}">
-											{{#if more}}													
-											<button class="btn btn-primary btn-sm btn-block" id="more" onclick="load_ajax()"><i
-													class="fas fa-sync"></i>
-												Load more</button>
-											{{/if}}
-											{{/unless}}
 										</div>
-										<div class="tab-pane avtive" id="add-comment">
-											<form method="post" class="form-horizontal" id="commentForm" role="form">
-												<input type="hidden" name="IdPost" value="{{post.Id}}">
-												<input type="hidden" name="Url" value="{{post.Url}}">
-
-												<div class="form-group">
-													<label for="email" class="col-sm-2 control-label">Comment</label>
-													<div class="col-sm-10">
-														<textarea class="form-control" name="Content" id="addComment"
-															rows="5"></textarea>
-													</div>
-												</div>
-												<div class="form-group">
-													<div class="col-sm-offset-2 col-sm-10">
-														<button class="btn btn-success btn-circle text-uppercase" type="submit" 
-															formaction="/post/comment/add"
-															id="submitComment"><span class="glyphicon glyphicon-send"></span> Summit
-															comment
-														</button>
-													</div>
-												</div>
-											</form>
+										<div class="mt-2 text-right">
+											<button class="btn btn-primary btn-sm shadow-none postComment" id="Post-1" type="button"
+												onclick="PostComment(event)">Post
+												comment</button>
+											<button class="btn btn-outline-primary btn-sm ml-1 shadow-none" type="button">Cancel</button>
 										</div>
-									</div>
-								</div> --}}
+									</form>
 								</div>
 							</div>
+							<hr><br>
+							{{!-- /bình luận bài viết --}}
 						</div>
-						{{!-- /bình luận bài viết --}}
-						<hr><br>
 					</div>
 				</div>
-
-
-				<!-- Sidebar -->
-
-				<div class="col-lg-3">
-					<div class="sidebar">
-						<div class="sidebar_background"></div>
-
-						<!-- Top Stories -->
-
-						<div class="sidebar_section">
-							<div class="sidebar_title_container">
-								<div class="sidebar_title">Random Post</div>
-								<div class="sidebar_slider_nav">
-									<div class="custom_nav_container sidebar_slider_nav_container">
-										<div class="custom_prev custom_prev_top">
-											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-												xml:space="preserve">
-												<polyline fill="#bebebe"
-													points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
-											</svg>
-										</div>
-										<ul id="custom_dots" class="custom_dots custom_dots_top">
-											<li class="custom_dot custom_dot_top active"><span></span></li>
-											<li class="custom_dot custom_dot_top"><span></span></li>
-											<li class="custom_dot custom_dot_top"><span></span></li>
-										</ul>
-										<div class="custom_next custom_next_top">
-											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-												xml:space="preserve">
-												<polyline fill="#bebebe"
-													points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
-											</svg>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="sidebar_section_content">
-
-								<!-- Top Stories Slider -->
-								<div class="sidebar_slider_container">
-									<div class="owl-carousel owl-theme sidebar_slider_top">
-
-										<!-- Top Stories Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_1 this.listRandomSidebar}}
-											<div class="side_post">
-												<a href="/detail/{{Url}}">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="side_post_image">
-															<div><img src="{{Avatar}}" alt=""></div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_1}}
-										</div>
-
-										<!-- Top Stories Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_2 this.listRandomSidebar}}
-											<div class="side_post">
-												<a href="/detail/{{Url}}">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="side_post_image">
-															<div><img src="{{Avatar}}" alt=""></div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_2}}
-										</div>
-
-										<!-- Top Stories Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_3 this.listRandomSidebar}}
-											<div class="side_post">
-												<a href="/detail/{{Url}}">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div class="side_post_image">
-															<div><img src="{{Avatar}}" alt=""></div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_3}}
-										</div>
-
-									</div>
-								</div>
-							</div>
-						</div>
-
-						<!-- Advertising -->
-
-						<div class="sidebar_section">
-							<div class="advertising">
-								<div class="advertising_background"
-									style="background-image:url(../../public/images/post_17.jpg)"></div>
-								<div
-									class="advertising_content d-flex flex-column align-items-start justify-content-end">
-									<div class="advertising_perc">-15%</div>
-									<div class="advertising_link"><a href="#">How Did van Gogh’s Turbulent Mind</a>
-									</div>
-								</div>
-							</div>
-						</div>
-
-
-						<!-- Future Events -->
-
-						<div class="sidebar_section future_events">
-							<div class="sidebar_title_container">
-								<div class="sidebar_title">Future Events</div>
-								<div class="sidebar_slider_nav">
-									<div class="custom_nav_container sidebar_slider_nav_container">
-										<div class="custom_prev custom_prev_events">
-											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-												xml:space="preserve">
-												<polyline fill="#bebebe"
-													points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
-											</svg>
-										</div>
-										<ul id="custom_dots" class="custom_dots custom_dots_events">
-											<li class="custom_dot custom_dot_events active"><span></span></li>
-											<li class="custom_dot custom_dot_events"><span></span></li>
-											<li class="custom_dot custom_dot_events"><span></span></li>
-										</ul>
-										<div class="custom_next custom_next_events">
-											<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-												xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
-												height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
-												xml:space="preserve">
-												<polyline fill="#bebebe"
-													points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
-											</svg>
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="sidebar_section_content">
-
-								<!-- Sidebar Slider -->
-								<div class="sidebar_slider_container">
-									<div class="owl-carousel owl-theme sidebar_slider_events">
-
-										{{#if emptyFutureEvent}}
-										<p>NOT FUTURE EVENTS</p>
-
-										{{else}}
-
-										<!-- Future Events Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_1 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div
-															class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">
-																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_1}}
-										</div>
-
-										<!-- Future Events Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_2 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div
-															class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">
-																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_2}}
-										</div>
-
-										<!-- Future Events Slider Item -->
-										<div class="owl-item">
-											{{#loadListRandomSideBar_3 this.listFutureEvent}}
-											<!-- Future Events Post -->
-											<div class="side_post">
-												<a href="/">
-													<div
-														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
-														<div
-															class="event_date d-flex flex-column align-items-center justify-content-center">
-															<div class="event_day">{{dayEvent}}</div>
-															<div class="event_month">
-																{{#convertMonth monthEvent}}{{/convertMonth}}</div>
-														</div>
-														<div class="side_post_content">
-															{{#if IsPremium}}
-															<div class="side_post_title"><span
-																	style="color: red;">{{Title}}</span></div>
-															{{else}}
-															<div class="side_post_title">{{Title}}</div>
-															{{/if }}
-															<small
-																class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
-														</div>
-													</div>
-												</a>
-											</div>
-											{{/loadListRandomSideBar_3}}
-										</div>
-
-										{{/if}}
-
-									</div>
-								</div>
-							</div>
-						</div>
-
-					</div>
-				</div>
-
 			</div>
+
+
+			<!-- Sidebar -->
+
+			<div class="col-lg-3">
+				<div class="sidebar">
+					<div class="sidebar_background"></div>
+
+					<!-- Top Stories -->
+
+					<div class="sidebar_section">
+						<div class="sidebar_title_container">
+							<div class="sidebar_title">Random Post</div>
+							<div class="sidebar_slider_nav">
+								<div class="custom_nav_container sidebar_slider_nav_container">
+									<div class="custom_prev custom_prev_top">
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+											xml:space="preserve">
+											<polyline fill="#bebebe"
+												points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
+										</svg>
+									</div>
+									<ul id="custom_dots" class="custom_dots custom_dots_top">
+										<li class="custom_dot custom_dot_top active"><span></span></li>
+										<li class="custom_dot custom_dot_top"><span></span></li>
+										<li class="custom_dot custom_dot_top"><span></span></li>
+									</ul>
+									<div class="custom_next custom_next_top">
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+											xml:space="preserve">
+											<polyline fill="#bebebe"
+												points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
+										</svg>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="sidebar_section_content">
+
+							<!-- Top Stories Slider -->
+							<div class="sidebar_slider_container">
+								<div class="owl-carousel owl-theme sidebar_slider_top">
+
+									<!-- Top Stories Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_1 this.listRandomSidebar}}
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_1}}
+									</div>
+
+									<!-- Top Stories Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_2 this.listRandomSidebar}}
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_2}}
+									</div>
+
+									<!-- Top Stories Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_3 this.listRandomSidebar}}
+											<div class="side_post">
+												<a href="/detail/{{Url}}">
+													<div
+														class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="side_post_image">
+															<div><img src="{{Avatar}}" alt=""></div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+																<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+																<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_3}}
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Advertising -->
+
+					<div class="sidebar_section">
+						<div class="advertising">
+							<div class="advertising_background"
+								style="background-image:url(../../public/images/post_17.jpg)"></div>
+							<div class="advertising_content d-flex flex-column align-items-start justify-content-end">
+								<div class="advertising_perc">-15%</div>
+								<div class="advertising_link"><a href="#">How Did van Gogh’s Turbulent Mind</a></div>
+							</div>
+						</div>
+					</div>
+
+
+					<!-- Future Events -->
+
+					<div class="sidebar_section future_events">
+						<div class="sidebar_title_container">
+							<div class="sidebar_title">Future Events</div>
+							<div class="sidebar_slider_nav">
+								<div class="custom_nav_container sidebar_slider_nav_container">
+									<div class="custom_prev custom_prev_events">
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+											xml:space="preserve">
+											<polyline fill="#bebebe"
+												points="0,5.61 5.609,0 7,0 7,1.438 2.438,6 7,10.563 7,12 5.609,12 -0.002,6.39 " />
+										</svg>
+									</div>
+									<ul id="custom_dots" class="custom_dots custom_dots_events">
+										<li class="custom_dot custom_dot_events active"><span></span></li>
+										<li class="custom_dot custom_dot_events"><span></span></li>
+										<li class="custom_dot custom_dot_events"><span></span></li>
+									</ul>
+									<div class="custom_next custom_next_events">
+										<svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+											xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="7px"
+											height="12px" viewBox="0 0 7 12" enable-background="new 0 0 7 12"
+											xml:space="preserve">
+											<polyline fill="#bebebe"
+												points="6.998,6.39 1.389,12 -0.002,12 -0.002,10.562 4.561,6 -0.002,1.438 -0.002,0 1.389,0 7,5.61 " />
+										</svg>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="sidebar_section_content">
+
+							<!-- Sidebar Slider -->
+							<div class="sidebar_slider_container">
+								<div class="owl-carousel owl-theme sidebar_slider_events">
+
+									{{#if emptyFutureEvent}}
+									<p>NOT FUTURE EVENTS</p>
+
+									{{else}}
+
+									<!-- Future Events Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_1 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_1}}
+									</div>
+
+									<!-- Future Events Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_2 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_2}}
+									</div>
+
+									<!-- Future Events Slider Item -->
+									<div class="owl-item">
+										{{#loadListRandomSideBar_3 this.listFutureEvent}}
+											<!-- Future Events Post -->
+											<div class="side_post">
+												<a href="/">
+													<div class="d-flex flex-row align-items-xl-center align-items-start justify-content-start">
+														<div class="event_date d-flex flex-column align-items-center justify-content-center">
+															<div class="event_day">{{dayEvent}}</div>
+															<div class="event_month">{{#convertMonth monthEvent}}{{/convertMonth}}</div>
+														</div>
+														<div class="side_post_content">
+															{{#if IsPremium}}
+															<div class="side_post_title"><span style="color: red;">{{Title}}</span></div>
+															{{else}}
+															<div class="side_post_title">{{Title}}</div>
+															{{/if }}
+															<small class="post_meta">{{Nickname}}<span>{{DatetimePost}}</span></small>
+														</div>
+													</div>
+												</a>
+											</div>
+										{{/loadListRandomSideBar_3}}
+									</div>
+
+									{{/if}}
+
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
 		</div>
 	</div>
+</div>
