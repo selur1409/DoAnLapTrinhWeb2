@@ -11,6 +11,15 @@
   "authentication":{
     "saltRounds": 8
   },
+  "mysql_cloud": {
+    "host": "bdif8nuraszoupoykeaf-mysql.services.clever-cloud.com",
+    "port": 3306,
+    "user": "uglxlapoyltaafez",
+    "password": "1tYzeNRKd8YgdcOttRR9",
+    "database": "bdif8nuraszoupoykeaf",
+    "connectionLimit": 10,
+    "multipleStatements": true
+  },
   "momentDefault":{
     "Duration": {
       "Year": "Y",
@@ -22,15 +31,6 @@
       "Minutes": "m",
       "Seconds": "s",
       "Miliseconds": "ms"
-    },
-    "mysql_cloud": {
-      "host": "bzs3goj1xfhxz2ygmedo-mysql.services.clever-cloud.com",
-      "port": 3306,
-      "user": "u9ah0l4ifjtunewo",
-      "password": "VEqdhf47ozXUVNgQI9g2",
-      "database": "bzs3goj1xfhxz2ygmedo",
-      "connectionLimit": 10,
-      "multipleStatements": true
     },
     "NumberTime": 7
   },
